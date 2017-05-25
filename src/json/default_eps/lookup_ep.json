@@ -1,0 +1,37 @@
+{
+    "ep_id":"default_lookup",
+    "ep_name":"LOOKUP",
+    "ep_description":"the default lookup endpoint",
+    "ep_type":"req",
+
+    "message":{   
+        "properties": {   
+            "ep_query": { 
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+
+            "cpt_query": { 
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        }   
+    },
+
+    "response":{   
+        "properties": {   
+            "endpoint": {    
+                "type": "object"   
+            },   
+            "ack_code": {   
+               "type": "number"   
+            }   
+        }   
+    },
+
+    "blocking":1
+}

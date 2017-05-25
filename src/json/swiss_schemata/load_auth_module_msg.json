@@ -1,0 +1,10 @@
+{
+    "properties": {
+        "auth_module_path": { 
+            "type": "string"
+        },
+        "auth_config_path": { 
+            "type": "string"
+        }
+    }
+}

@@ -1,0 +1,20 @@
+{
+    "ep_id":"default_md",
+    "ep_name":"MD",
+    "ep_description":"the default mapping endpoint",
+    "ep_type":"resp",
+
+    "message":{ 
+        "properties": {}
+    },
+
+    "response":{  
+        "properties": {   
+            "endpoint": {    
+                "type": "object"   
+            }
+        }   
+    },
+
+    "blocking":1
+}

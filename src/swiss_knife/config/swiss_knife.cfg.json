@@ -1,0 +1,19 @@
+{
+    "app_config":{
+        "log_level": 5,
+        "log_file": "sk_app.log"
+    },
+
+    "core_config":{
+        "log_level": 5,
+        "log_file": "sk_core.log",
+        "com_libs": [
+            {
+                "lib_path": "com_modules/libcommoduletcp.so",
+                "cfg_path": "swiss_knife/swiss_knife_tcp.cfg.json"
+            }
+        ],
+        "access_libs": [
+        ]
+    }
+}

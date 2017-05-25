@@ -1,0 +1,7 @@
+{
+    "properties": {
+        "ack_code":{
+            "type": "number"
+        }
+    }
+}

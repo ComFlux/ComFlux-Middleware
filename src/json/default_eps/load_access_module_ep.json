@@ -1,0 +1,19 @@
+{
+    "ep_id":"default_load_auth_module",
+    "ep_name":"LOAD_AUTH_MODULE",
+    "ep_description":"the default endpoint to load an auth module",
+    "ep_type":"snk",
+
+    "message":{
+        "properties": {
+            "module_path": { 
+                "type": "string"
+            },
+            "config_path": { 
+                "type": "string"
+            }
+        }
+    },
+    
+    "blocking":1
+}

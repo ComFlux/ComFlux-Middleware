@@ -1,0 +1,8 @@
+{
+    "basemodulepath":"/home/jie/test/middleware/build/lib/libcommoduletcp.so",
+    "basemodulecfg":"/home/jie/test/middleware/build/lib/tcp_src.cfg.json",
+    "metadata": {
+       "name": "comrest"
+    },
+    "address":"127.0.0.1:1503",
+}

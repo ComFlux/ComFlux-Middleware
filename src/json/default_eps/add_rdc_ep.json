@@ -1,0 +1,16 @@
+{
+    "ep_id":"default_add_rdc",
+    "ep_name":"ADD_RDC",
+    "ep_description":"the default endpoint to add rdc",
+    "ep_type":"snk",
+
+    "message":{
+        "properties": {
+            "address": { 
+                "type": "string"
+            }
+        }
+    },
+    
+    "blocking":1
+}

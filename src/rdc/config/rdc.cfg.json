@@ -1,0 +1,23 @@
+{
+    "com_lib_path": "/usr/local/bin/libcommoduletcp.so",
+    "com_cfg_path": "/usr/local/etc/middleware/rdc/rdc_tcp.cfg.json",
+
+
+    "app_config":{
+        "log_level": 6,
+        "log_file": "rdc.log"
+    },
+
+    "core_config":{
+        "log_level": 6,
+        "log_file": "rdc.log",
+        "com_libs": [
+            {
+                "lib_path": "/usr/local/etc/middleware/com_modules/libcommoduletcp.so",
+                "cfg_path": "/usr/local/etc/middleware/rdc/rdc_tcp.cfg.json"
+            }
+        ],
+        "access_libs": [
+        ]
+    }
+}

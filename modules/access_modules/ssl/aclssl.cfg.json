@@ -1,0 +1,9 @@
+{
+  "sopath": "/home/jie/iot/middleware/modules/auth_modules/libmoduleaclcred.so",
+  "metadata": {
+    "name": "acl-simple"
+  },
+  "public_key": "/media/dpan/Dropbox/middleware/build/bin/examples/client.crt",
+  "ca_file":"/media/dpan/Dropbox/middleware/build/bin/examples/ca.crt",
+  "access_granted": "core1,core2,client"
+}

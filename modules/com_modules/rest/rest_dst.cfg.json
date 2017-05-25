@@ -1,0 +1,9 @@
+{
+    "basemodulepath":"/Users/admin/dev/middleware/build/lib/libcommoduletcp.so",
+    "basemodulecfg":"/Users/admin/dev/middleware/build/lib/tcp_src.cfg.json",
+    "metadata": {
+       "name": "comrest"
+    },
+    "address": "127.0.0.1:1505"
+ 
+}

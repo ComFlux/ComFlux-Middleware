@@ -1,0 +1,8 @@
+{
+  "sopath": "/home/jie/iot/middleware/modules/auth_modules/libmoduleaclcred.so",
+  "metadata": {
+    "name": "acl-simple"
+  },
+  "credential": "password1",
+  "access_granted": "core1,core2,password1"
+}

@@ -1,0 +1,8 @@
+{
+  "metadata": {
+    "name": "acl-kerberos"
+  },
+  "hostname": "frank",
+  "password": "frank",
+  "access_granted": "core1,core2,frank"
+}

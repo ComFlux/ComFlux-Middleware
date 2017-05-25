@@ -1,0 +1,8 @@
+{
+    "metadata": {
+        "name": "sockpair"
+    },
+    "configs": {
+        "address": "5"
+    }
+}

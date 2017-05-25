@@ -1,0 +1,10 @@
+{
+    "properties": {
+        "version":{
+            "type": "string"
+        },
+        "manifest":{
+            "type": "object"
+        }
+    }
+}

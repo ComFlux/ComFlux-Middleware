@@ -1,0 +1,10 @@
+{
+    "properties": {
+        "endpoint": { 
+            "type": "object"
+        },
+        "ack_code": {
+           "type": "number"
+        }
+    }
+}

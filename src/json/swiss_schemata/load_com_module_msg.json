@@ -1,0 +1,10 @@
+{
+    "properties": {
+        "com_module_path": { 
+            "type": "string"
+        },
+        "com_config_path": { 
+            "type": "string"
+        }
+    }
+}

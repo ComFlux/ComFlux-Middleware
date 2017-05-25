@@ -1,0 +1,23 @@
+{
+    "app_config":{
+        "log_level": 5,
+        "log_file": "simple_sink_app.log"
+    },
+
+    "core_config":{
+        "log_level": 5,
+        "log_file": "simple_sink_core.log",
+        "com_libs": [
+            {
+                "lib_path": "../../lib/libcommoduletcp.so",
+                "cfg_path": "../../lib/tcp_snk.cfg.json"
+            }
+        ],
+        "access_libs": [
+            {
+                "cfg_path":" ",
+                "lib_path": " "
+            }
+        ]
+    }
+}

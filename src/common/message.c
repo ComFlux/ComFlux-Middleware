@@ -1,0 +1,163 @@
+/*
+ * message.c
+ *
+ *  Created on: 11 Apr 2016
+ *      Author: Raluca Diaconu
+ */
+
+#include "message.h"
+
+#include "hashmap.h"
+#include "endpoint.h"
+#include <utils.h>
+
+#include <stdio.h>
+
+extern HashMap* endpoints;
+
+MESSAGE* message_new(const char* msg_, unsigned int status_)
+{
+	MESSAGE* message = (MESSAGE*)malloc(sizeof(MESSAGE));
+	message->msg = strdup_null(msg_);
+	message->status = status_;
+
+	message->msg_id = message_generate_id();
+
+	message->ep = NULL;
+
+
+	message->conn = 0;
+	message->module = NULL;
+
+	return message;
+}
+
+MESSAGE* message_new_id(const char* msg_id, const char* msg_, unsigned int status_)
+{
+	MESSAGE* message = (MESSAGE*)malloc(sizeof(MESSAGE));
+	message->msg_id = strdup_null(msg_id);
+	message->msg = strdup_null(msg_);
+
+	message->status = status_;
+
+	message->ep = NULL;
+
+
+	message->conn = 0;
+	message->module = NULL;
+
+	return message;
+}
+
+void message_free(MESSAGE* msg)
+{
+	if(msg == NULL)
+		return;
+
+	free(msg->msg);
+	free(msg->msg_id);
+	free(msg);
+}
+
+MESSAGE* message_parse(const char* msg)
+{
+	if(msg == NULL)
+		return NULL;
+	JSON* json_msg = json_new(msg);
+	if(json_msg == NULL)
+		return NULL;
+	MESSAGE* ret_msg = malloc(sizeof(MESSAGE));
+	char* ep_id = json_get_str(json_msg, "ep_id");
+	if (ep_id != NULL)
+		ret_msg->ep = (ENDPOINT*)map_get(endpoints, ep_id);
+	else
+		ret_msg->ep = NULL;
+	ret_msg->msg_id = (json_get_str(json_msg, "msg_id"));
+	ret_msg->msg = (json_get_str(json_msg, "msg"));
+	ret_msg->status = (unsigned int) json_get_int(json_msg, "status");
+
+	char* module = json_get_str(json_msg, "module");
+	int conn = json_get_int(json_msg, "conn");
+	if (module != NULL && conn != 0)
+	{
+		ret_msg->conn = conn;
+		ret_msg->module = module;
+	}
+	else
+	{
+		ret_msg->conn = 0;
+		ret_msg->module = NULL;
+	}
+	json_free(json_msg);
+
+	return ret_msg;
+}
+
+JSON* message_to_json(MESSAGE* msg)
+{
+	JSON *msg_json = json_new(NULL);
+
+	json_set_int(msg_json, "status", (int)(msg->status));
+
+	if(msg->msg)
+		json_set_str(msg_json, "msg", msg->msg);
+
+	if (msg->ep)
+		json_set_str(msg_json, "ep_id", msg->ep->id);
+
+	if(msg->msg_id)
+		json_set_str(msg_json, "msg_id", msg->msg_id);
+
+
+	if(msg->conn)
+		json_set_int(msg_json, "conn", msg->conn);
+
+	if(msg->module)
+		json_set_str(msg_json, "module", msg->module);
+
+	return msg_json;
+}
+
+char* message_to_str(MESSAGE* msg)
+{
+	JSON *msg_json = message_to_json(msg);
+
+	char* js = json_to_str(msg_json);
+	//TODO: json_free(msg_json);
+	return js;
+}
+
+char* message_generate_id()
+{
+	static int counter_messages=0;
+	//static char id[10];
+	char *id = (char*)malloc(11*sizeof(char));
+	sprintf(id, "%d", counter_messages);
+	counter_messages +=1;
+	return id;
+}
+
+const char* message_status_to_str(int msg_status)
+{
+	static const char status_str[16][16]= {"MSG_NONE",
+"MSG_HELLO",
+"MSG_HELLO_ACK",
+"MSG_AUTH",
+"MSG_AUTH_ACK",
+"MSG_MAP",
+"MSG_MAP_ACK",
+"MSG_UNMAP",
+"MSG_UNMAP_ACK",
+"MSG_MSG",
+"MSG_REQ",
+"MSG_RESP_NEXT",
+"MSG_RESP_LAST",
+"MSG_STREAM",
+"MSG_STREAM_CMD",
+"MSG_CMD"};
+
+	if(msg_status<0 || msg_status >15)
+		return NULL;
+
+	return status_str[msg_status];
+}

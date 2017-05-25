@@ -1,0 +1,12 @@
+{
+    "ep_id":"default_terminate",
+    "ep_name":"TERMINATE",
+    "ep_description":"the default endpoint to terminate core",
+    "ep_type":"snk",
+
+    "message":{
+        "properties": { }
+    },
+    
+    "blocking":1
+}

@@ -1,0 +1,6 @@
+[submodule "lib/uthash"]
+	path = lib/uthash
+	url = https://github.com/troydhanson/uthash.git
+[submodule "lib/jsonschema-c"]
+	path = lib/jsonschema-c
+	url = https://github.com/radiaconu/jsonschema-c.git

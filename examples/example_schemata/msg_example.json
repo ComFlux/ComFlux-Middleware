@@ -1,0 +1,10 @@
+{
+    "properties": {
+        "the_string": { 
+            "type": "string"
+        },
+        "the_number": {
+            "type": "number"
+        }
+    }
+}

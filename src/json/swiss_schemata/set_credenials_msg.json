@@ -1,0 +1,10 @@
+{
+    "properties": {
+        "endoint": { 
+            "type": "string"
+        },
+        "credentials": { 
+            "type": "string"
+        }
+    }
+}

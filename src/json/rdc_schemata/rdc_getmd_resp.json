@@ -1,0 +1,7 @@
+{
+    "properties": {
+        "endpoint": {
+            "type": "object"
+        }
+    }
+}

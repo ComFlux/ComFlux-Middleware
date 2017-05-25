@@ -1,0 +1,16 @@
+{
+    "ep_id":"default_reg_rdc",
+    "ep_name":"REG_RDC",
+    "ep_description":"the default endpoint to register with rdc",
+    "ep_type":"src",
+
+    "message":{
+        "properties": {
+            "address": { 
+                "type": "string"
+            }
+        }
+    },
+    
+    "blocking":0
+}

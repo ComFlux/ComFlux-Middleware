@@ -1,0 +1,40 @@
+{
+    "ep_id":"default_map",
+    "ep_name":"MAP",
+    "ep_description":"the default mapping endpoint",
+    "ep_type":"resp",
+
+    "message":{
+        "properties": {
+            "endpoint": {
+                "type": "object" 
+            },
+
+            "address":"string",
+            
+            "ep_query": { 
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+            
+            "cpt_query": { 
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+
+    "response":{
+        "properties": {
+            "ack_code": {
+               "type": "number"
+            }
+        }
+    },
+
+    "blocking":1
+}

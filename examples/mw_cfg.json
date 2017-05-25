@@ -1,0 +1,23 @@
+{
+    "app_config":{
+        "log_level": 1,
+        "log_file": "app.log"
+    },
+
+    "core_config":{
+        "log_level": 1,
+        "log_file": "core.log",
+        "com_libs": [
+            {
+                "lib_path": "../../lib/libcommoduletcp.so",
+                "cfg_path": "../../lib/src_mw_cfg.json"
+            }
+        ],
+        "access_libs": [
+            {
+                "cfg_path":" ",
+                "lib_path": " "
+            }
+        ]
+    }
+}

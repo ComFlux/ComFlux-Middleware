@@ -1,0 +1,7 @@
+{
+    "metadata": {
+       "name": "commqtt"
+    },
+    "clientid": "source",
+    "clean_session": 1
+}

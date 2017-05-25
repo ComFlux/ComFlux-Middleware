@@ -1,0 +1,38 @@
+{
+    "ep_id":"default_map_lookup",
+    "ep_name":"MAP LOOKUP",
+    "ep_description":"the default map with lookup endpoint",
+    "ep_type":"resp",
+
+    "message":{
+        "properties": {
+            "endpoint": {
+                "type": "object" 
+            },
+            
+            "ep_query": { 
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
+
+            "cpt_query": { 
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+
+    "response":{
+        "properties": {
+            "ack_code": {
+               "type": "number"
+            }
+        }
+    },
+
+    "blocking":1
+}

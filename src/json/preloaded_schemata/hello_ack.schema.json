@@ -1,0 +1,13 @@
+{
+    "properties": {
+        "ack_code":{
+            "type": "number"
+        },
+        "version":{
+            "type": "string"
+        },
+        "manifest":{
+            "type": "object"
+        }
+    }
+}

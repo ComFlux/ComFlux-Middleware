@@ -1,0 +1,14 @@
+{
+    "properties": {
+        "credentials":{ 
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name":{ "type": "string"},
+                    "credential": { "type": "string"}
+                }
+            }
+        }
+    }
+}

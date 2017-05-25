@@ -1,0 +1,24 @@
+{
+    "ep_id":"default_unmap",
+    "ep_name":"UNMAP",
+    "ep_description":"the default unmapping endpoint",
+    "ep_type":"resp",
+
+    "message":{ 
+        "properties": {   
+            "endpoint": {    
+                "type": "object"   
+            }
+        }   
+    },
+
+    "response":{  
+        "properties": {   
+            "ack_code": {   
+               "type": "number"   
+            }   
+        }   
+    },
+
+    "blocking":1
+}

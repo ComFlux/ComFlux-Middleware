@@ -1,0 +1,21 @@
+{
+    "properties": {
+        "endpoint": {
+            "type": "object" 
+        },
+        
+        "ep_query": { 
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+
+        "cpt_query": { 
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    }
+}

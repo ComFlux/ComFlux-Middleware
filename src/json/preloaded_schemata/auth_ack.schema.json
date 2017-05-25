@@ -1,0 +1,18 @@
+{
+    "properties": {
+        "ack_code":{
+            "type": "number"
+        },
+
+        "credentials":{ 
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "name":{ "type": "string"},
+                    "key": { "type": "string"}
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "metadata": {
+       "name": "commqtt"
+    },
+    "host": "127.0.0.1",
+    "port": 1883,
+    "clientid": "source",
+    "clean_session": 1,
+    "topic": "src"
+}

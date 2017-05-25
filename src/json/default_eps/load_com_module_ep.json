@@ -1,0 +1,19 @@
+{
+    "ep_id":"default_load_com_module",
+    "ep_name":"LOAD_COM_MODULE",
+    "ep_description":"the default endpoint to loada com module",
+    "ep_type":"snk",
+
+    "message":{
+        "properties": {
+            "module_path": { 
+                "type": "string"
+            },
+            "config_path": { 
+                "type": "string"
+            }
+        }
+    },
+    
+    "blocking":1
+}

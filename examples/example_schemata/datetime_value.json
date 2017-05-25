@@ -1,0 +1,11 @@
+{
+    "properties": {
+        "date": { 
+            "type": "string"
+        },
+        "value": {
+            "type": "number"
+        }
+    },
+    "required": ["date", "value"]
+}

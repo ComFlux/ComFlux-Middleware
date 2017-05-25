@@ -1,0 +1,14 @@
+{
+  "metadata": {
+    "name": "comtcp"
+  },
+  "configs": {
+    "address": "127.0.0.1:1513",
+    "cli_cafile": "/home/jie/test/middleware/modules/com_modules/ssl/ca.crt",
+    "cli_certfile": "/home/jie/test/middleware/modules/com_modules/ssl/client.crt",
+    "cli_keyfile": "/home/jie/test/middleware/modules/com_modules/ssl/client.key",
+    "srv_cafile": "/home/jie/test/middleware/modules/com_modules/ssl/ca.crt",
+    "srv_certfile": "/home/jie/test/middleware/modules/com_modules/ssl/debian.crt",
+    "srv_keyfile": "/home/jie/test/middleware/modules/com_modules/ssl/debian.key"
+  }
+}
