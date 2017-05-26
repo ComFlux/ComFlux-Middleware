@@ -100,9 +100,9 @@ Run a simple source - sink communication by opening two terminals and typing
 
 ```
 
-### Dynamic mapping
+### Resource discovery
 
-Map the sink to the source dynamically by querying a Resource Discovery Component. First, run an RDC
+Map the sink to the source by querying a Resource Discovery Component for the source. First, run an RDC
 ```
 #!sh
 rdc
@@ -122,6 +122,9 @@ Then start `lookup_source` and `lookup_sink`.
 
 ```
 
+### Dynamic connection management and reconfiguration
+
+Watch this space
 
 # Compile your new component
 The distribution provides the core and the library of the middleware. To compile your component run:
