@@ -41,7 +41,7 @@ The are included as submodules. The  added submodules are: uthash, kerberros, an
 
 ```
 #!sh
-cd middleware
+cd ComFlux-Middleware
 git submodule init
 git submodule update --recursive
 
@@ -90,13 +90,15 @@ Run a simple source - sink communication by opening two terminals and typing
 
 ```
 #!sh
-./simple_source src_tcp_cfg.json
+cd build/bin/examples
+./simple_source src_mw_cfg.json
 
 ```
 
 ```
 #!sh
-./simple_sink 127.0.0.1:1503 snk_tcp_cfg.json
+cd build/bin/examples
+./simple_sink 127.0.0.1:1503 snk_mw_cfg.json
 
 ```
 
@@ -112,12 +114,14 @@ rdc
 Then start `lookup_source` and `lookup_sink`.
 ```
 #!sh
-./lookup_source src_tcp_cfg.json
+cd build/bin/examples
+./lookup_source src_mw_cfg.json
 
 ```
 
 ```
 #!sh
+cd build/bin/examples
 ./lookup_sink snk_mw_cfg.json "\"ep_name\" = \"ep_source\"
 
 ```
