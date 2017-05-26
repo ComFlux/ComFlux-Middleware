@@ -1,4 +1,4 @@
-Middleware for dynamic flow reconfiguration
+Middleware for data flow integration and reconfiguration
 
 # Dependencies 
 
