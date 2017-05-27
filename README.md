@@ -10,24 +10,6 @@ sudo apt-get install libjson0 libjson0-dev
 
 ```
 
-Some com and access control modules require specific libraries. To install mosquitto:
-
-```
-#!sh
-sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa
-sudo apt-get update
-sudo apt-get install libmosquitto
-
-```
-
-To install openssl:
-
-```
-#!sh
-sudo apt-get install libssl-dev
-
-```
-
 # Installation
 
 Download the git repository:
@@ -51,27 +33,41 @@ Install the middleware:
 
 ```
 #!sh
-cmake .
+cmake [-DSSLENABLED:BOOL=ON] [-DKRBENABLED:BOOL=ON] [-DMQTTENABLED:BOOL=ON] .
 make
 sudo make install
 
 ```
 
-Note that to generate SSL libraries and Kerberos access module the following command must replace the first one:
+The optional cmake arguments generate communication and access control modules relying on third party libraries.
+
+| Argument  | Summary |
+| :---: | ---     |
+| `-DMQTTENABLED:BOOL=ON` | Enables building two com modules relying on MQTT. |
+| `-DSSLENABLED:BOOL=ON` | Enables building an SSL com module and a certificate based access control module. |
+| `-DKRBENABLED:BOOL=ON` | Enables building a Kerberos access control module. |
+
+
+To install mosquitto:
 
 ```
 #!sh
-cmake -DSSLENABLED:BOOL=ON -DKRBENABLED:BOOL=ON .
+sudo apt-add-repository ppa:mosquitto-dev/mosquitto-ppa
+sudo apt-get update
+sudo apt-get install libmosquitto
 
 ```
 
-To generate mosquitto com modules set the MQTTENABLED argument
+To install OpensSSL:
 
 ```
 #!sh
-cmake -DMQTTENABLED:BOOL=ON .
+sudo apt-get install libssl-dev
 
 ```
+
+The Kerberos module uses krb5 library linked as a submodule.
+
 
 # API structure
 Through the API the following headers are available:
