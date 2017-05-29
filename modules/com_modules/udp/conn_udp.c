@@ -343,6 +343,7 @@ int com_send_data(int pconn, const char* msg) {
 }
 
 int com_connection_close(int conn) {
+	return 0;
 }
 
 int com_set_on_data(void (*handler)(void*, int, const char*)) {

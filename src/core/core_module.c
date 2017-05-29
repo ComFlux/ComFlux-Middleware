@@ -282,8 +282,6 @@ int core_unmap_all(const char* ep_id)
 
     ep_unmap_all(lep);
 
-    printf("unmap all dne\n");
-
     return 0;
 }
 

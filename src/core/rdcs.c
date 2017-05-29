@@ -185,7 +185,6 @@ void rdc_register(RDC* r, MESSAGE* register_msg, int flag)
 	}
 	else
 	{
-		printf("Could not perform: %s\n", (flag==RDC_REGISTER)?"register":"unregister");
 		slog(SLOG_ERROR, SLOG_ERROR,
 				"RDC: %s; Could not perform: %s",
 				r->addr,
@@ -274,13 +273,11 @@ void rdc_lookup(RDC* r, MESSAGE* lookup_query)//, JSON* ep_query, JSON* cpt_quer
 
 	int c = 0;
 	while(r->state == RDC_STATE_LOOKUP && c < 5) {
-		printf("\nstate_lookup\n\n");
-        sleep(1);  // TODO: use lock.
+		sleep(1);  // TODO: use lock.
         c += 1;
     }
 
 	r->state = RDC_STATE_REG;
-	printf("\nlookup size %d \n\n", array_size(r->lookup_result));
 	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE: Lookup response size: %d", array_size(r->lookup_result));
 
 }
