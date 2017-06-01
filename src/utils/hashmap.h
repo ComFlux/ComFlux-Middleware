@@ -9,6 +9,11 @@
 #define HASHMAP_H_
 /*
  * A wrapper for hash map implementation
+ * Values are non null pointers
+ * Keys are one of the three types:
+ *   - int: eg, used for file descriptors, connection ids
+ *   - string:
+ *   - pointers: used in modules
  */
 
 #include "uthash.h"
@@ -18,15 +23,33 @@
 #define KEY_TYPE_INT 1
 #define KEY_TYPE_STR 2
 
-typedef struct Value_{
-	void * _key_;
-	void * _value_;
+typedef struct map_int_{
+	int   _key_;
+	void* _value_;
 	UT_hash_handle hh; /* makes this structure hashable */
-} Value;
+} map_int;
+
+typedef struct map_str_{
+	char* _key_;
+	void* _value_;
+	UT_hash_handle hh; /* makes this structure hashable */
+} map_str;
+
+typedef struct map_ptr_{
+	void* _key_;
+	void* _value_;
+	UT_hash_handle hh; /* makes this structure hashable */
+} map_ptr;
+
+typedef union Values_{
+	map_int* values_int;
+	map_str* values_str;
+	map_ptr* values_ptr;
+} Values;
 
 typedef struct HashMap_{
 	int key_type;
-	Value *values;
+	Values *values;
 } HashMap;
 
 /*

@@ -54,7 +54,7 @@ JSON* json_new(const char* msg)
 
 	if(msg == NULL)
 	{
-		/* NULL in json_tokener_parse results in Seg fault */
+		/* NULL in json_tokener_parse throws seg fault */
 		json->elem_json = json_tokener_parse_ex(jtok, "{}", 2);
 	}
 	else
