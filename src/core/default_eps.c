@@ -23,8 +23,8 @@
 //extern HashMap *endpoints;
 extern HashMap *locales;
 
-extern LOCAL_EP *ep_reg_rdc;
-extern LOCAL_EP *ep_lookup;
+LOCAL_EP *ep_reg_rdc;
+LOCAL_EP *ep_lookup;
 
 LOCAL_EP *default_ep_map;
 LOCAL_EP *default_ep_map_lookup;
@@ -128,7 +128,7 @@ void unmap_handler(MESSAGE* msg)
 		}
 	}
 
-	core_unmap_all(ep_unmap->ep->id);
+	core_unmap_all(ep_unmap);
 }
 
 void lookup_handler(MESSAGE* msg)

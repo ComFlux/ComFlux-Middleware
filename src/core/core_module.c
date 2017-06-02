@@ -54,16 +54,12 @@ int core_register_endpoint(const char* json)
     if (!lep)
     	return -2;
 
-    // map_insert()
-    // map_insert((HashMap *)endpoint_table, lep->ep->name, lep);
-    // array_add((Array *)endpoint_name, lep->ep->name);
     return 0;
 }
 
 void core_remove_endpoint(const char* ep_id)
 {
-    slog(SLOG_INFO,
-         SLOG_INFO,
+    slog(SLOG_INFO, SLOG_INFO,
          "CORE:remove_endpoint:\n"
          "\tid: %s",
          ep_id);
@@ -73,14 +69,11 @@ void core_remove_endpoint(const char* ep_id)
         return;
 
     ep_local_remove(lep);
-
-    return;
 }
 
 int core_map(LOCAL_EP* lep, COM_MODULE* com_module, const char* addr, JSON* ep_query, JSON* cpt_query)
 {
-    slog(SLOG_INFO,
-         SLOG_INFO,
+    slog(SLOG_INFO, SLOG_INFO,
          "CORE:map:\n"
          "\tendpoint [%s]\n"
          "\taddress %s\n"
@@ -129,20 +122,27 @@ int core_map(LOCAL_EP* lep, COM_MODULE* com_module, const char* addr, JSON* ep_q
     core_proto_map_to(state_ptr, lep, ep_query, cpt_query);
     result = sync_wait(map_sync_pipe[1]);
 
-    if (state_ptr->flag != 0 || state_ptr->state == STATE_BAD) {
-        slog(SLOG_WARN, SLOG_WARN, "Mapping unsuccessful. Flag %d, state %d", state_ptr->flag, state_ptr->state);
-    } else {
-    	slog(SLOG_INFO,SLOG_INFO,"Mapping successful. Flag %d, state %d",state_ptr->flag, state_ptr->state);
+    if (state_ptr->flag != 0 || state_ptr->state == STATE_BAD)
+    {
+        slog(SLOG_WARN, SLOG_WARN,
+        	 "Mapping unsuccessful. Flag %d, state %d",
+			 state_ptr->flag, state_ptr->state);
+    }
+    else
+    {
+    	slog(SLOG_INFO, SLOG_INFO,
+    		"Mapping successful. Flag %d, state %d",
+			state_ptr->flag, state_ptr->state);
         state_ptr->addr = strdup(addr);
     }
-
 
     return state_ptr->flag;
 }
 
 int core_map_all_modules(LOCAL_EP* lep, const char* addr, JSON* ep_query, JSON* cpt_query)
 {
-    slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_map_all_modules");
+    slog(SLOG_INFO, SLOG_INFO,
+    	"CORE FUNC: core_map_all_modules");
     int result = -1;
 
     int i;
@@ -158,15 +158,13 @@ int core_map_all_modules(LOCAL_EP* lep, const char* addr, JSON* ep_query, JSON* 
             break;
     }
 
+    array_free(com_modules_names);
     return result;
 }
 
-LOCAL_EP* ep_lookup;
-
 void core_map_lookup(LOCAL_EP* lep, JSON* ep_query, JSON* cpt_query, int max_maps)
 {
-    slog(SLOG_INFO,
-         SLOG_INFO,
+    slog(SLOG_INFO, SLOG_INFO,
          "CORE:map_lookup:\n"
          "\tep %s\n"
          "\tep_query %s\n"
@@ -234,19 +232,15 @@ void core_map_lookup(LOCAL_EP* lep, JSON* ep_query, JSON* cpt_query, int max_map
     message_free(query_msg);
 }
 
-int core_unmap(const char* ep_id, const char* addr)
+/* wrapper for ep_unmap_addr */
+int core_unmap(LOCAL_EP* lep, const char* addr)
 {
-    slog(SLOG_INFO,
-         SLOG_INFO,
+    slog(SLOG_INFO, SLOG_INFO,
          "CORE:unmap:\n"
          "\tid: %s\n"
          "\taddr: %s",
-         ep_id,
+         lep->id,
          addr);
-
-    LOCAL_EP* lep = map_get(locales, (void*)ep_id);
-    if (!lep)
-        return EP_NO_EXIST;
 
     ep_unmap_addr(lep, addr);
 
@@ -267,18 +261,13 @@ int core_unmap_connection(LOCAL_EP* lep, COM_MODULE* module, int conn)
     return 0;
 }
 
-
-int core_unmap_all(const char* ep_id)
+/* a wrapper for ep_unmap_all */
+int core_unmap_all(LOCAL_EP* lep)
 {
-    slog(SLOG_INFO,
-         SLOG_INFO,
+    slog(SLOG_INFO, SLOG_INFO,
          "CORE:unmap_all:\n"
          "\tep_id: %s",
-         ep_id);
-
-    LOCAL_EP* lep = map_get(locales, (void*)ep_id);
-    if (!lep)
-        return EP_NO_EXIST;
+         lep->id);
 
     ep_unmap_all(lep);
 
@@ -288,8 +277,7 @@ int core_unmap_all(const char* ep_id)
 /* TODO */
 int core_divert(LOCAL_EP* lep, const char* ep_id_from, const char* addr)
 {
-    slog(SLOG_INFO,
-         SLOG_INFO,
+    slog(SLOG_INFO, SLOG_INFO,
          "CORE:divert:\n"
          "\tep_id: %s\n"
          "\taddr: %s",
@@ -300,7 +288,7 @@ int core_divert(LOCAL_EP* lep, const char* ep_id_from, const char* addr)
         return EP_NO_EXIST;
 
     int result;
-    result = core_unmap(lep->id, ep_id_from);
+    result = core_unmap(lep, ep_id_from);
     if (result)
         return result;
     result = core_map_all_modules(lep, addr, NULL, NULL);
@@ -308,31 +296,26 @@ int core_divert(LOCAL_EP* lep, const char* ep_id_from, const char* addr)
     return result; /* just for the sake of symmetry */
 }
 
-int core_ep_send_message(const char* ep_id, const char* msg_id, const char* msg)
+
+int core_ep_send_message(LOCAL_EP* lep, const char* msg_id, const char* msg)
 {
-    slog(SLOG_INFO,
-         SLOG_INFO,
+    slog(SLOG_INFO, SLOG_INFO,
          "CORE:ep_send_message:\n"
          "\tep_id: %s\n"
          "\tmsg_id: %s",
-         ep_id,
+         lep->id,
          msg_id);
 
-    LOCAL_EP* lep = map_get(locales, (void*)ep_id);
     if (!ep_can_send(lep->ep))
-    {
         return EP_NO_SEND;
-    }
+
     JSON* msg_json = json_new(msg);
 
     //TODO: make correct fcs for stream/src
     if (json_validate_message(lep, msg_json))
-    {
         return EP_NO_VALID;
-    }
 
     MESSAGE* msg_msg = message_parse(msg);
-    //if(lep->ep->type == EP_STR_SRC && )
 
     ep_send_json(lep, msg_json, msg_id, msg_msg->status);
 
@@ -340,6 +323,194 @@ int core_ep_send_message(const char* ep_id, const char* msg_id, const char* msg)
 
     return 0;
 }
+
+
+int core_ep_send_request(LOCAL_EP* lep, const char* req_id, const char* req)
+{
+    slog(SLOG_INFO, SLOG_INFO,
+         "CORE:ep_send_request:\n"
+         "\tep_id: %s\n"
+         "\treq_id: %s",
+         lep->id,
+         req_id);
+
+    if (!(lep->ep->type == EP_REQ || lep->ep->type == EP_REQ_P || lep->ep->type == EP_RR)) {
+        return EP_NO_RECEIVE;
+    }
+    JSON* req_json = json_new(req);
+
+    ep_send_json(lep, req_json, req_id, MSG_REQ);
+
+    json_free(req_json);
+
+    return 0;
+}
+
+int core_ep_send_response(LOCAL_EP* lep, const char* req_id, const char* resp)
+{
+    slog(SLOG_INFO, SLOG_INFO,
+         "CORE:ep_send_response:\n"
+         "\tep_id: %s\n"
+         "\tmsg_id: %s\n"
+         "\tmsg: %s\n",
+         lep->id,
+         req_id,
+         resp);
+
+    if (!(lep->ep->type == EP_RESP || lep->ep->type == EP_RESP_P || lep->ep->type == EP_RR)) {
+        return EP_NO_SEND;
+    }
+
+    JSON* resp_json = json_new(resp);
+
+    // MESSAGE *resp_msg = message_parse(resp);
+    // resp_msg->msg = strdup_null(resp);
+
+    ep_send_json(lep, resp_json, req_id, MSG_RESP_LAST);
+
+    json_free(resp_json);
+
+    // message_free(resp_msg);
+    return 0;
+}
+
+int core_ep_more_messages(LOCAL_EP* lep)
+{
+    slog(SLOG_INFO, SLOG_INFO,
+         "CORE:ep_more_messages:\n"
+         "\tep_id: %s",
+         lep->id);
+
+    if (lep->ep->type != EP_SNK && lep->ep->type != EP_SS)
+        return -1;
+
+    return array_size(lep->messages);
+}
+
+int core_ep_more_requests(LOCAL_EP* lep)
+{
+    slog(SLOG_INFO, SLOG_INFO,
+         "CORE:ep_more_requests:\n"
+         "\tep_id: %s",
+         lep->id);
+
+    if (lep->ep->type != EP_REQ && lep->ep->type != EP_REQ_P && lep->ep->type != EP_RR)
+        return -1;
+
+    return array_size(lep->messages);
+}
+
+int core_ep_more_responses(LOCAL_EP* lep, const char* req_id)
+{
+    slog(SLOG_INFO, SLOG_INFO,
+         "CORE:ep_more_responses:\n"
+         "\tep_id: %s\n"
+         "\treq_id: %s",
+         lep->id,
+         req_id);
+
+    if (lep->ep->type != EP_RESP && lep->ep->type != EP_RESP_P && lep->ep->type != EP_RR)
+        return -1;
+
+    int nb_msgs = 0;
+    int i;
+    for (i = 0; i < array_size(lep->responses); i++)
+    {
+        MESSAGE* msg = array_get(lep->responses, i);
+        if (strcmp(msg->msg_id, req_id) == 0)
+        {
+            nb_msgs += 1;
+        }
+    }
+    return nb_msgs;
+}
+
+MESSAGE* core_ep_fetch_message(LOCAL_EP* lep)
+{
+    slog(SLOG_INFO, SLOG_INFO,
+         "CORE:ep_receive_message:\n"
+         "\tep_id: %s",
+         lep->id);
+
+    if (lep->ep->type != EP_SNK && lep->ep->type != EP_SS)
+        return NULL;
+
+    slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: message array length %d", array_size(lep->messages));
+
+    // TODO
+    if (array_size(lep->messages) <= 0)
+        sleep(1);
+
+    if (array_size(lep->messages) > 0)
+    {
+        MESSAGE* msg = array_get(lep->messages, 0);
+        array_remove_index(lep->messages, 0);
+
+        return msg;
+    }
+    else
+        return NULL;
+}
+
+MESSAGE* core_ep_fetch_request(LOCAL_EP* lep)
+{
+    slog(SLOG_INFO, SLOG_INFO,
+         "CORE:ep_receive_request\n"
+         "\tep_id: %s",
+         lep->id);
+
+    if (lep->ep->type != EP_REQ && lep->ep->type != EP_REQ_P && lep->ep->type != EP_RR)
+        return NULL;
+
+    slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: request array length %d", array_size(lep->messages));
+
+    if (array_size(lep->messages) <= 0)
+        sleep(1);
+
+    if (array_size(lep->messages) > 0)
+    {
+        MESSAGE* msg = array_get(lep->messages, 0);
+        state_send_message(app_state, msg);
+        array_remove_index(lep->messages, 0);
+
+        return msg;
+    }
+    else
+        return NULL;
+
+    return NULL;
+}
+
+MESSAGE* core_ep_fetch_response(LOCAL_EP* lep, const char* req_id)
+{
+    slog(SLOG_INFO, SLOG_INFO,
+         "CORE:ep_receive_response\n"
+         "\tep_id: %s\n"
+         "\treq_id: %s",
+         lep->id,
+         req_id);
+
+    if (lep->ep->type != EP_RESP && lep->ep->type != EP_RESP_P && lep->ep->type != EP_RR)
+        return NULL;
+
+    if (array_size(lep->responses) <= 0)
+        sleep(1);
+
+    int i;
+    for (i = 0; i < array_size(lep->responses); i++)
+    {
+        MESSAGE* msg = array_get(lep->responses, i);
+        if (strcmp(msg->msg_id, req_id) == 0)
+        {
+            state_send_message(app_state, msg); // TODO: send to app
+            array_remove_index(lep->responses, i);
+
+            return msg;
+        }
+    }
+    return NULL;
+}
+
 
 void core_ep_stream_start(LOCAL_EP* lep)
 {
@@ -404,234 +575,9 @@ void core_ep_stream_send(LOCAL_EP* lep, const char* msg)
     lep->flag = 1;
 }
 
-
-int core_ep_send_request(const char* ep_id, const char* req_id, const char* req)
-{
-    slog(SLOG_INFO,
-         SLOG_INFO,
-         "CORE:ep_send_request:\n"
-         "\tep_id: %s\n"
-         "\treq_id: %s",
-         ep_id,
-         req_id);
-
-    LOCAL_EP* lep = map_get(locales, (void*)ep_id);
-    if (!(lep->ep->type == EP_REQ || lep->ep->type == EP_REQ_P || lep->ep->type == EP_RR)) {
-        return EP_NO_RECEIVE;
-    }
-    JSON* req_json = json_new(req);
-
-    ep_send_json(lep, req_json, req_id, MSG_REQ);
-
-    json_free(req_json);
-
-    return 0;
-}
-
-int core_ep_send_response(const char* ep_id, const char* req_id, const char* resp)
-{
-    slog(0,
-         0,
-         "CORE:ep_send_response:\n"
-         "\tep_id: %s\n"
-         "\tmsg_id: %s\n"
-         "\tmsg: %s\n",
-         ep_id,
-         req_id,
-         resp);
-
-    LOCAL_EP* lep = map_get(locales, (void*)ep_id);
-    if (!(lep->ep->type == EP_RESP || lep->ep->type == EP_RESP_P || lep->ep->type == EP_RR)) {
-        return EP_NO_SEND;
-    }
-
-    JSON* resp_json = json_new(resp);
-
-    // MESSAGE *resp_msg = message_parse(resp);
-    // resp_msg->msg = strdup_null(resp);
-
-    ep_send_json(lep, resp_json, req_id, MSG_RESP_LAST);
-
-    json_free(resp_json);
-
-    // message_free(resp_msg);
-    return 0;
-}
-
-int core_ep_more_messages(const char* ep_id)
-{
-    slog(SLOG_INFO,
-         SLOG_INFO,
-         "CORE:ep_more_messages:\n"
-         "\tep_id: %s",
-         ep_id);
-    LOCAL_EP* lep = map_get(locales, (void*)ep_id);
-    if (!lep) {
-        slog(SLOG_WARN, SLOG_WARN, "CORE FUNC: ep not found %s", ep_id);
-        return -1;
-    }
-
-    if (lep->ep->type != EP_SNK && lep->ep->type != EP_SS)
-        return -1;
-
-    return array_size(lep->messages);
-}
-
-int core_ep_more_requests(const char* ep_id)
-{
-    slog(SLOG_INFO,
-         SLOG_INFO,
-         "CORE:ep_more_requests:\n"
-         "\tep_id: %s",
-         ep_id);
-    LOCAL_EP* lep = map_get(locales, (void*)ep_id);
-    if (!lep) {
-        slog(SLOG_WARN, SLOG_WARN, "CORE FUNC: ep not found %s", ep_id);
-        return -1;
-    }
-
-    if (lep->ep->type != EP_REQ && lep->ep->type != EP_REQ_P && lep->ep->type != EP_RR)
-        return -1;
-
-    return array_size(lep->messages);
-}
-
-// TODO: does not need ep_id. req_id is enough
-int core_ep_more_responses(const char* ep_id, const char* req_id)
-{
-    slog(SLOG_INFO,
-         SLOG_INFO,
-         "CORE:ep_more_responses:\n"
-         "\tep_id: %s\n"
-         "\treq_id: %s",
-         ep_id,
-         req_id);
-    LOCAL_EP* lep = map_get(locales, (void*)ep_id);
-    if (!lep) {
-        slog(SLOG_WARN, SLOG_WARN, "CORE FUNC: ep not found %s", ep_id);
-        return -1;
-    }
-
-    if (lep->ep->type != EP_RESP && lep->ep->type != EP_RESP_P && lep->ep->type != EP_RR)
-        return -1;
-
-    int nb_msgs = 0;
-    int i;
-    for (i = 0; i < array_size(lep->responses); i++) {
-        MESSAGE* msg = array_get(lep->responses, i);
-        if (strcmp(msg->msg_id, req_id) == 0) {
-            nb_msgs += 1;
-        }
-    }
-    return nb_msgs;
-}
-
-// TODO: rename with  fetch_message
-MESSAGE* core_ep_receive_message(const char* ep_id)
-{
-    slog(SLOG_INFO,
-         SLOG_INFO,
-         "CORE:ep_receive_message:\n"
-         "\tep_id: %s",
-         ep_id);
-    LOCAL_EP* lep = map_get(locales, (void*)ep_id);
-    if (!lep) {
-        slog(SLOG_WARN, SLOG_WARN, "CORE FUNC: ep not found %s", ep_id);
-        return NULL;
-    }
-    if (lep->ep->type != EP_SNK && lep->ep->type != EP_SS)
-        return NULL;
-
-    slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: message array length %d", array_size(lep->messages));
-
-    // TODO
-    if (array_size(lep->messages) <= 0)
-        sleep(1);
-
-    if (array_size(lep->messages) > 0) {
-        MESSAGE* msg = array_get(lep->messages, 0);
-        array_remove_index(lep->messages, 0);
-
-        return msg;
-    } else
-        return NULL;
-}
-
-// TODO: rename with  fetch_request
-MESSAGE* core_ep_receive_request(const char* ep_id)
-{
-    slog(SLOG_INFO,
-         SLOG_INFO,
-         "CORE:ep_receive_request\n"
-         "\tep_id: %s",
-         ep_id);
-
-    LOCAL_EP* lep = map_get(locales, (void*)ep_id);
-    if (!lep) {
-        slog(SLOG_WARN, SLOG_WARN, "CORE FUNC: ep not found %s", ep_id);
-        return NULL;
-    }
-    if (lep->ep->type != EP_REQ && lep->ep->type != EP_REQ_P && lep->ep->type != EP_RR)
-        return NULL;
-
-    slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: request array length %d", array_size(lep->messages));
-
-    if (array_size(lep->messages) <= 0)
-        sleep(1);
-
-    if (array_size(lep->messages) > 0) {
-        MESSAGE* msg = array_get(lep->messages, 0);
-        state_send_message(app_state, msg);
-        array_remove_index(lep->messages, 0);
-
-        return msg;
-    } else
-        return NULL;
-
-    return NULL;
-}
-
-// TODO: rename with fetch_response
-// T TODO: does not need ep_id
-MESSAGE* core_ep_receive_response(const char* ep_id, const char* req_id)
-{
-    slog(SLOG_INFO,
-         SLOG_INFO,
-         "CORE:ep_receive_response\n"
-         "\tep_id: %s\n"
-         "\treq_id: %s",
-         ep_id,
-         req_id);
-    LOCAL_EP* lep = map_get(locales, (void*)ep_id);
-    if (!lep) {
-        slog(SLOG_WARN, SLOG_WARN, "CORE FUNC: ep not found %s", ep_id);
-        return NULL;
-    }
-    if (lep->ep->type != EP_RESP && lep->ep->type != EP_RESP_P && lep->ep->type != EP_RR)
-        return NULL;
-
-    slog(SLOG_DEBUG, SLOG_DEBUG, "aray len: %d", array_size(lep->responses));
-
-    if (array_size(lep->responses) <= 0)
-        sleep(1);
-
-    int i;
-    for (i = 0; i < array_size(lep->responses); i++) {
-        MESSAGE* msg = array_get(lep->responses, i);
-        if (strcmp(msg->msg_id, req_id) == 0) {
-            state_send_message(app_state, msg); // TODO: send to app
-            array_remove_index(lep->responses, i);
-
-            return msg;
-        }
-    }
-    return NULL;
-}
-
 void core_ep_set_access(LOCAL_EP* lep, const char* subject)
 {
-    slog(SLOG_INFO,
-         SLOG_INFO,
+    slog(SLOG_INFO, SLOG_INFO,
          "CORE: core_ep_set_access:\n"
          "\tobject: %s (%s)\n"
          "\tsubject: %s",
@@ -650,8 +596,7 @@ void core_ep_set_access(LOCAL_EP* lep, const char* subject)
 
 void core_ep_reset_access(LOCAL_EP* lep, const char* subject)
 {
-    slog(SLOG_INFO,
-         SLOG_INFO,
+    slog(SLOG_INFO, SLOG_INFO,
          "CORE: core_ep_reset_access:\n"
          "\tobject: %s (%s)\n"
          "\tsubject: %s",
@@ -694,8 +639,6 @@ char* core_get_manifest()
     json_free(elem_md);
     return md_str;
 }
-
-LOCAL_EP* ep_reg_rdc;
 
 int core_add_rdc(COM_MODULE* module, const char* addr)
 {
@@ -751,28 +694,17 @@ void core_rdc_unregister(const char* addr)
     }
 }
 
-void core_add_filter(const char* ep_id, const char* filter)
+void core_add_filter(LOCAL_EP* lep, const char* filter)
 {
-    LOCAL_EP* lep = map_get(locales, (void*)ep_id);
-    if (!lep) {
-        slog(SLOG_WARN, SLOG_WARN, "CORE FUNC: ep not found %s", ep_id);
-        return;
-    }
-
     array_add(lep->filters, strdup_null(filter));
 }
 
-void core_reset_filter(const char* ep_id, JSON* filter_json)
+void core_reset_filter(LOCAL_EP* lep, Array* new_filters)
 {
-    LOCAL_EP* lep = map_get(locales, (void*)ep_id);
-    if (!lep) {
-        slog(SLOG_WARN, SLOG_WARN, "CORE FUNC: ep not found %s", ep_id);
-        return;
-    }
-
     array_free(lep->filters);
-    if (filter_json != NULL)
-        lep->filters = json_get_array(filter_json, NULL);
+
+    if (new_filters != NULL)
+        lep->filters = new_filters;
     else
         lep->filters = array_new(ELEM_TYPE_STR);
 }

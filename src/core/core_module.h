@@ -46,12 +46,12 @@ int core_map_all_modules(LOCAL_EP* lep,
 void core_map_lookup(LOCAL_EP* lep, JSON* ep_query, JSON* cpt_query, int max_maps);
 
 /* unmaps ep with ep->name from all connections */
-int core_unmap(const char* ep_id, const char *addr);
+int core_unmap(LOCAL_EP* lep, const char *addr);
 
 /* unmaps ep with ep->name from a specific connections */
 int core_unmap_connection(LOCAL_EP* lep, COM_MODULE* module, int conn);
 
-int core_unmap_all(const char* ep_id);
+int core_unmap_all(LOCAL_EP* lep);
 
 /* TODO */
 int core_divert(LOCAL_EP* lep, const char *ep_id_from, const char* addr);
@@ -60,23 +60,23 @@ int core_divert(LOCAL_EP* lep, const char *ep_id_from, const char* addr);
  * This is th function that decides to send messages to an ep or not.
  * Access control and filtering should be added here.
  */
-int core_ep_send_message(const char* ep_id, const char* msg_id, const char* msg);
+int core_ep_send_message(LOCAL_EP* lep, const char* msg_id, const char* msg);
 
-int core_ep_send_request(const char* ep_id, const char* req_id, const char* msg);
+int core_ep_send_request(LOCAL_EP* lep, const char* req_id, const char* msg);
 
-int core_ep_send_response(const char* ep_id, const char* req_id, const char* msg);
+int core_ep_send_response(LOCAL_EP* lep, const char* req_id, const char* msg);
 
-int core_ep_more_messages(const char* ep_id);
+int core_ep_more_messages(LOCAL_EP* lep);
 
-int core_ep_more_requests(const char* ep_id);
+int core_ep_more_requests(LOCAL_EP* lep);
 
-int core_ep_more_responses(const char* ep_id, const char* req_id);
+int core_ep_more_responses(LOCAL_EP* lep, const char* req_id);
 
-MESSAGE* core_ep_receive_message(const char* ep_id);
+MESSAGE* core_ep_fetch_message(LOCAL_EP* lep);
 
-MESSAGE* core_ep_receive_request(const char* ep_id);
+MESSAGE* core_ep_fetch_request(LOCAL_EP* lep);
 
-MESSAGE* core_ep_receive_response(const char* ep_id, const char* req_id);
+MESSAGE* core_ep_fetch_response(LOCAL_EP* lep, const char* req_id);
 
 void core_ep_stream_start(LOCAL_EP* lep);
 
@@ -97,9 +97,9 @@ void core_rdc_register(COM_MODULE *com_module, const char *addr);
 void core_rdc_unregister(const char *addr);
 
 /* ep filters and access */
-void core_add_filter(const char * ep_id, const char *filter);
+void core_add_filter(LOCAL_EP* lep, const char *filter);
 
-void core_reset_filter(const char * ep_id, JSON *filter);
+void core_reset_filter(LOCAL_EP* lep, Array* new_filters);
 
 void core_ep_set_access(LOCAL_EP* lep, const char* subject);
 

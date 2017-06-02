@@ -34,7 +34,7 @@ void core_remove_endpoint_array(Array* argv);
 
 
 /* maps ep with name ep->name to addr, port */
-int core_map_array(Array* argv);
+int core_map_all_modules_array(Array* argv);
 
 int core_map_module_array(Array* argv);
 
@@ -65,11 +65,11 @@ int core_ep_more_requests_array(Array* argv);
 
 int core_ep_more_responses_array(Array* argv);
 
-MESSAGE* core_ep_receive_message_array(Array* argv);
+MESSAGE* core_ep_fetch_message_array(Array* argv);
 
-MESSAGE* core_ep_receive_request_array(Array* argv);
+MESSAGE* core_ep_fetch_request_array(Array* argv);
 
-MESSAGE* core_ep_receive_response_array(Array* argv);
+MESSAGE* core_ep_fetch_response_array(Array* argv);
 
 void core_ep_stream_start_array(Array* argv);
 
