@@ -178,7 +178,7 @@ void rdc_register(RDC* r, MESSAGE* register_msg, int flag)
 		register_msg->ep = ep_reg_rdc->ep;
 
 	    //sync_init(rdc_register_pipe);
-		core_ep_send_message(ep_reg_rdc->ep->id, message_generate_id(), message_to_str(register_msg));
+		core_ep_send_message(ep_reg_rdc, message_generate_id(), message_to_str(register_msg));
 
 		//sync_wait(rdc_register_pipe[1]);
 		//ep_unmap_all(ep_reg_rdc);
@@ -264,10 +264,10 @@ void rdc_lookup(RDC* r, MESSAGE* lookup_query)//, JSON* ep_query, JSON* cpt_quer
 
 	r->state = RDC_STATE_LOOKUP;
 	/* send the query */
-	//core_ep_send_request(ep_lookup->ep->id, generate_id(), message_to_str(query_msg));
+	//core_ep_send_request(ep_lookup, generate_id(), message_to_str(query_msg));
 
 
-	core_ep_send_request(ep_lookup->ep->id, generate_id(), message_to_str(lookup_query));
+	core_ep_send_request(ep_lookup, generate_id(), message_to_str(lookup_query));
 
 	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE: Lookup request sent to %s", r->addr);
 

@@ -458,7 +458,7 @@ int endpoint_more_responses(ENDPOINT* endpoint, const char* req_id);
  * @return Pointer to (previously queued) message.
  *
  */
-MESSAGE* endpoint_receive_message(ENDPOINT* endpoint);
+MESSAGE* endpoint_fetch_message(ENDPOINT* endpoint);
 
 /**
  * @brief Retrieve a single queued request from the core.
@@ -469,7 +469,7 @@ MESSAGE* endpoint_receive_message(ENDPOINT* endpoint);
  * @return Pointer to (previously queued) request.
  *
  */
-MESSAGE* endpoint_receive_request(ENDPOINT* endpoint);
+MESSAGE* endpoint_fetch_request(ENDPOINT* endpoint);
 
 /**
  * @brief Retrieve a single queued response from the core.
@@ -483,7 +483,7 @@ MESSAGE* endpoint_receive_request(ENDPOINT* endpoint);
  * @return Pointer to (previously queued) response.
  *
  */
-MESSAGE* endpoint_receive_response(ENDPOINT* endpoint, const char* req_id);
+MESSAGE* endpoint_fetch_response(ENDPOINT* endpoint, const char* req_id);
 
 /**
  * @brief Add a message filter to an endpoint.

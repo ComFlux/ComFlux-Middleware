@@ -7,61 +7,142 @@
 
 #include "hashmap.h"
 
-//HashMap *map = map_new(KEY_TYPE_PTR)
+
+
 HashMap* map_new(int key_type)
 {
 	HashMap *map = (HashMap*)malloc(sizeof(HashMap));
-	map->values = NULL;
+	map->values = (Values*)malloc(sizeof(Values));
+
 	map->key_type = key_type;
+
+	if(key_type == KEY_TYPE_INT)
+	{
+		map->values->values_int = NULL;
+	}
+	else if(map->key_type == KEY_TYPE_STR)
+	{
+		map->values->values_str = NULL;
+	}
+	else if(map->key_type == KEY_TYPE_PTR)
+	{
+		map->values->values_ptr = NULL;
+	}
+	else
+	{
+		map_free(map);
+		return NULL;
+	}
 
 	return map;
 }
 
 void map_free(HashMap *map)
 {
-	Value *s, *tmp;
-	/* free the hash table contents */
-	HASH_ITER(hh, map->values, s, tmp)
+	if(map == NULL)
+		return;
+
+	if(map->key_type == KEY_TYPE_INT)
 	{
-	  HASH_DEL(map->values, s);
-	  free(s);
+		map_int *s, *tmp, *values;
+		/* free the hash table contents */
+		values = map->values->values_int;
+		HASH_ITER(hh, values, s, tmp)
+		{
+			HASH_DEL(values, s);
+			free(s);
+		}
+		free(values);
+	}
+	else if(map->key_type == KEY_TYPE_STR)
+	{
+		map_str *s, *tmp, *values;
+		/* free the hash table contents */
+		values = map->values->values_str;
+		HASH_ITER(hh, values, s, tmp)
+		{
+			HASH_DEL(values, s);
+			free(s);
+		}
+		free(values);
+	}
+	else if(map->key_type == KEY_TYPE_PTR)
+	{
+		map_ptr *s, *tmp, *values;
+		/* free the hash table contents */
+		values = map->values->values_ptr;
+		HASH_ITER(hh, values, s, tmp)
+		{
+			HASH_DEL(values, s);
+			free(s);
+		}
+		free(values);
 	}
 	free(map);
-
-	//HASH_CLEAR(hh,users);
 }
 
 int map_insert(HashMap *map, void *key_, void *value)
 {
-	Value *elem = map_get(map, key_);
-	if (elem != NULL)
+	if(map == NULL || key_ == NULL || value == NULL)
 	{
-		map_update(map, key_, value);
-		return 0;
+		return -1;
 	}
 
-	elem = (Value*)malloc(sizeof(Value));
-	elem->_value_ = value;
 	if (map->key_type == KEY_TYPE_INT)
 	{
-		//("__ins key %d", *((int*)key_));
-		elem->_key_ = (int*) malloc(sizeof(int));
-		*((int*)(elem->_key_)) = *((int*)key_);
-		//HASH_ADD_INT(map->values, _key_, elem);
-		/* doesn't work because they are ptrs */
-		HASH_ADD_KEYPTR( hh, map->values, key_, sizeof(int), elem );
+		map_int* elem = NULL;
+
+		HASH_FIND_INT(map->values->values_int, key_, elem);
+
+		if (elem==NULL)
+		{
+			elem = (map_int*)malloc(sizeof(map_int));
+			elem->_key_ = *((int*)key_);
+			elem->_value_ = value;
+			HASH_ADD_INT(map->values->values_int, _key_, elem);
+		}
+		else/* value was found */
+		{
+			elem->_value_ = value;
+		}
 	}
 	else if (map->key_type == KEY_TYPE_STR)
 	{
-		elem->_key_ = key_;
-		HASH_ADD_STR(map->values, _key_, elem);
+		map_str* elem = NULL;
+
+		HASH_FIND_STR(map->values->values_str, key_, elem);
+
+		if (elem == NULL)
+		{
+			elem = (map_str*)malloc(sizeof(map_str));
+			elem->_key_ = strdup((char*)key_);
+			elem->_value_ = value;
+			HASH_ADD_STR(map->values->values_str, _key_, elem);
+		}
+		else/* value was found */
+		{
+			elem->_value_ = value;
+		}
 	}
 	else if (map->key_type == KEY_TYPE_PTR)
 	{
-		elem->_key_ = key_;
-		HASH_ADD_PTR(map->values, _key_, elem);
+		map_ptr* elem = NULL;
+
+		HASH_FIND_PTR(map->values->values_ptr, &key_, elem);
+
+		if (elem == NULL)
+		{
+			elem = (map_ptr*)malloc(sizeof(map_ptr));
+			elem->_key_ = (char*)key_;
+			elem->_value_ = value;
+			HASH_ADD_PTR(map->values->values_ptr, _key_, elem);
+		}
+		else /* value was found */
+		{
+			elem->_value_ = value;
+		}
 	}
-	else
+	else /* bad key */
 	{
 		return -1;
 	}
@@ -69,72 +150,50 @@ int map_insert(HashMap *map, void *key_, void *value)
 	return 0;
 }
 
+/* insert acts as update */
 int map_update(HashMap *map, void *key_, void *value)
 {
-	map_remove(map, key_);
-
-	map_insert(map, key_, value);
-
-	return 0;
-
-	Value *elem, *tmp;
-	if(!map_contains(map, key_))
-		return -1;
-
-	elem = (Value*) malloc(sizeof(Value));
-	if (map->key_type == KEY_TYPE_INT)
-	{
-		elem->_key_ = (int*) malloc(sizeof(int));
-		*((int*)(elem->_key_)) = *((int*)key_);
-		HASH_REPLACE_INT(map->values, _key_, elem, tmp);
-		/* id: name of key field */
-	}
-	else if (map->key_type == KEY_TYPE_STR)
-	{
-		elem->_key_ = (char*) malloc((strlen(key_)+1)*sizeof(char));
-		strcpy(elem->_key_, key_);
-		HASH_REPLACE_STR(map->values, _key_, elem, tmp);
-	}
-	else if (map->key_type == KEY_TYPE_PTR)
-	{
-		elem->_key_ = key_;
-		HASH_REPLACE_PTR(map->values, _key_, elem, tmp);
-	}
-	else
-	{
-		return -1;
-	}
-
-	if(tmp)
-		HASH_DEL(map->values, tmp);
-		free(tmp);
-
-	return 0;
+	//map_remove(map, key_);
+	return map_insert(map, key_, value);
 }
 
 int map_remove(HashMap *map, void *key_)
 {
-	Value *elem = NULL;
+	if(map == NULL || key_ == NULL)
+		return -1;
+
 	if (map->key_type == KEY_TYPE_INT)
 	{
-		HASH_FIND_INT(map->values, key_, elem);
+		map_int* elem = NULL;
+		HASH_FIND_INT(map->values->values_int, key_, elem);
+		if (elem != NULL)
+		{
+			HASH_DEL(map->values->values_int, elem);
+			return 0;
+		}
 	}
 	else if (map->key_type == KEY_TYPE_STR)
 	{
-		HASH_FIND_STR(map->values, key_, elem);
+		map_str* elem = NULL;
+		HASH_FIND_STR(map->values->values_str, key_, elem);
+		if (elem != NULL)
+		{
+			HASH_DEL(map->values->values_str, elem);
+			return 0;
+		}
 	}
 	else if (map->key_type == KEY_TYPE_PTR)
 	{
-		HASH_FIND_PTR(map->values, &key_, elem);
+		map_ptr* elem = NULL;
+		HASH_FIND_PTR(map->values->values_ptr, &key_, elem);
+		if (elem != NULL)
+		{
+			HASH_DEL(map->values->values_ptr, elem);
+			return 0;
+		}
 	}
 
-	if (elem != NULL)
-	{
-		HASH_DEL(map->values, elem);
-		return 0;
-	}
-	else
-		return 1;
+	return 1;
 }
 
 void* map_get(HashMap *map, void *key_)
@@ -142,89 +201,154 @@ void* map_get(HashMap *map, void *key_)
 	if(map == NULL || key_ == NULL)
 		return NULL;
 
-	Value *elem = NULL;
 	if (map->key_type == KEY_TYPE_INT)
 	{
-		HASH_FIND_INT(map->values, key_, elem);
+		map_int* elem = NULL;
+		HASH_FIND_INT(map->values->values_int, key_, elem);
+		if(elem != NULL)
+			return elem->_value_;
 	}
 	else if (map->key_type == KEY_TYPE_STR)
 	{
-		HASH_FIND_STR(map->values, key_, elem);
+		map_str* elem = NULL;
+		HASH_FIND_STR(map->values->values_str, key_, elem);
+		if(elem != NULL)
+		{
+			return elem->_value_;
+		}
 	}
 	else if (map->key_type == KEY_TYPE_PTR)
 	{
-		HASH_FIND_PTR(map->values, &key_, elem);
+		map_ptr* elem = NULL;
+		HASH_FIND_PTR(map->values->values_ptr, &key_, elem);
+		if(elem != NULL)
+			return elem->_value_;
 	}
 
-	if (elem == NULL)
-	{
-		return NULL;
-	}
-
-	return elem->_value_;
+	return NULL;
 }
 
 int map_contains(HashMap *map, void *key_)
 {
-	Value *elem = NULL;
+	if(map == NULL || key_ == NULL)
+		return -1;
+
 	if (map->key_type == KEY_TYPE_INT)
 	{
-		HASH_FIND_INT(map->values, key_, elem);
+		map_int* elem = NULL;
+		HASH_FIND_INT(map->values->values_int, key_, elem);
+		if(elem != NULL)
+			return 1;
+		else
+			return 0;
 	}
 	else if (map->key_type == KEY_TYPE_STR)
 	{
-		HASH_FIND_STR(map->values, key_, elem);
+		map_str* elem = NULL;
+		HASH_FIND_STR(map->values->values_str, key_, elem);
+		if(elem != NULL)
+			return 1;
+		else
+			return 0;
 	}
 	else if (map->key_type == KEY_TYPE_PTR)
 	{
-		HASH_FIND_PTR(map->values, &key_, elem);
+		map_ptr* elem = NULL;
+		HASH_FIND_PTR(map->values->values_ptr, &key_, elem);
+		if(elem != NULL)
+			return 1;
+		else
+			return 0;
 	}
-
-	if(elem != NULL)
-		return 1;
-	else
-		return 0;
+	return -1;
 }
 
 unsigned int map_size(HashMap *map)
 {
-	return HASH_COUNT(map->values);
+	if(map == NULL)
+		return -1;
+
+	if (map->key_type == KEY_TYPE_INT)
+	{
+		return HASH_COUNT(map->values->values_int);
+	}
+	else if (map->key_type == KEY_TYPE_STR)
+	{
+		return HASH_COUNT(map->values->values_str);
+	}
+	else if (map->key_type == KEY_TYPE_PTR)
+	{
+		return HASH_COUNT(map->values->values_ptr);
+	}
+
+	return -1;
 }
 
 void map_foreach(HashMap *map, void (*f)(void* key, void *value) )
 {
-	Value *s;
-	for (s = map->values; s != NULL; s=s->hh.next)
+	if(map == NULL || f == NULL)
+		return;
+
+	if (map->key_type == KEY_TYPE_INT)
 	{
-		f(s->_key_, s->_value_);
+		map_int* s = NULL;
+		for (s = map->values->values_int ; s != NULL; s=s->hh.next)
+		{
+			f(&(s->_key_), s->_value_);
+		}
+	}
+	else if (map->key_type == KEY_TYPE_STR)
+	{
+		map_str* s = NULL;
+		for (s = map->values->values_str ; s != NULL; s=s->hh.next)
+		{
+			f(s->_key_, s->_value_);
+		}
+	}
+	else if (map->key_type == KEY_TYPE_PTR)
+	{
+		map_ptr* s = NULL;
+		for (s = map->values->values_ptr ; s != NULL; s=s->hh.next)
+		{
+			f(s->_key_, s->_value_);
+		}
 	}
 }
 
 Array* map_get_keys(HashMap *map)
 {
-	Array* keys;
+	if(map == NULL)
+		return NULL;
+
+	Array* keys = NULL;
+
 	if (map->key_type == KEY_TYPE_INT)
 	{
+		map_int* s = NULL;
 		keys = array_new(ELEM_TYPE_INT);
+		for (s = map->values->values_int ; s != NULL; s=s->hh.next)
+		{
+			array_add(keys, &(s->_key_));
+		}
 	}
 	else if (map->key_type == KEY_TYPE_STR)
 	{
+		map_str* s = NULL;
 		keys = array_new(ELEM_TYPE_STR);
+		for (s = map->values->values_str ; s != NULL; s=s->hh.next)
+		{
+			/* duplicate a string key to avoid str corruption */
+			array_add(keys, strdup(s->_key_));
+		}
 	}
 	else if (map->key_type == KEY_TYPE_PTR)
 	{
+		map_ptr* s = NULL;
 		keys = array_new(ELEM_TYPE_PTR);
-	}
-	else
-		return NULL;
-
-	Value *s;
-	for(s=map->values; s != NULL; s=s->hh.next)
-	{
-		if (map->key_type == KEY_TYPE_STR)
-			array_add(keys, strdup(s->_key_));
-		else
+		for (s = map->values->values_ptr ; s != NULL; s=s->hh.next)
+		{
 			array_add(keys, s->_key_);
+		}
 	}
 
 	return keys;
@@ -232,8 +356,14 @@ Array* map_get_keys(HashMap *map)
 
 Array* map_get_values(HashMap *map)
 {
-	Array* keys = map_get_keys(map);
+	if(map == NULL)
+		return NULL;
+
+	/* hashmap values are pointers */
 	Array* values = array_new(ELEM_TYPE_PTR);
+	/* get keys and the values */
+	Array* keys = map_get_keys(map);
+
 	if (map->key_type == KEY_TYPE_INT)
 	{
 		int i;
@@ -265,7 +395,12 @@ Array* map_get_values(HashMap *map)
 		}
 	}
 	else
+	{
+		array_free(keys);
+		array_free(values);
 		return NULL;
+	}
 
+	array_free(keys);
 	return values;
 }

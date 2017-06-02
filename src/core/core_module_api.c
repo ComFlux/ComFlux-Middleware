@@ -8,8 +8,6 @@
 #include "core_module_api.h"
 
 #include "core_module.h"
-
-//#include <slog.h>
 #include "slog.h"
 
 //extern HashMap *endpoints;
@@ -41,9 +39,8 @@ void core_remove_endpoint_array(Array* argv)
 	return core_remove_endpoint(ep_id);
 }
 
-int core_map_array(Array* argv)
+int core_map_all_modules_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: map array");
 	if (array_size(argv) < 4)
 		return -1;
 
@@ -57,23 +54,11 @@ int core_map_array(Array* argv)
 	JSON* ep_query = json_new(ep_query_str);
 	JSON* cpt_query = json_new(cpt_query_str);
 
-	int result = -1;
-	int i;
-	COM_MODULE *com_module;
-	char* com_module_name;
-	Array* com_modules_names = map_get_keys(com_modules);
-	//TODO: change with ep->modules
-	for(i=0; i<map_size(com_modules); i++)
-	{
-		com_module_name = array_get(com_modules_names, i);
-		com_module = map_get(com_modules, com_module_name);
-		result = core_map(lep, com_module, addr, ep_query, cpt_query);
-		if(result == 0)
-			break;
-	}
+	int result = core_map_all_modules(lep, addr, ep_query, cpt_query);
 
 	json_free(ep_query);
 	json_free(cpt_query);
+
 	return result;
 }
 
@@ -92,7 +77,7 @@ int core_map_module_array(Array* argv)
 	slog(SLOG_DEBUG, SLOG_DEBUG, "Args: \n"
 			"ep: %s\n"
 			"module: %s\n"
-			"addr %s\n"
+			"addr: %s\n"
 			"ep_query_str: %s\n"
 			"cpt_query_str %s",local_ep_id, module, addr, ep_query_str, cpt_query_str);
 
@@ -141,9 +126,13 @@ int core_unmap_array(Array* argv)
 		return -1;
 
 	char* local_ep_id = (char*)array_get( argv, 0 );
-	char* remote_ep_id = (char*)array_get( argv, 1 );
+	char* addr = (char*)array_get( argv, 1 );
 
-	return core_unmap(local_ep_id, remote_ep_id);
+	LOCAL_EP* lep = map_get(locales, local_ep_id);
+	if (!lep)
+		return -2;
+
+	return core_unmap(lep, addr);
 }
 
 int core_unmap_connection_array(Array* argv)
@@ -174,9 +163,12 @@ int core_unmap_all_array(Array* argv)
 	if (array_size(argv) < 1)
 		return -1;
 
-	char* ep_name = (char*)array_get( argv, 0 );
+	char* local_ep_id = (char*)array_get( argv, 0 );
+	LOCAL_EP* lep = map_get(locales, local_ep_id);
+	if (!lep)
+		return -2;
 
-	return core_unmap_all(ep_name);
+	return core_unmap_all(lep);
 }
 
 int core_divert_array(Array* argv)
@@ -191,6 +183,8 @@ int core_divert_array(Array* argv)
 	char* addr = (char*)array_get( argv, 2 );
 
 	LOCAL_EP* lep = map_get(locales, ep_id);
+	if (!lep)
+		return -2;
 
 	return core_divert(lep, ep_name_from, addr);
 }
@@ -205,7 +199,12 @@ int core_ep_send_message_array(Array* argv)
 	char* ep_id = (char*)array_get( argv, 0 );
 	char* msg_id = (char*)array_get( argv, 1 );
 	char* msg = (char*)array_get( argv, 2 );
-	return core_ep_send_message(ep_id, msg_id, msg);
+
+	LOCAL_EP* lep = map_get(locales, ep_id);
+	if (!lep)
+		return -2;
+
+	return core_ep_send_message(lep, msg_id, msg);
 }
 
 int core_ep_send_request_array(Array* argv)
@@ -218,7 +217,12 @@ int core_ep_send_request_array(Array* argv)
 	char* ep_id = (char*)array_get( argv, 0 );
 	char* req_id = (char*)array_get( argv, 1 );
 	char* msg = (char*)array_get( argv, 2 );
-	return core_ep_send_request(ep_id, req_id, msg);
+
+	LOCAL_EP* lep = map_get(locales, ep_id);
+	if (!lep)
+		return -2;
+
+	return core_ep_send_request(lep, req_id, msg);
 }
 
 int core_ep_send_response_array(Array* argv)
@@ -231,7 +235,12 @@ int core_ep_send_response_array(Array* argv)
 	char* ep_id = (char*)array_get( argv, 0 );
 	char* req_id = (char*)array_get( argv, 1 );
 	char* msg = (char*)array_get( argv, 2 );
-	return core_ep_send_response(ep_id, req_id, msg);
+
+	LOCAL_EP* lep = map_get(locales, ep_id);
+	if (!lep)
+		return -2;
+
+	return core_ep_send_response(lep, req_id, msg);
 }
 
 int core_ep_more_messages_array(Array* argv)
@@ -243,7 +252,11 @@ int core_ep_more_messages_array(Array* argv)
 
 	char* ep_id = (char*)array_get( argv, 0 );
 
-	return core_ep_more_messages(ep_id);
+	LOCAL_EP* lep = map_get(locales, ep_id);
+	if (!lep)
+		return -2;
+
+	return core_ep_more_messages(lep);
 }
 
 int core_ep_more_requests_array(Array* argv)
@@ -254,7 +267,12 @@ int core_ep_more_requests_array(Array* argv)
 		return -1;
 
 	char* ep_id = (char*)array_get( argv, 0 );
-	return core_ep_more_requests(ep_id);
+
+	LOCAL_EP* lep = map_get(locales, ep_id);
+	if (!lep)
+		return -2;
+
+	return core_ep_more_requests(lep);
 }
 
 int core_ep_more_responses_array(Array* argv)
@@ -266,10 +284,15 @@ int core_ep_more_responses_array(Array* argv)
 
 	char* ep_id = (char*) array_get(argv, 0);
 	char* req_id = (char*) array_get(argv, 1);
-	return core_ep_more_responses(ep_id, req_id);
+
+	LOCAL_EP* lep = map_get(locales, ep_id);
+	if (!lep)
+		return -2;
+
+	return core_ep_more_responses(lep, req_id);
 }
 
-MESSAGE* core_ep_receive_message_array(Array* argv)
+MESSAGE* core_ep_fetch_message_array(Array* argv)
 {
 	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_receive_message array");
 	if (array_size(argv) < 1)
@@ -277,32 +300,44 @@ MESSAGE* core_ep_receive_message_array(Array* argv)
 
 	char* ep_id = (char*) array_get(argv, 0);
 
-	return core_ep_receive_message(ep_id);
+	LOCAL_EP* lep = map_get(locales, ep_id);
+	if (!lep)
+		return NULL;
+
+	return core_ep_fetch_message(lep);
 }
 
-MESSAGE* core_ep_receive_request_array(Array* argv)
+MESSAGE* core_ep_fetch_request_array(Array* argv)
 {
 	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_receive_request_array");
 
 	if (array_size(argv) < 1)
 		return NULL;
 
-	char* ep_name = (char*)array_get( argv, 0 );
+	char* ep_id = (char*) array_get(argv, 0);
 
-	return core_ep_receive_request(ep_name);
+	LOCAL_EP* lep = map_get(locales, ep_id);
+	if (!lep)
+		return NULL;
+
+	return core_ep_fetch_request(lep);
 }
 
-MESSAGE* core_ep_receive_response_array(Array* argv)
+MESSAGE* core_ep_fetch_response_array(Array* argv)
 {
 	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_receive_response_array");
 
 	if (array_size(argv) < 2)
 		return NULL;
 
-	char* ep_name = (char*)array_get( argv, 0 );
+	char* ep_id = (char*)array_get( argv, 0 );
 	char* req_id = (char*)array_get( argv, 1 );
 
-	return core_ep_receive_response(ep_name, req_id);
+	LOCAL_EP* lep = map_get(locales, ep_id);
+	if (!lep)
+		return NULL;
+
+	return core_ep_fetch_response(lep, req_id);
 }
 
 void core_ep_stream_start_array(Array* argv)
@@ -310,10 +345,13 @@ void core_ep_stream_start_array(Array* argv)
 	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_stream_start_Array");
 
 	if (array_size(argv) < 1)
-		return ;
+		return;
 
 	char* ep_id = (char*)array_get( argv, 0 );
+
 	LOCAL_EP *lep = map_get(locales, ep_id);
+	if (!lep)
+		return;
 
 	core_ep_stream_start(lep);
 }
@@ -328,6 +366,9 @@ void core_ep_stream_stop_array(Array* argv)
 	char* ep_id = (char*)array_get( argv, 0 );
 	LOCAL_EP *lep = map_get(locales, ep_id);
 
+	if (!lep)
+		return;
+
 	core_ep_stream_stop(lep);
 }
 
@@ -339,8 +380,11 @@ void core_ep_stream_send_array(Array* argv)
 		return ;
 
 	char* ep_id = (char*)array_get( argv, 0 );
-	LOCAL_EP *lep = map_get(locales, ep_id);
 	char* msg = (char*)array_get( argv, 1 );
+	LOCAL_EP *lep = map_get(locales, ep_id);
+
+	if (!lep)
+		return;
 
 	core_ep_stream_send(lep, msg);
 }
@@ -426,7 +470,12 @@ void core_add_filter_array(Array* argv)
 	char* ep_id = (char*)array_get( argv, 0 );
 	char* filter = (char*)array_get( argv, 1 );
 
-	core_add_filter(ep_id, filter);
+	LOCAL_EP *lep = map_get(locales, ep_id);
+
+	if (!lep)
+		return;
+
+	core_add_filter(lep, filter);
 }
 
 void core_reset_filter_array(Array* argv)
@@ -437,16 +486,24 @@ void core_reset_filter_array(Array* argv)
 		return ;
 
 	char* ep_id = (char*)array_get( argv, 0 );
-	JSON* filter = NULL;
+
+	JSON* new_filters_json = NULL;
+	Array* new_filters = NULL;
+
 	if (array_size(argv) >= 2)
 	{
-		char* filter_str = (char*)array_get( argv, 2 );
-		filter = json_new(filter_str);
+		new_filters_json = json_new((char*)array_get(argv, 2));
+		new_filters = json_get_array(new_filters_json, NULL);
 	}
 
-	core_reset_filter(ep_id, filter);
+	LOCAL_EP *lep = map_get(locales, ep_id);
 
-	json_free(filter);
+	if (!lep)
+		return;
+
+	core_reset_filter(lep, new_filters);
+
+	json_free(new_filters_json);
 }
 
 void core_ep_set_access_array(Array* argv)
@@ -631,12 +688,6 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 
 int _core_init()
 {
-	/*void_function_table 	= map_new(KEY_TYPE_STR);
-	int_function_table 		= map_new(KEY_TYPE_STR);
-	float_function_table 	= map_new(KEY_TYPE_STR);
-	string_function_table 	= map_new(KEY_TYPE_STR);
-	message_function_table 	= map_new(KEY_TYPE_STR);*/
-
 	void_function_table_array 	= map_new(KEY_TYPE_STR);
 	int_function_table_array 	= map_new(KEY_TYPE_STR);
 	float_function_table_array 	= map_new(KEY_TYPE_STR);
@@ -648,7 +699,7 @@ int _core_init()
 	map_insert(int_function_table_array, _core_get_id("core", "register_endpoint", "int"), core_register_endpoint_array);
 	map_insert(void_function_table_array, _core_get_id("core", "remove_endpoint", "void"), core_remove_endpoint_array);
 
-	map_insert(int_function_table_array, _core_get_id("core", "map", "int"), core_map_array);
+	map_insert(int_function_table_array, _core_get_id("core", "map", "int"), core_map_all_modules_array);
 	map_insert(int_function_table_array, _core_get_id("core", "map_module", "int"), core_map_module_array);
 	map_insert(void_function_table_array, _core_get_id("core", "map_lookup", "void"), core_map_lookup_array);
 	map_insert(int_function_table_array, _core_get_id("core", "unmap", "int"), core_unmap_array);
@@ -668,9 +719,9 @@ int _core_init()
 	map_insert(void_function_table_array, _core_get_id("core", "ep_stream_stop", "void"), core_ep_stream_stop_array);
 	map_insert(void_function_table_array, _core_get_id("core", "ep_stream_send", "void"), core_ep_stream_send_array);
 
-	map_insert(message_function_table_array, _core_get_id("core", "ep_receive_message", "message"), core_ep_receive_message_array);
-	map_insert(message_function_table_array, _core_get_id("core", "ep_receive_request", "message"), core_ep_receive_request_array);
-	map_insert(message_function_table_array, _core_get_id("core", "ep_receive_response", "message"), core_ep_receive_response_array);
+	map_insert(message_function_table_array, _core_get_id("core", "ep_fetch_message", "message"), core_ep_fetch_message_array);
+	map_insert(message_function_table_array, _core_get_id("core", "ep_fetch_request", "message"), core_ep_fetch_request_array);
+	map_insert(message_function_table_array, _core_get_id("core", "ep_fetch_response", "message"), core_ep_fetch_response_array);
 
 	map_insert(void_function_table_array, _core_get_id("core", "add_manifest", "void"), core_add_manifest_array);
 	map_insert(string_function_table_array, _core_get_id("core", "get_manifest", "string"), core_get_manifest_array);

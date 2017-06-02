@@ -489,7 +489,7 @@ int endpoint_more_responses(ENDPOINT* endpoint, const char* req_id)
 }
 
 /* receive queued message from the core */
-MESSAGE* endpoint_receive_message(ENDPOINT* endpoint)
+MESSAGE* endpoint_fetch_message(ENDPOINT* endpoint)
 {
 	char* result = (char*) mw_call_module_function_blocking(
 			NULL,
@@ -504,7 +504,7 @@ MESSAGE* endpoint_receive_message(ENDPOINT* endpoint)
 }
 
 /* receive queued request from the core */
-MESSAGE* endpoint_receive_request(ENDPOINT* endpoint)
+MESSAGE* endpoint_fetch_request(ENDPOINT* endpoint)
 {
 	char* result = mw_call_module_function_blocking(
 			NULL,
@@ -522,7 +522,7 @@ MESSAGE* endpoint_receive_request(ENDPOINT* endpoint)
 }
 
 /* receive queued response from the core */
-MESSAGE* endpoint_receive_response(ENDPOINT* endpoint, const char* req_id)
+MESSAGE* endpoint_fetch_response(ENDPOINT* endpoint, const char* req_id)
 {
 	char* result = (char*) mw_call_module_function_blocking(
 			req_id,
