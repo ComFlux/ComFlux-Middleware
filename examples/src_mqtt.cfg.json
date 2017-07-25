@@ -6,5 +6,5 @@
     "port": 1883,
     "clientid": "source",
     "clean_session": 1,
-    "topic": "src"
+    "topic": "test"
 }

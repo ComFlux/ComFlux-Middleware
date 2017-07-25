@@ -6,5 +6,5 @@
     "port": 1883,
     "clientid": "sink",
     "clean_session": 1,
-    "topic": "snk"
+    "topic": "test"
 }

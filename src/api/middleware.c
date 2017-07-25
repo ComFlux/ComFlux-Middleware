@@ -763,8 +763,9 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 							buffer_set(buffer, new_data, word_start, word_end);
 							/* apply the callback for this connection */
 
+							//printf(" -- %s\n", buffer->data);
 							pthread_t api_on_msg_thread;
-							pthread_create(&api_on_msg_thread, NULL, api_on_message, buffer->data);
+							pthread_create(&api_on_msg_thread, NULL, api_on_message, strdup_null(buffer->data));
 
 							//api_on_message(buffer->data);
 
