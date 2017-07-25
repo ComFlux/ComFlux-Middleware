@@ -408,6 +408,7 @@ add_executable(simple_sink_nomap ${CMAKE_CURRENT_SOURCE_DIR}/examples/simple_sin
 target_link_libraries(simple_sink_nomap middleware_api)
 #target_include_directories(simple_sink_nomap PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+
 # Copy the example endpoints schemata  
 add_executable(simple_res ${CMAKE_CURRENT_SOURCE_DIR}/examples/simple_res.c)
 target_link_libraries(simple_res middleware_api)
@@ -427,3 +428,34 @@ add_custom_command(TARGET simple_source POST_BUILD
         ${CMAKE_CURRENT_SOURCE_DIR}/examples/*cfg.json
         ${RUNTIME_OUTPUT_ROOT}/examples/)
 
+
+
+# Build the tests.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${RUNTIME_OUTPUT_ROOT}/tests)
+
+add_executable(test_tcp_sender ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_tcp_sender.c)
+target_link_libraries(test_tcp_sender middleware_api)
+#target_include_directories(test_tcp_sender PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+add_executable(test_tcp_receiver ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_tcp_receiver.c)
+target_link_libraries(test_tcp_receiver middleware_api)
+#target_include_directories(test_tcp_receiver PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+add_executable(test_mqtt_sender ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_mqtt_sender.c)
+target_link_libraries(test_mqtt_sender middleware_api)
+#target_include_directories(test_mqtt_sender PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+add_executable(test_mqtt_receiver ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_mqtt_receiver.c)
+target_link_libraries(test_mqtt_receiver middleware_api)
+#target_include_directories(test_mqtt_receiver PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+add_custom_command(TARGET test_mqtt_receiver POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/examples/example_schemata
+        ${RUNTIME_OUTPUT_ROOT}/tests/example_schemata)
+        
+# Copy the example general config file with all configs: slog level, log filepath, libs, etc
+add_custom_command(TARGET test_mqtt_receiver POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        ${CMAKE_CURRENT_SOURCE_DIR}/tests/*cfg.json
+        ${RUNTIME_OUTPUT_ROOT}/tests/)
