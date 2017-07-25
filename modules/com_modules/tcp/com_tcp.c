@@ -88,7 +88,7 @@ int com_connect(const char* server_address)
 {
     if (!tcp_is_addr(server_address))
     {
-        slog(SLOG_ERROR, SLOG_ERROR, "Invalid address format given: %s", server_address);
+        slog(SLOG_ERROR, SLOG_ERROR, "CONN: Invalid address format given: %s", server_address);
         return -1;
     }
 
@@ -309,7 +309,7 @@ void* tcp_accept_function(void* serversock)
     while (1) {
         peersock = accept(*((int*)serversock), (struct sockaddr*)&peerin, (socklen_t*)&c);
         if (peersock < 0) {
-            slog(1, SLOG_ERROR, "CONN: accept failed for (%d).", serversock);
+            slog(1, SLOG_ERROR, "CONN: accept failed for (%d).", *((int*)serversock));
             return NULL; // TODO
         }
         slog(SLOG_INFO, SLOG_INFO, "CONN: connection accpeted by socket (%d) ", peersock);
@@ -345,7 +345,7 @@ void* tcp_receive_function(void* conn)
 {
     int _conn = *((int*)conn);
     if (_conn <= 0) {
-        slog(SLOG_ERROR, SLOG_ERROR, "CONN: not established with (%d), can't recv", conn);
+        slog(SLOG_ERROR, SLOG_ERROR, "CONN: not established with (%d), can't recv", _conn);
         return NULL;
     }
     char* buf;
