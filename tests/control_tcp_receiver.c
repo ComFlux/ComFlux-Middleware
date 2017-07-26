@@ -295,13 +295,13 @@ int main(int argc, char *argv[])
 		sleep(2);
 
 		printf("\n\n nb msg received: %d \ntotal time received %d \n", count_msg, time_total - time_start);
-		printf("avg:  %f\n", (time_total/(float)count_msg));
+		printf("avg:  %f\n", (time_total/(float)count_msg)/ CLOCKS_PER_SEC);
 	}
 
 	sleep(1);
 	printf("Total: ");
 	printf("\n\n nb msg received: %d \ntotal time received %d \n", count_msg, time_total - time_start);
-	printf("avg:  %f\n", (time_total/(float)count_msg));
+	printf("avg:  %f\n", (time_total/(float)count_msg)/ CLOCKS_PER_SEC);
 
 	return 0;
 }
