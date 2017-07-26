@@ -45,7 +45,7 @@ void print_callback(MESSAGE *msg)
 	else if(started_flag == 1 && stopped_flag ==0)
 	{
 		count_msg += 1;
-		time_total += clock();
+		time_total += (clock() - time_start);
 	}
 }
 
@@ -122,13 +122,13 @@ int main(int argc, char *argv[])
     	sleep(2);
 
     	printf("\n\n nb msg received: %d \ntotal time received %d \n", count_msg, time_total - time_start);
-    	printf("avg:  %f\n", (time_total/(float)count_msg) - time_start);
+    	printf("avg:  %f\n", (time_total/(float)count_msg));
     }
 
 	sleep(1);
 	printf("Total: ");
 	printf("\n\n nb msg received: %d \ntotal time received %d \n", count_msg, time_total - time_start);
-	printf("avg:  %f\n", (time_total/(float)count_msg) - time_start);
+	printf("avg:  %f\n", (time_total/(float)count_msg));
 
 	return 0;
 }
