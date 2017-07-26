@@ -16,21 +16,29 @@ unsigned int count_msg = 0;
 int main(int argc, char *argv[])
 {
 	char *mw_cfg_path = NULL;
-	char *src_addr = NULL;
 
-	if(argc<2)
-	{
-		printf("Usage: ./test_mqtt_sender [mw_cfg_path]\n"
-				"\tmw_cfg_path       is the path to the config file for the middleware;\n"
-				"\t                  default mw_cfg.json\n"
-				"\treceiver_addr     is the address of the receiver we want to map to\n");
 
-		mw_cfg_path = "1src_mw_cfg.json";
-	}
-	else
+	printf("argc: %d\n", argc);
+	switch (argc)
 	{
-		mw_cfg_path=argv[1];
+	case 1: break;
+	case 2:
+	{
+		nb_msg=atoi(argv[1]);
+		break;
 	}
+	default:
+	{
+		printf("Usage: ./test_mqtt_sender [nbmsg] \n"
+				"\tnbmsg              default 500\n");
+
+		return -1;
+	}
+	}
+
+	printf("\tnbmsg    %d\n", nb_msg);
+	mw_cfg_path = "1src_mw_cfg.json";
+
 
 	/* load and apply configuration */
 	int load_cfg_result = load_mw_config(mw_cfg_path);
@@ -78,6 +86,8 @@ int main(int argc, char *argv[])
 	int map_result = endpoint_map_to(ep_src,
 				addr, ep_query_str, cpt_query_str);
 	printf("Map result: %d \n", map_result);
+
+	endpoint_send_message(ep_src, message);
 
 	unsigned int i;
 

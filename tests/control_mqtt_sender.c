@@ -92,8 +92,28 @@ _mqtt_channel* channel_new(const char* host, int port, const char* topic,
 }
 
 
-int main()
+int main(int argc, char *argv[])
 {
+
+	printf("argc: %d\n", argc);
+	switch (argc)
+	{
+	case 1: break;
+	case 2:
+	{
+		nb_msg=atoi(argv[1]);
+		break;
+	}
+	default:
+	{
+		printf("Usage: ./control_mqtt_sender [nbmsg] \n"
+				"\tnbmsg              default 500\n");
+
+		return -1;
+	}
+	}
+	printf("\tnbmsg    %d\n", nb_msg);
+
 	mosquitto_lib_init();
 
 	_mqtt_channel* channel = channel_new(
@@ -108,6 +128,9 @@ int main()
 	char data[250];
 
 	unsigned int i=0;
+	sprintf(data, "date %d\n", i);
+
+	mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, 0, true);
 
 	for(i=0; i<nb_msg; i++)
 	{
@@ -122,8 +145,6 @@ int main()
 	printf("done %d\n", count_msg);
 	sleep(1);
 
-	sleep(1);
-	sleep(1);
 
 	return 0;
 }

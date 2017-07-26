@@ -52,7 +52,7 @@ void disconnect_callback(struct mosquitto *mosq, void *obj, int result)
 
 void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_message *message)
 {
-	printf("%.*s\n", message->payloadlen, (char*) message->payload);
+	//printf("%.*s\n", message->payloadlen, (char*) message->payload);
 	if(started_flag == 0 && stopped_flag ==0)
 	{
 		started_flag = 1;
@@ -66,10 +66,10 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
 		stopped_flag = 1;
 	}
 
-	if(started_flag == 1 && stopped_flag ==0)
+	else if(started_flag == 1 && stopped_flag ==0)
 	{
 		count_msg += 1;
-		time_total += clock();
+		time_total += (clock() - time_start);
 	}
 }
 
@@ -116,9 +116,28 @@ _mqtt_channel* channel_new(const char* host, int port, const char* topic,
 }
 
 
-int main()
+int main(int argc, char *argv[])
 {
 	mosquitto_lib_init();
+
+	printf("argc: %d\n", argc);
+	switch (argc)
+	{
+	case 1: break;
+	case 2:
+	{
+		total_msg=atoi(argv[1]);
+		break;
+	}
+	default:
+	{
+		printf("Usage: ./control_mqtt_sender [nbmsg] \n"
+				"\tnbmsg              default 500\n");
+
+		return -1;
+	}
+	}
+	printf("\tnbmsg    %d\n", total_msg);
 
 	_mqtt_channel* channel = channel_new(
 			"127.0.0.1", //mqtt_host
@@ -135,13 +154,13 @@ int main()
 		sleep(2);
 
 		printf("\n\n nb msg received: %d \ntotal time received %d \n", count_msg, time_total - time_start);
-		printf("avg:  %f\n", (time_total - time_start)/(float)count_msg);
+		printf("avg:  %f\n",  (time_total/(float)count_msg)/ CLOCKS_PER_SEC);
 	}
 
 	sleep(1);
 	printf("Total: ");
 	printf("\n\n nb msg received: %d \ntotal time received %d \n", count_msg, time_total - time_start);
-	printf("avg:  %f\n", (time_total - time_start)/(float)count_msg);
+	printf("avg:  %f\n",  (time_total/(float)count_msg)/ CLOCKS_PER_SEC);
 
 	return 0;
 }

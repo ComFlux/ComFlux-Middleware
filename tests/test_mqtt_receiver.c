@@ -29,7 +29,7 @@ unsigned int count_msg = 0;
 
 void print_callback(MESSAGE *msg)
 {
-	printf("%s -- %s\n", msg->msg_id, msg->msg);
+	//printf("%s -- %s\n", msg->msg_id, msg->msg);
 	if(started_flag == 0 && stopped_flag ==0)
 	{
 		started_flag = 1;
@@ -43,30 +43,38 @@ void print_callback(MESSAGE *msg)
 		stopped_flag = 1;
 	}
 
-	if(started_flag == 1 && stopped_flag ==0)
+	else if(started_flag == 1 && stopped_flag ==0)
 	{
 		count_msg += 1;
-		time_total += clock();
+		time_total += (clock() - time_start);
 	}
 }
 
 int main(int argc, char *argv[])
 {
 	char *mw_cfg_path = NULL;
-	char *src_addr = NULL;
 
-	if(argc<2)
-	{
-		printf("Usage: ./simple_source [mw_cfg_path]\n"
-				"\tmw_cfg_path		is the path to the config file for the middleware;\n"
-				"\t                 default mw_cfg.json\n");
 
-		mw_cfg_path = "1src_mw_cfg.json";
-	}
-	else
+	printf("argc: %d\n", argc);
+	switch (argc)
 	{
-		mw_cfg_path=argv[1];
+	case 1: break;
+	case 2:
+	{
+		total_msg=atoi(argv[1]);
+		break;
 	}
+	default:
+	{
+		printf("Usage: ./test_mqtt_receiver [nbmsg] \n"
+				"\tnbmsg              default 500\n");
+
+		return -1;
+	}
+	}
+	printf("\tnbmsg    %d\n", total_msg);
+	mw_cfg_path = "1src_mw_cfg.json";
+
 
 	/* load and apply configuration */
 	int load_cfg_result = load_mw_config(mw_cfg_path);
@@ -114,13 +122,13 @@ int main(int argc, char *argv[])
     	sleep(2);
 
     	printf("\n\n nb msg received: %d \ntotal time received %d \n", count_msg, time_total - time_start);
-    	printf("avg:  %f\n", (time_total - time_start)/(float)count_msg);
+    	printf("avg:  %f\n",  (time_total/(float)count_msg)/ CLOCKS_PER_SEC);
     }
 
 	sleep(1);
 	printf("Total: ");
 	printf("\n\n nb msg received: %d \ntotal time received %d \n", count_msg, time_total - time_start);
-	printf("avg:  %f\n", (time_total - time_start)/(float)count_msg);
+	printf("avg:  %f\n",  (time_total/(float)count_msg)/ CLOCKS_PER_SEC);
 
 	return 0;
 }
