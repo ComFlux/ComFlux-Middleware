@@ -28,7 +28,7 @@ unsigned int count_msg = 0;
 
 void print_callback(MESSAGE *msg)
 {
-	printf("%s -- %s\n", msg->msg_id, msg->msg);
+	//printf("%s -- %s\n", msg->msg_id, msg->msg);
 	if(started_flag == 0 && stopped_flag ==0)
 	{
 		started_flag = 1;
@@ -46,6 +46,7 @@ void print_callback(MESSAGE *msg)
 	{
 		count_msg += 1;
 		time_total += (clock() - time_start);
+                //printf("--- %d", clock()-time_start);
 	}
 }
 
