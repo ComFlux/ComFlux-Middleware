@@ -108,6 +108,8 @@ int main(int argc, char *argv[])
 			receiver_full, ep_query_str, cpt_query_str);
 	printf("Map result: %d \n", map_result);
 
+	endpoint_send_message(ep_src, message);
+
 	unsigned int i;
 
 	for(i=0; i<nb_msg; i++)

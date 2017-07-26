@@ -138,6 +138,10 @@ int main(int argc, char *argv[])
 
 	unsigned int i=0;
 
+	sprintf(data, "{date %d\n}", i);
+
+	com_send_data(conn, data);
+
 	for(i=0; i<nb_msg; i++)
 	{
 		//sprintf(data, "{ \"status\": 9, \"msg\": \"{ \\\"status\\\": 9, \\\"msg\\\": \\\"{ \\\\\\\"value\\\\\\\": 9, \\\\\\\"datetime\\\\\\\": \\\\\\\"today\\\\\\\" }\\\", \\\"ep_id\\\": \\\"CiZTvUvpRY\\\", \\\"msg_id\\\": \\\"%d\\\" }\", \"msg_id\": \"%d\" }", i, i);
