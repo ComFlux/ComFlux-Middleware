@@ -8,6 +8,9 @@
 #include <file.h>
 
 
+char receiver_addr[200] = "34.229.95.129";
+unsigned int receiver_port = 1505;
+
 unsigned int nb_msg = 500;
 
 unsigned int time_total = 0;
@@ -16,21 +19,47 @@ unsigned int count_msg = 0;
 int main(int argc, char *argv[])
 {
 	char *mw_cfg_path = NULL;
-	char *src_addr = NULL;
 
-	if(argc<2)
+	printf("argc: %d\n", argc);
+	switch (argc)
 	{
-		printf("Usage: ./test_tcp_sender [mw_cfg_path]\n"
-				"\tmw_cfg_path       is the path to the config file for the middleware;\n"
-				"\t                  default mw_cfg.json\n"
-				"\treceiver_addr     is the address of the receiver we want to map to\n");
+	case 1: break;
+	case 2:
+	{
+		nb_msg=atoi(argv[1]);
+		break;
+	}
+	case 3:
+	{
+		strcpy(receiver_addr, argv[1]);
+		receiver_port = atoi(argv[2]);
+		break;
+	}
+	case 4:
+	{
+		strcpy(receiver_addr, argv[1]);
+		receiver_port = atoi(argv[2]);
+		nb_msg=atoi(argv[3]);
+		break;
+	}
+	default:
+	{
+		printf("Usage: ./test_tcp_sender [receiver_addr receiver_port] [nbmsg] \n"
+				"\treceiver_addr      default 34.229.95.129;\n"
+				"\treceiver_port      default 1505\n"
+				"\tnbmsg              default 500\n");
 
-		mw_cfg_path = "2src_mw_cfg.json";
+		return -1;
 	}
-	else
-	{
-		mw_cfg_path=argv[1];
 	}
+
+	printf("\treceiver_addr: %s\n"
+			"\treceiver_port: %d\n"
+			"\tnbmsg    %d\n", receiver_addr, receiver_port, nb_msg);
+	mw_cfg_path = "2src_mw_cfg.json";
+	char receiver_full[110];
+	sprintf(receiver_full, "%s:%d", receiver_addr, receiver_port);
+
 
 	/* load and apply configuration */
 	int load_cfg_result = load_mw_config(mw_cfg_path);
@@ -76,7 +105,7 @@ int main(int argc, char *argv[])
 
 	char* addr = text_load_from_file("src_mqtt.cfg.json");
 	int map_result = endpoint_map_to(ep_src,
-				"127.0.0.1:1505", ep_query_str, cpt_query_str);
+			receiver_full, ep_query_str, cpt_query_str);
 	printf("Map result: %d \n", map_result);
 
 	unsigned int i;

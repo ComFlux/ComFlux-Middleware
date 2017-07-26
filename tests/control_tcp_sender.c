@@ -26,6 +26,9 @@
 #include <net/if.h>
 #endif
 
+char receiver_addr[200] = "34.229.95.129";
+unsigned int receiver_port = 1505;
+
 unsigned int nb_msg = 500;
 
 unsigned int time_total = 0;
@@ -90,9 +93,47 @@ int com_send_data(int conn, const char* msg)
     return (int)allBytesSent;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-	int conn = com_connect("127.0.0.1", 1505);
+	printf("argc: %d\n", argc);
+	switch (argc)
+	{
+	case 1: break;
+	case 2:
+	{
+		nb_msg=atoi(argv[1]);
+		break;
+	}
+	case 3:
+	{
+		strcpy(receiver_addr, argv[1]);
+		receiver_port = atoi(argv[2]);
+		break;
+	}
+	case 4:
+	{
+		strcpy(receiver_addr, argv[1]);
+		receiver_port = atoi(argv[2]);
+		nb_msg=atoi(argv[3]);
+		break;
+	}
+	default:
+	{
+		printf("Usage: ./control_tcp_sender [receiver_addr receiver_port] [nbmsg] \n"
+				"\treceiver_addr      default 34.229.95.129;\n"
+				"\treceiver_port      default 1505\n"
+				"\tnbmsg              default 500\n");
+
+		return -1;
+	}
+	}
+
+	printf("\treceiver_addr: %s\n"
+			"\treceiver_port: %d\n"
+			"\tnbmsg    %d\n", receiver_addr, receiver_port, nb_msg);
+
+
+	int conn = com_connect(receiver_addr, receiver_port);
 	char data[250];
 
 	unsigned int i=0;

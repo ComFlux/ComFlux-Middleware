@@ -52,20 +52,29 @@ void print_callback(MESSAGE *msg)
 int main(int argc, char *argv[])
 {
 	char *mw_cfg_path = NULL;
-	char *src_addr = NULL;
 
-	if(argc<2)
+	printf("argc: %d\n", argc);
+	switch (argc)
 	{
-		printf("Usage: ./test_tcp_receiver [mw_cfg_path]\n"
-				"\tmw_cfg_path		is the path to the config file for the middleware;\n"
-				"\t                 default mw_cfg.json\n");
+	case 1: break;
+	case 2:
+	{
+		total_msg=atoi(argv[1]);
+		break;
+	}
+	default:
+	{
+		printf("Usage: ./test_tcp_receiver [nbmsg] \n"
+				"\tnbmsg              default 500\n");
 
-		mw_cfg_path = "3src_mw_cfg.json";
+		return -1;
 	}
-	else
-	{
-		mw_cfg_path=argv[1];
 	}
+
+	printf("\ttotal msg    %d\n", total_msg);
+
+
+	mw_cfg_path = "3src_mw_cfg.json";
 
 	/* load and apply configuration */
 	int load_cfg_result = load_mw_config(mw_cfg_path);

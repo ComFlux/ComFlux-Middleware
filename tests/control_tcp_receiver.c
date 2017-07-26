@@ -26,6 +26,9 @@
 #include <net/if.h>
 #endif
 
+char receiver_addr[200] = "34.229.95.129";
+unsigned int receiver_port = 1505;
+
 unsigned int total_msg = 500;
 
 unsigned int started_flag = 0;
@@ -237,15 +240,53 @@ void* tcp_receive_function(void* conn)
 }
 
 
-int main()
+int main(int argc, char *argv[])
 {
+	printf("argc: %d\n", argc);
+	switch (argc)
+	{
+	case 1: break;
+	case 2:
+	{
+		total_msg=atoi(argv[1]);
+		break;
+	}
+	case 3:
+	{
+		strcpy(receiver_addr, argv[1]);
+		receiver_port = atoi(argv[2]);
+		break;
+	}
+	case 4:
+	{
+		strcpy(receiver_addr, argv[1]);
+		receiver_port = atoi(argv[2]);
+		total_msg=atoi(argv[3]);
+		break;
+	}
+	default:
+	{
+		printf("Usage: ./control_tcp_receiver [receiver_addr receiver_port] [nbmsg] \n"
+				"\treceiver_addr      default 34.229.95.129;\n"
+				"\treceiver_port      default 1505\n"
+				"\tnbmsg              default 500\n");
+
+		return -1;
+	}
+	}
+
+	printf("\treceiver_addr: %s\n"
+			"\treceiver_port: %d\n"
+			"\ttotal msg:    %d\n", receiver_addr, receiver_port, total_msg);
+
+
 	api_buffer = (BUFFER*) malloc(sizeof(BUFFER));
 	api_buffer->data = NULL;
 	api_buffer->size = 0;
 	api_buffer->buffer_state = 0;
 	api_buffer->brackets = 0;
 
-	init("127.0.0.1", 1505);
+	init(receiver_addr, receiver_port);
 
 	int i;
 
