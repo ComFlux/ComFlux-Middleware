@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 	{
 		endpoint_send_message(ep_src, message);
 		count_msg += 1;
-		time_total += clock();
+		//time_total += clock();
 	}
 
 	sleep(1);

@@ -68,12 +68,12 @@ int com_send_data(int conn, const char* msg)
         printf("not established with (%d), can't send msg *%s*", conn, msg);
         return -1;
     }
-    printf("send to (%d) *%s*\n", conn, msg);
+    //printf("send to (%d) *%s*\n", conn, msg);
 
     const uint32_t varSize = strlen(msg);
     int allBytesSent; /* sum of all sent sizes */
     ssize_t sentSize; /* one shot sent size */
-    printf("About to send message using tcp on socket (%d)", conn);
+    //printf("About to send message using tcp on socket (%d)", conn);
 
     allBytesSent = 0;
     while (allBytesSent < varSize)
@@ -144,8 +144,8 @@ int main(int argc, char *argv[])
 
 	for(i=0; i<nb_msg; i++)
 	{
-		//sprintf(data, "{ \"status\": 9, \"msg\": \"{ \\\"status\\\": 9, \\\"msg\\\": \\\"{ \\\\\\\"value\\\\\\\": 9, \\\\\\\"datetime\\\\\\\": \\\\\\\"today\\\\\\\" }\\\", \\\"ep_id\\\": \\\"CiZTvUvpRY\\\", \\\"msg_id\\\": \\\"%d\\\" }\", \"msg_id\": \"%d\" }", i, i);
-		sprintf(data, "{date %d\n}", i);
+		sprintf(data, "{ \"status\": 9, \"msg\": \"{ \\\"status\\\": 9, \\\"msg\\\": \\\"{ \\\\\\\"value\\\\\\\": 9, \\\\\\\"datetime\\\\\\\": \\\\\\\"today\\\\\\\" }\\\", \\\"ep_id\\\": \\\"CiZTvUvpRY\\\", \\\"msg_id\\\": \\\"%d\\\" }\", \"msg_id\": \"%d\" }", i, i);
+		//sprintf(data, "{date %d\n}", i);
 
 		com_send_data(conn, data);
 		count_msg += 1;
@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
 	}
 
 	printf("done %d\n", count_msg);
-	sleep(1);
+	sleep(2);
 
 	return 0;
 }
