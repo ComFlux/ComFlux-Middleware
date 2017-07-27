@@ -11,7 +11,6 @@
 #include "hashmap.h"
 #include "array.h"
 #include <utils.h>
-#include <slog.h>
 
 #include <string.h>
 #include "environment.h" /* only for EP_UID_SIZE */
@@ -25,8 +24,6 @@ ENDPOINT* endpoint_init(const char* name, const char *description, int type,
 						void (*callback_function)(struct _MESSAGE*),
 						const char* id)
 {
-	slog(SLOG_INFO, SLOG_INFO, "ENDPOINT: endpoint_init: %s", name);
-
 	ENDPOINT *ep;
 
 	/* basic param init */
@@ -46,7 +43,7 @@ ENDPOINT* endpoint_init(const char* name, const char *description, int type,
 
 	if(type <= 0 || type >= 12)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "ENDPOINT: wrong ep_type: %d ", type);
+		//slog(SLOG_ERROR, SLOG_ERROR, "ENDPOINT: wrong ep_type: %d ", type);
 		endpoint_free(ep);
 		return NULL;
 	}
@@ -59,7 +56,7 @@ ENDPOINT* endpoint_init(const char* name, const char *description, int type,
 	}
 	else if(msg_str == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "ENDPOINT: no msg specified");
+		//slog(SLOG_ERROR, SLOG_ERROR, "ENDPOINT: no msg specified");
 		endpoint_free(ep);
 		return NULL;
 	}
@@ -72,7 +69,7 @@ ENDPOINT* endpoint_init(const char* name, const char *description, int type,
 	{
 		if( resp_str == NULL)
 		{
-			slog(SLOG_ERROR, SLOG_ERROR, "ENDPOINT: no response msg specified");
+			//slog(SLOG_ERROR, SLOG_ERROR, "ENDPOINT: no response msg specified");
 			endpoint_free(ep);
 			return NULL;
 		}

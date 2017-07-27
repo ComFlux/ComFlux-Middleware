@@ -6,7 +6,6 @@
  */
 
 
-#include "slog.h"
 #include <string.h>
 
 #include "json.h"
@@ -412,21 +411,21 @@ int json_validate(JSON* schema, JSON* instance)
      * note that value returned by json_validate_instance is the number of errors! */
     if (json_validate_instance(instance->elem_json, schema->elem_json))
     {
-    	printf(
+    	/*printf(
     			"JSON not valid:\n "
     			"\tinstance:\t*%s*\n"
     			"\tschema\t*%s*\n",
 				json_to_str_pretty(instance), json_to_str_pretty(schema));
-
+	*/
     	return JSON_NOT_VALID;
     }
 
-	slog(SLOG_WARN, SLOG_WARN,
+	/*slog(SLOG_WARN, SLOG_WARN,
 			"JSON not valid:\n "
 			"\tinstance:\t*%s*\n"
 			"\tschema\t*%s*",
 			json_to_str_pretty(instance), json_to_str_pretty(schema));
-
+	*/
 	return JSON_OK;
 }
 

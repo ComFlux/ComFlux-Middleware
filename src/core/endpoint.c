@@ -32,10 +32,6 @@ LOCAL_EP* ep_local_new(JSON *ep_json, void(* from_ext_handler)(MESSAGE*))
 {
 	JSON* json_data = ep_json; // json_new(json_get_str(ep_json, "msg"));
 
-	char* json_data_str = json_to_str_pretty(json_data);
-	slog(SLOG_INFO, SLOG_INFO, "EP LOCAL: parse ep def : %s\n", json_data_str);
-	free(json_data_str);
-
 	/*if (json_validate_ep_def(json_data))
 	{
 		slog(SLOG_ERROR, SLOG_ERROR, "EP LOCAL: Does not pass general ep schema: %s", json_to_str(ep_json));
@@ -50,8 +46,6 @@ LOCAL_EP* ep_local_new(JSON *ep_json, void(* from_ext_handler)(MESSAGE*))
 	lep->id = strdup_null(json_get_str(json_data, "ep_id"));
 	lep->queuing = json_get_int(json_data, "blocking");
 
-	//slog(SLOG_INFO, SLOG_INFO, "EP LOCAL: instantiating EP: %s", );
-
 	if (from_ext_handler == NULL) // app ep
 	{
 		if(lep->queuing == 1)
@@ -65,8 +59,6 @@ LOCAL_EP* ep_local_new(JSON *ep_json, void(* from_ext_handler)(MESSAGE*))
 	}
 	else // default ep
 		ep_handler = from_ext_handler;
-
-	slog(SLOG_DEBUG, SLOG_DEBUG, "**** %s", lep->id);
 
 
 	lep->msg_schema = json_get_json(json_data, "message");
@@ -91,7 +83,6 @@ LOCAL_EP* ep_local_new(JSON *ep_json, void(* from_ext_handler)(MESSAGE*))
 
 	if (lep->ep == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "EP LOCAL: Could not instantiate ep from json: %s", json_to_str(json_data));
 		ep_local_free(lep);
 		return NULL;
 	}
@@ -319,19 +310,15 @@ char *ep_local_to_str(LOCAL_EP *lep)
 /* actual mapping given given the checks were done before */
 int ep_map(LOCAL_EP *ep_local, STATE* state)
 {
-	slog(SLOG_INFO, SLOG_INFO, "EP MAP %s to connection (%s:%d)",
-			ep_local->ep->id, state->module->name, state->conn);
 	if(ep_local==NULL)
 	{
 		/* if ep was removed recently */
-		slog(SLOG_ERROR, SLOG_ERROR, "EP MAP: ep is  null");
 		return EP_NO_EXIST;
 	}
 
 	 if(!state || state->conn<=0)
 	 {
 		 /* this may appear only when conn has stopped meanwhile */
-		 slog(SLOG_ERROR, SLOG_ERROR, "EP MAP: conn is  <0");
 		 return -1;
 	 }
 
@@ -345,8 +332,6 @@ void ep_unmap_addr(LOCAL_EP* lep, const char* addr)
 {
     if (lep == NULL || addr == NULL)
         return;
-
-    slog(SLOG_INFO, SLOG_INFO, "EP: unmapping [%s] locally from address %s", lep->ep->id, addr);
 
     int i;
     STATE* peer_;
@@ -372,33 +357,18 @@ void ep_unmap_send(LOCAL_EP* lep, STATE* state_ptr)
 	/* error checking */
 	if(state_ptr == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "LOCAL_EP: ep_unmap_send: invalid null state\n"
-				"\tep: %s",
-				lep->ep->id);
 		return;
 	}
 
 	if(lep == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "LOCAL_EP: ep_unmap_send: invalid null endpoint\n"
-				"\tstate: %s:%d",
-				state_ptr->module->name, state_ptr->conn);
 		return;
 	}
 
 	if(state_ptr->lep != lep)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "LOCAL_EP: ep_unmap_send: wrong state - local ep association\n"
-				"\tep: %s\n"
-				"\tstate: %s:%d",
-				lep->ep->id, state_ptr->module->name, state_ptr->conn);
 		return;
 	}
-
-    slog(SLOG_INFO, SLOG_INFO, "LOCAL_EP: ep_unmap_send:\n"
-    		"\tep: %s\n"
-    		"\tstate: (%s:%d)",
-    		lep->ep->id, state_ptr->module->name, state_ptr->conn);
 
 	MESSAGE* unmap_msg = message_new(NULL, MSG_UNMAP);
 	state_send_message(state_ptr, unmap_msg);
@@ -412,33 +382,18 @@ void ep_unmap_recv(LOCAL_EP* lep, STATE* state_ptr)
 	/* error checking */
 	if(state_ptr == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "LOCAL_EP: ep_unmap_recv: invalid null state\n"
-				"\tep: %s",
-				lep->ep->id);
 		return;
 	}
 
 	if(lep == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "LOCAL_EP: ep_unmap_recv: invalid null endpoint\n"
-				"\tstate: %s:%d",
-				state_ptr->module->name, state_ptr->conn);
 		return;
 	}
 
 	if(state_ptr->lep != lep)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "LOCAL_EP: ep_unmap_recv: wrong state - local ep association\n"
-				"\tep: %s\n"
-				"\tstate: %s:%d",
-				lep->ep->id, state_ptr->module->name, state_ptr->conn);
 		return;
 	}
-
-    slog(SLOG_INFO, SLOG_INFO, "LOCAL_EP: ep_unmap_recv: sending ACK\n"
-    		"\t ep: %s\n"
-    		"\tstate: (%s:%d)",
-    		lep->ep->id, state_ptr->module->name, state_ptr->conn);
 
 	/* send acknowledge */
 	MESSAGE* unmap_ack_msg = message_new(NULL, MSG_UNMAP_ACK);
@@ -455,37 +410,22 @@ void ep_unmap_final(LOCAL_EP* lep, STATE* state_ptr)
 	/* error checking */
 	if(state_ptr == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "LOCAL_EP: ep_unmap_final: invalid null state\n"
-				"\tep: %s",
-				lep->ep->id);
 		return;
 	}
 
 	if(lep == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "LOCAL_EP: ep_unmap_final: invalid null endpoint\n"
-				"\tstate: %s:%d",
-				state_ptr->module->name, state_ptr->conn);
 		return;
 	}
 
 	if(state_ptr->lep != lep)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "LOCAL_EP: ep_unmap_final: wrong state - local ep association\n"
-				"\tep: %s\n"
-				"\tstate: %s:%d",
-				lep->ep->id, state_ptr->module->name, state_ptr->conn);
 		return;
 	}
 
 	/* remove from the array of mappings */
 	if(array_remove(lep->mappings_states, state_ptr) < 0)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "LOCAL_EP: ep_unmap_final: state not in local ep mappings\n"
-				"\tep: %s\n"
-				"\tstate: %s:%d",
-				lep->ep->id, state_ptr->module->name, state_ptr->conn);
-
 		return;
 	}
 
@@ -501,8 +441,6 @@ void ep_unmap_all(LOCAL_EP *lep)
     if (!lep)
         return;
 
-    slog(SLOG_INFO, SLOG_INFO, "EP: unmapping all %d mappings from [%s]",
-    		array_size(lep->mappings_states), lep->ep->id);
 
     int i;
 	STATE* state;
@@ -519,7 +457,6 @@ void ep_unmap_all(LOCAL_EP *lep)
 
 LOCAL_EP* endpoint_query(JSON* query_json)
 {
-	slog(SLOG_INFO, SLOG_INFO, "EP QUERY: %s", json_to_str(query_json));
 
 	LOCAL_EP *lep;
 	JSON* lep_json;
@@ -534,7 +471,7 @@ LOCAL_EP* endpoint_query(JSON* query_json)
 		if( json_filter_validate(lep_json, query_json) )
 		{
 			//if()
-			slog(SLOG_INFO, SLOG_INFO, "EP QUERY result: %s", lep->ep->name);
+			//slog(SLOG_INFO, SLOG_INFO, "EP QUERY result: %s", lep->ep->name);
 			return lep;
 		}
 	}

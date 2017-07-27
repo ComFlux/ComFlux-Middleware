@@ -27,7 +27,7 @@
 
 #include <hashmap.h>
 #include "sync.h"
-#include <slog.h>
+//#include <slog.h>
 
 void* module;
 /* functions called in the same thread
@@ -44,7 +44,7 @@ int sync_init(int fds[2])
 	int sockpair_err = socketpair(AF_LOCAL, SOCK_STREAM, 0, fds);
 	if(sockpair_err)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "SYNC: init error: %d.", sockpair_err);
+		//slog(SLOG_ERROR, SLOG_ERROR, "SYNC: init error: %d.", sockpair_err);
 		goto final;
 	}
 
@@ -52,7 +52,7 @@ int sync_init(int fds[2])
 	setsockopt(fds[1], SOL_SOCKET, SO_RCVTIMEO, (char*)&sock_timeout, sizeof(sock_timeout));
 	if(sockpair_err)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "SYNC: init setopt error: %d.", sockpair_err);
+		//slog(SLOG_ERROR, SLOG_ERROR, "SYNC: init setopt error: %d.", sockpair_err);
 		goto final;
 	}
 
@@ -85,7 +85,7 @@ char* sync_wait(int _conn)
 		recvSize = recv(_conn , (char*)&varSize, sizeof(uint32_t), 0);
 		if(recvSize <= 0)
 		{
-			slog(SLOG_WARN, SLOG_WARN, "SYNC wait: Recv size failed from (%d). Code %d. Closing connection ", _conn, recvSize);
+			//slog(SLOG_WARN, SLOG_WARN, "SYNC wait: Recv size failed from (%d). Code %d. Closing connection ", _conn, recvSize);
 
 /*            if (on_disconnect_handler)
                 (*on_disconnect_handler)(NULL, _conn);
@@ -96,9 +96,9 @@ char* sync_wait(int _conn)
 		}
 		if (recvSize != sizeof (uint32_t))
 		{
-			slog(SLOG_WARN, SLOG_WARN,
-				 "SYNC wait: error receiving size on sock (%d), val: %d; continue",
-				 _conn, recvSize);
+			//slog(SLOG_WARN, SLOG_WARN,
+			//	 "SYNC wait: error receiving size on sock (%d), val: %d; continue",
+			//	 _conn, recvSize);
 			continue;
 		}
 
@@ -106,14 +106,14 @@ char* sync_wait(int _conn)
 		recvSize = recv(_conn , &recvEscape, 1, 0);
 		if(recvEscape != escape)
 		{
-			slog(SLOG_WARN, SLOG_WARN,
-				"SYNC wait: On sock (%d), did not receive correct escape code %c; ignoring size %d",
-				 _conn, recvEscape, recvSize);
+			//slog(SLOG_WARN, SLOG_WARN,
+			//	"SYNC wait: On sock (%d), did not receive correct escape code %c; ignoring size %d",
+			//	 _conn, recvEscape, recvSize);
 			continue;
 		}
 		if(recvSize <= 0)
 		{
-			slog(SLOG_WARN, SLOG_WARN, "SYNC wait: Recv escape failed from (%d). closing connection ", _conn);
+			//slog(SLOG_WARN, SLOG_WARN, "SYNC wait: Recv escape failed from (%d). closing connection ", _conn);
 
 /*            if (on_disconnect_handler)
                 (*on_disconnect_handler)(NULL, _conn);
@@ -124,13 +124,12 @@ char* sync_wait(int _conn)
 		}
 		if (recvSize != 1) // Should never get here
 		{
-			slog(SLOG_WARN, SLOG_WARN,
-				 "SYNC wait: error receiving escape on sock (%d), val: %d; continue",
-				 _conn, recvSize);
+			//slog(SLOG_WARN, SLOG_WARN,
+			//	 "SYNC wait: error receiving escape on sock (%d), val: %d; continue",
+			//	 _conn, recvSize);
 			continue;
 		}
 
-		slog(SLOG_INFO, SLOG_INFO, "SYNC wait: Expecting %d bytes on sock (%d).", varSize, _conn);
 
 		/* reading msg */
 		allBytesRecv = 0;
@@ -142,7 +141,7 @@ char* sync_wait(int _conn)
 			recvSize = recv(_conn , buf+allBytesRecv , varSize , 0);
 			if(recvSize == -1)
 			{
-				slog(SLOG_WARN, SLOG_WARN, "SYNC wait: Recv msg failed from (%d). closing connection ", _conn);
+				//slog(SLOG_WARN, SLOG_WARN, "SYNC wait: Recv msg failed from (%d). closing connection ", _conn);
 
 /*	            if (on_disconnect_handler)
 	                (*on_disconnect_handler)(NULL, _conn);
@@ -154,7 +153,6 @@ char* sync_wait(int _conn)
 			allBytesRecv += recvSize;
 		}
 
-		slog(SLOG_INFO, SLOG_INFO, "SYNC wait: received %d total bytes on sock (%d): *%s*", allBytesRecv, _conn, buf);
 		return buf;
 
 	}while(1);
@@ -164,12 +162,8 @@ int sync_trigger(int conn, const char *msg)
 {
 	if(conn <= 0)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR,
-			 "SYNC trigger: not established with (%d), can't send msg *%s*",
-			 conn, msg);
 		return -1;
 	}
-	slog(SLOG_INFO, SLOG_INFO, "SYNC trigger: send to (%d) *%s*", conn, msg);
 
 	const uint32_t varSize = strlen (msg);
 	int allBytesSent; /* sum of all sent sizes */
@@ -180,10 +174,6 @@ int sync_trigger(int conn, const char *msg)
 	escapeSent = send(conn, &escape, 1, 0);
 	if (allBytesSent != sizeof (uint32_t) || escapeSent != 1)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR,
-			 "SYNC trigger: error sending size on sock (%d): %s",
-			 conn, strerror(errno));
-
         if (on_disconnect_handler)
             (*on_disconnect_handler)(NULL, conn);
         else
@@ -202,9 +192,6 @@ int sync_trigger(int conn, const char *msg)
 			sentSize = send(conn , msg+allBytesSent , 512 , 0);*/
 		if (sentSize < 0)
 		{
-			slog(SLOG_ERROR, SLOG_ERROR,
-				 "SYNC trigger: error sending msg on sock (%d)",
-				 conn);
 			break;
 		}
 		allBytesSent += sentSize;
@@ -226,9 +213,6 @@ void * receive_function(void *conn)
 	int _conn = *((int*)conn);
 	if(_conn <= 0)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR,
-			 "CONN sockpair: not established with (%d), can't recv",
-			 conn);
 		return NULL;
 	}
 
@@ -266,16 +250,15 @@ void run_receive_thread(int conn)
 	err = pthread_create(&rcvthread, NULL, &receive_function, (void*)conn_ptr);
 	if (err != 0)
 	{
-		slog(1, SLOG_ERROR, "CONN sockpair: can't create receive thread  for (%d).", conn);
+		//slog(1, SLOG_ERROR, "CONN sockpair: can't create receive thread  for (%d).", conn);
 		return ;
 	}
 	err = pthread_detach(rcvthread);
 	if ( err != 0 )
 	{
-		slog(1, SLOG_ERROR, "CONN sockpair: Could not detach rcv thread for (%d) ", conn);
+		//slog(1, SLOG_ERROR, "CONN sockpair: Could not detach rcv thread for (%d) ", conn);
 		return ;
 	}
-	slog(4, SLOG_INFO, "CONN sockpair: Receive thread created successfully for (%d).", *conn_ptr);
 
 }
 

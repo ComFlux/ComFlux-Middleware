@@ -9,7 +9,6 @@
 
 #include <json.h>
 #include <middleware.h>
-#include <slog.h>
 #include <array.h>
 
 #include <unistd.h> //for chdir
@@ -69,14 +68,7 @@ int load_libs_array(Array* libs_array,
 		if(cfg_path != NULL && lib_path != NULL)
 		{
 			load_result = load_module(lib_path, cfg_path);
-			if(load_result != 0)
-			{
-				slog(SLOG_ERROR, SLOG_ERROR,
-						"Error: %d: Unable to load module \n"
-						"\t%s\n"
-						"\t%s\n", load_result, lib_path, cfg_path);
-			}
-			else
+			if(load_result == 0)
 				total += 1;
 		}
 	}
@@ -157,9 +149,9 @@ int config_load_com_libs()
 	if(com_libs && libs_array_size)
 	{
 		total = load_libs_array(com_libs, &mw_load_com_module);
-		slog(SLOG_INFO, SLOG_INFO,
-				"%d out of %d com modules successfully loaded",
-				total, libs_array_size);
+		//slog(SLOG_INFO, SLOG_INFO,
+		//		"%d out of %d com modules successfully loaded",
+		//		total, libs_array_size);
 	}
 
 	if(total == libs_array_size)
@@ -183,9 +175,9 @@ int config_load_access_libs()
 	if(access_libs && libs_array_size)
 	{
 		total = load_libs_array(access_libs, &mw_load_access_module);
-		slog(SLOG_INFO, SLOG_INFO,
-				"%d out of %d access modules successfully loaded",
-				total, libs_array_size);
+		//slog(SLOG_INFO, SLOG_INFO,
+		//		"%d out of %d access modules successfully loaded",
+		//		total, libs_array_size);
 	}
 
 	if(total == libs_array_size)

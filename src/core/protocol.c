@@ -252,7 +252,7 @@ void core_proto_check_auth(STATE *state_ptr, MESSAGE *auth_msg)
 	}
 	else
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "Proto: auth failed\n");
+		//slog(SLOG_ERROR, SLOG_ERROR, "Proto: auth failed\n");
 		auth_validate = -3;
 	}
 
@@ -344,7 +344,7 @@ void core_proto_map_ack(STATE *state_ptr, MESSAGE *map_ack_msg)
 		LOCAL_EP  *lep = state_ptr->lep;
 		if(lep == NULL)
 		{
-			slog(SLOG_ERROR, SLOG_ERROR, "PROTO: received map ack for no ep %s");
+			//slog(SLOG_ERROR, SLOG_ERROR, "PROTO: received map ack for no ep %s");
 			goto final;
 		}
 		ep_map(lep, state_ptr);
@@ -355,8 +355,8 @@ void core_proto_map_ack(STATE *state_ptr, MESSAGE *map_ack_msg)
 	{
 		state_ptr->state = STATE_BAD;
 		state_ptr->flag = map_ack_validate;
-		slog(SLOG_WARN, SLOG_WARN, "PROTO: Cannot map, Bad state reached for fd (%s:%d)",
-				state_ptr->module->name, state_ptr->conn);
+		//slog(SLOG_WARN, SLOG_WARN, "PROTO: Cannot map, Bad state reached for fd (%s:%d)",
+			//	state_ptr->module->name, state_ptr->conn);
 	}
 
 	//TODO
@@ -407,7 +407,6 @@ void core_proto_map(STATE *state_ptr, MESSAGE *map_msg)
 			ep_map(lep, state_ptr);
 			state_ptr->state = STATE_EXT_MSG;
 			state_ptr->ep_metadata = json_get_json(map_json, "ep_metadata");
-			slog(SLOG_DEBUG, SLOG_DEBUG, "ep metadata: %s\n\n", json_to_str_pretty(state_ptr->ep_metadata));
 		}
 		else
 		{

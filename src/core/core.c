@@ -88,7 +88,7 @@ int core_init(const char* _app_name, const char* _app_key)
 
 int core_init_fd(int fd, const char* _app_name, const char* _app_key)
 {
-	slog(SLOG_INFO, SLOG_INFO, "CORE: init_fd: %d, %s", fd, _app_name);
+	//slog(SLOG_INFO, SLOG_INFO, "CORE: init_fd: %d, %s", fd, _app_name);
 
 	COM_MODULE* fd_module=NULL;
 

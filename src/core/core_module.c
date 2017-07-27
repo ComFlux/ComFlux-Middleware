@@ -44,12 +44,6 @@ extern void core_on_disconnect(COM_MODULE* module, int conn);
 
 int core_register_endpoint(const char* json)
 {
-    slog(SLOG_INFO,
-         SLOG_INFO,
-         "CORE:register_endpoint:\n"
-         "\tjson:%s",
-         json);
-
     LOCAL_EP *lep = ep_local_new(json_new(json), NULL);
     if (!lep)
     	return -2;
@@ -59,11 +53,6 @@ int core_register_endpoint(const char* json)
 
 void core_remove_endpoint(const char* ep_id)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:remove_endpoint:\n"
-         "\tid: %s",
-         ep_id);
-
     LOCAL_EP* lep = map_get(locales, (void*)ep_id);
     if (!lep)
         return;
@@ -73,17 +62,6 @@ void core_remove_endpoint(const char* ep_id)
 
 int core_map(LOCAL_EP* lep, COM_MODULE* com_module, const char* addr, JSON* ep_query, JSON* cpt_query)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:map:\n"
-         "\tendpoint [%s]\n"
-         "\taddress %s\n"
-         "\tep query: %s\n"
-         "\tcpt query: %s",
-         lep->id,
-         addr,
-         json_to_str(ep_query),
-         json_to_str(cpt_query));
-
     if (!lep)
         return EP_NO_EXIST;
 
@@ -113,9 +91,6 @@ int core_map(LOCAL_EP* lep, COM_MODULE* com_module, const char* addr, JSON* ep_q
     state_ptr = states_get(com_module, map_conn);
     if(state_ptr == NULL)
     {
-    	slog(SLOG_ERROR, SLOG_ERROR,
-    		"CORE MAP: Can't find connection, this should't occur. Connection unsuccessful: %s",
-			addr);
     	return -1;
     }
 
@@ -124,15 +99,10 @@ int core_map(LOCAL_EP* lep, COM_MODULE* com_module, const char* addr, JSON* ep_q
 
     if (state_ptr->flag != 0 || state_ptr->state == STATE_BAD)
     {
-        slog(SLOG_WARN, SLOG_WARN,
-        	 "Mapping unsuccessful. Flag %d, state %d",
-			 state_ptr->flag, state_ptr->state);
+        ;
     }
     else
     {
-    	slog(SLOG_INFO, SLOG_INFO,
-    		"Mapping successful. Flag %d, state %d",
-			state_ptr->flag, state_ptr->state);
         state_ptr->addr = strdup(addr);
     }
 
@@ -141,8 +111,6 @@ int core_map(LOCAL_EP* lep, COM_MODULE* com_module, const char* addr, JSON* ep_q
 
 int core_map_all_modules(LOCAL_EP* lep, const char* addr, JSON* ep_query, JSON* cpt_query)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-    	"CORE FUNC: core_map_all_modules");
     int result = -1;
 
     int i;
@@ -164,17 +132,6 @@ int core_map_all_modules(LOCAL_EP* lep, const char* addr, JSON* ep_query, JSON* 
 
 void core_map_lookup(LOCAL_EP* lep, JSON* ep_query, JSON* cpt_query, int max_maps)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:map_lookup:\n"
-         "\tep %s\n"
-         "\tep_query %s\n"
-         "\tcpt_query\n"
-         "\tmax nb %d",
-         lep->id,
-         json_to_str(ep_query),
-         json_to_str(cpt_query),
-         max_maps);
-
     if (!lep)
         return;
 
@@ -235,12 +192,6 @@ void core_map_lookup(LOCAL_EP* lep, JSON* ep_query, JSON* cpt_query, int max_map
 /* wrapper for ep_unmap_addr */
 int core_unmap(LOCAL_EP* lep, const char* addr)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:unmap:\n"
-         "\tid: %s\n"
-         "\taddr: %s",
-         lep->id,
-         addr);
 
     ep_unmap_addr(lep, addr);
 
@@ -249,8 +200,6 @@ int core_unmap(LOCAL_EP* lep, const char* addr)
 
 int core_unmap_connection(LOCAL_EP* lep, COM_MODULE* module, int conn)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:unmap_connection:\n");
 
     STATE* state_ptr = states_get(module, conn);
     if(! state_ptr)
@@ -264,10 +213,6 @@ int core_unmap_connection(LOCAL_EP* lep, COM_MODULE* module, int conn)
 /* a wrapper for ep_unmap_all */
 int core_unmap_all(LOCAL_EP* lep)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:unmap_all:\n"
-         "\tep_id: %s",
-         lep->id);
 
     ep_unmap_all(lep);
 
@@ -277,13 +222,6 @@ int core_unmap_all(LOCAL_EP* lep)
 /* TODO */
 int core_divert(LOCAL_EP* lep, const char* ep_id_from, const char* addr)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:divert:\n"
-         "\tep_id: %s\n"
-         "\taddr: %s",
-         lep->id,
-         addr);
-
     if (!lep)
         return EP_NO_EXIST;
 
@@ -299,12 +237,6 @@ int core_divert(LOCAL_EP* lep, const char* ep_id_from, const char* addr)
 
 int core_ep_send_message(LOCAL_EP* lep, const char* msg_id, const char* msg)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:ep_send_message:\n"
-         "\tep_id: %s\n"
-         "\tmsg_id: %s",
-         lep->id,
-         msg_id);
 
     if (!ep_can_send(lep->ep))
         return EP_NO_SEND;
@@ -327,13 +259,6 @@ int core_ep_send_message(LOCAL_EP* lep, const char* msg_id, const char* msg)
 
 int core_ep_send_request(LOCAL_EP* lep, const char* req_id, const char* req)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:ep_send_request:\n"
-         "\tep_id: %s\n"
-         "\treq_id: %s",
-         lep->id,
-         req_id);
-
     if (!(lep->ep->type == EP_REQ || lep->ep->type == EP_REQ_P || lep->ep->type == EP_RR)) {
         return EP_NO_RECEIVE;
     }
@@ -348,14 +273,6 @@ int core_ep_send_request(LOCAL_EP* lep, const char* req_id, const char* req)
 
 int core_ep_send_response(LOCAL_EP* lep, const char* req_id, const char* resp)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:ep_send_response:\n"
-         "\tep_id: %s\n"
-         "\tmsg_id: %s\n"
-         "\tmsg: %s\n",
-         lep->id,
-         req_id,
-         resp);
 
     if (!(lep->ep->type == EP_RESP || lep->ep->type == EP_RESP_P || lep->ep->type == EP_RR)) {
         return EP_NO_SEND;
@@ -376,10 +293,6 @@ int core_ep_send_response(LOCAL_EP* lep, const char* req_id, const char* resp)
 
 int core_ep_more_messages(LOCAL_EP* lep)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:ep_more_messages:\n"
-         "\tep_id: %s",
-         lep->id);
 
     if (lep->ep->type != EP_SNK && lep->ep->type != EP_SS)
         return -1;
@@ -389,11 +302,6 @@ int core_ep_more_messages(LOCAL_EP* lep)
 
 int core_ep_more_requests(LOCAL_EP* lep)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:ep_more_requests:\n"
-         "\tep_id: %s",
-         lep->id);
-
     if (lep->ep->type != EP_REQ && lep->ep->type != EP_REQ_P && lep->ep->type != EP_RR)
         return -1;
 
@@ -402,13 +310,6 @@ int core_ep_more_requests(LOCAL_EP* lep)
 
 int core_ep_more_responses(LOCAL_EP* lep, const char* req_id)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:ep_more_responses:\n"
-         "\tep_id: %s\n"
-         "\treq_id: %s",
-         lep->id,
-         req_id);
-
     if (lep->ep->type != EP_RESP && lep->ep->type != EP_RESP_P && lep->ep->type != EP_RR)
         return -1;
 
@@ -427,15 +328,10 @@ int core_ep_more_responses(LOCAL_EP* lep, const char* req_id)
 
 MESSAGE* core_ep_fetch_message(LOCAL_EP* lep)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:ep_receive_message:\n"
-         "\tep_id: %s",
-         lep->id);
 
     if (lep->ep->type != EP_SNK && lep->ep->type != EP_SS)
         return NULL;
 
-    slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: message array length %d", array_size(lep->messages));
 
     // TODO
     if (array_size(lep->messages) <= 0)
@@ -454,15 +350,9 @@ MESSAGE* core_ep_fetch_message(LOCAL_EP* lep)
 
 MESSAGE* core_ep_fetch_request(LOCAL_EP* lep)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:ep_receive_request\n"
-         "\tep_id: %s",
-         lep->id);
-
     if (lep->ep->type != EP_REQ && lep->ep->type != EP_REQ_P && lep->ep->type != EP_RR)
         return NULL;
 
-    slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: request array length %d", array_size(lep->messages));
 
     if (array_size(lep->messages) <= 0)
         sleep(1);
@@ -483,13 +373,6 @@ MESSAGE* core_ep_fetch_request(LOCAL_EP* lep)
 
 MESSAGE* core_ep_fetch_response(LOCAL_EP* lep, const char* req_id)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:ep_receive_response\n"
-         "\tep_id: %s\n"
-         "\treq_id: %s",
-         lep->id,
-         req_id);
-
     if (lep->ep->type != EP_RESP && lep->ep->type != EP_RESP_P && lep->ep->type != EP_RR)
         return NULL;
 
@@ -516,11 +399,6 @@ void core_ep_stream_start(LOCAL_EP* lep)
 {
 	if(lep == NULL)
 		return;
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE: ep_stream_start:\n"
-         "\tep_id: %s\n",
-         "\tflag: %d",
-         lep->id, lep->flag);
 
     if(lep->ep->type != EP_STR_SRC && lep->ep->type != EP_STR_SNK)
     	return;
@@ -537,11 +415,6 @@ void core_ep_stream_stop(LOCAL_EP* lep)
 {
 	if(lep == NULL)
 		return;
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE: ep_stream_stop:\n"
-         "\tep_id: %s\n"
-         "\tflag: %d",
-         lep->id, lep->flag);
 
     if(lep->ep->type != EP_STR_SRC && lep->ep->type != EP_STR_SNK)
     	return;
@@ -558,10 +431,6 @@ void core_ep_stream_send(LOCAL_EP* lep, const char* msg)
 {
 	if(lep == NULL)
 		return;
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE: ep_stream_start:\n"
-         "\tep_id: %s\n",
-         lep->id);
 
     if(lep->ep->type != EP_STR_SRC || lep->flag == 0)
     	return;
@@ -577,16 +446,9 @@ void core_ep_stream_send(LOCAL_EP* lep, const char* msg)
 
 void core_ep_set_access(LOCAL_EP* lep, const char* subject)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE: core_ep_set_access:\n"
-         "\tobject: %s (%s)\n"
-         "\tsubject: %s",
-         lep->id,
-         lep->ep->name,
-         subject);
 
     if (lep == NULL || subject == NULL) {
-        slog(SLOG_WARN, SLOG_WARN, "CORE FUNC: null arguments ignored");
+        //slog(SLOG_WARN, SLOG_WARN, "CORE FUNC: null arguments ignored");
         return;
     }
 
@@ -596,16 +458,9 @@ void core_ep_set_access(LOCAL_EP* lep, const char* subject)
 
 void core_ep_reset_access(LOCAL_EP* lep, const char* subject)
 {
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE: core_ep_reset_access:\n"
-         "\tobject: %s (%s)\n"
-         "\tsubject: %s",
-         lep->id,
-         lep->ep->name,
-         subject);
 
     if (lep == NULL || subject == NULL) {
-        slog(SLOG_WARN, SLOG_WARN, "CORE FUNC: null arguments ignored");
+        //slog(SLOG_WARN, SLOG_WARN, "CORE FUNC: null arguments ignored");
         return;
     }
 
@@ -615,7 +470,6 @@ void core_ep_reset_access(LOCAL_EP* lep, const char* subject)
 
 int core_add_manifest(const char* msg)
 {
-    slog(SLOG_INFO, SLOG_INFO, "CORE:add_manifest: %s", msg);
 
     MESSAGE* md_msg = message_parse(msg);
     JSON* md_json = md_msg->_msg_json;
@@ -632,7 +486,6 @@ int core_add_manifest(const char* msg)
 // TODO: add function get_metadata(char* addr)
 char* core_get_manifest()
 {
-    slog(SLOG_INFO, SLOG_INFO, "CORE:get_manifest");
 
     JSON* elem_md = manifest_get(MANIFEST_SHORT);
     char* md_str = json_to_str(elem_md);
@@ -647,10 +500,6 @@ int core_add_rdc(COM_MODULE* module, const char* addr)
 		return -1;
 	}
 
-    slog(SLOG_INFO, SLOG_INFO,
-         "CORE:add_rdc:\n"
-         "\t%s:%s",
-         module->name, addr);
 
     RDC* r = rdc_new(module, addr);
     rdcs_set_addr(module, addr, r);
@@ -667,18 +516,12 @@ void core_rdc_register(COM_MODULE* com_module, const char* addr)
     }
     if (addr == NULL || com_module == NULL)
     {
-        slog(SLOG_ERROR, SLOG_ERROR,
-             "CORE:rdc_register: Incorrect arguments; Can't have only one NULL\n");
         return;
     }
     if ((*(com_module->fc_is_valid_address))(addr))
         rdc_register_addr_all(addr, RDC_REGISTER);
     else
-        slog(SLOG_ERROR, SLOG_ERROR,
-             "CORE:rdc_register: Invalid address; Ignoring\n"
-        	 "CORE:add_rdc:\n"
-             "\t%s:%s",
-             com_module->name, addr);
+        ;
 }
 
 void core_rdc_unregister(const char* addr)
@@ -711,7 +554,6 @@ void core_reset_filter(LOCAL_EP* lep, Array* new_filters)
 
 void core_terminate()
 {
-    slog(SLOG_INFO, SLOG_INFO, "CORE FUNC: terminate");
     rdc_register_all(RDC_UNREGISTER);
 
     int i;
@@ -753,14 +595,11 @@ void core_terminate()
 
 int core_load_com_module(const char* lib_path, const char* config_json)
 {
-    slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_load_com_module \n"
-    		"\tcom module path: %s\n"
-    		"\tconfig path: %s", lib_path, config_json);
 
     COM_MODULE* com_module = com_module_new(lib_path, config_json); // com_get_module(path);//change after socketpair with app
 
     if (com_module == NULL) {
-        slog(SLOG_ERROR, SLOG_ERROR, "CORE FUNC: could not load com module %s", lib_path);
+        //slog(SLOG_ERROR, SLOG_ERROR, "CORE FUNC: could not load com module %s", lib_path);
         return -1;
     }
 
@@ -770,14 +609,11 @@ int core_load_com_module(const char* lib_path, const char* config_json)
 
     map_update(com_modules, (void*)com_module->name, (void*)com_module);
 
-    slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: successfully loaded com module %s", com_module->name);
-
     return 0;
 }
 
 int core_load_access_module(const char* path, const char* config_json)
 {
-    slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: %s: %s , %s", __func__, path, config_json);
     return access_load_module(path, config_json);
 }
 
@@ -785,7 +621,6 @@ int core_load_access_module(const char* path, const char* config_json)
 
 char* core_ep_get_all_connections(LOCAL_EP* lep)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_get_all_conections");
 
 	if(lep==NULL)
 		return NULL;
@@ -807,7 +642,6 @@ char* core_ep_get_all_connections(LOCAL_EP* lep)
 
 	json_set_array(result_json, "all_mappings", result_array);
 	char* result = json_to_str(result_json);
-	slog(SLOG_DEBUG, SLOG_DEBUG, "result:%s, strlen = %d", result, strlen(result));
 
 	return json_to_str(result_json);
 }

@@ -27,7 +27,6 @@ COMPONENT* cpt = NULL;
 
 int manifest_update(JSON *json)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "%s: %s", __func__, json_to_str(json));
 	if(cpt == NULL)
 	{
 		 cpt = (COMPONENT*)malloc(sizeof(COMPONENT));
@@ -127,9 +126,6 @@ Array* metadata_endpoints_array()
 
 JSON* manifest_get(int lvl)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "%s:\n"
-			"\t%d", __func__, lvl);
-
 	JSON *manifest= json_new(NULL);
 
 	if (cpt == NULL)
