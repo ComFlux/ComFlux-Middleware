@@ -41,8 +41,7 @@
 typedef struct _MESSAGE{
 	char * msg_id; 		/* general message_id */
 	ENDPOINT *ep;		/* source or destination */
-	JSON * _msg_json;
-	char * msg_str; 		/* actual message */
+	JSON * _msg_json;   /* actual message */
 
 	 /* int value if the message status as defined above
 	 	e.g., last message for resp+, req message, src/snk msg

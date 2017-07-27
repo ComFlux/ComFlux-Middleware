@@ -19,7 +19,7 @@ MESSAGE* message_new(const char* msg_, unsigned int status_)
 {
 	MESSAGE* message = (MESSAGE*)malloc(sizeof(MESSAGE));
 	message->_msg_json = json_new(msg_);
-	message->msg_str = NULL;//strdup_null(msg_);
+	//message->msg_str = NULL;//strdup_null(msg_);
 	message->status = status_;
 
 	message->msg_id = message_generate_id();
@@ -36,8 +36,8 @@ MESSAGE* message_new(const char* msg_, unsigned int status_)
 MESSAGE* message_new_json(JSON* msg_, unsigned int status_)
 {
 	MESSAGE* message = (MESSAGE*)malloc(sizeof(MESSAGE));
-	message->_msg_json = json_new(json_to_str(msg_));
-	message->msg_str = NULL;//json_to_str(msg_);
+	message->_msg_json = _json_dup(msg_);
+	//message->msg_str = NULL;//json_to_str(msg_);
 	message->status = status_;
 
 	message->msg_id = message_generate_id();
@@ -56,7 +56,7 @@ MESSAGE* message_new_id(const char* msg_id, const char* msg_, unsigned int statu
 	MESSAGE* message = (MESSAGE*)malloc(sizeof(MESSAGE));
 	message->msg_id = strdup_null(msg_id);
 	message->_msg_json = json_new(msg_);
-	message->msg_str = NULL;//strdup_null(msg_);
+	//message->msg_str = NULL;//strdup_null(msg_);
 
 	message->status = status_;
 
@@ -74,7 +74,7 @@ MESSAGE* message_new_id_json(const char* msg_id, JSON* msg_, unsigned int status
 	MESSAGE* message = (MESSAGE*)malloc(sizeof(MESSAGE));
 	message->msg_id = strdup_null(msg_id);
 	message->_msg_json = msg_;
-	message->msg_str = NULL;//json_to_str(msg_);
+	//message->msg_str = NULL;//json_to_str(msg_);
 
 	message->status = status_;
 
@@ -126,7 +126,7 @@ MESSAGE* message_parse_json(JSON* json_msg)
 		ret_msg->ep = NULL;
 	ret_msg->msg_id = json_get_str(json_msg, "msg_id");
 	ret_msg->_msg_json = json_get_json(json_msg, "msg_json");
-	ret_msg->msg_str = NULL;//json_get_str(json_msg, "msg");
+	//ret_msg->msg_str = NULL;//json_get_str(json_msg, "msg");
 	ret_msg->status = (unsigned int) json_get_int(json_msg, "status");
 
 	char* module = json_get_str(json_msg, "module");

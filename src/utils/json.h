@@ -33,6 +33,7 @@ typedef struct _JSON{
 
 JSON * json_new(const char* msg);
 void json_free(JSON * json);
+JSON* _json_dup(JSON* json);
 
 /* setters */
 /* function overloading does not work in C */
