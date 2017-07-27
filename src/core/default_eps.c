@@ -188,7 +188,7 @@ void md_handler(MESSAGE* msg)
 	/* message can be empty */
 	JSON *md_json = manifest_get(MANIFEST_FULL);
 
-	MESSAGE *md_msg = message_new(json_to_str(md_json), 0);
+	MESSAGE *md_msg = message_new_json(md_json, 0);
 	md_msg->msg_id = msg->msg_id;
 
 	MESSAGE* resp_msg = message_new(message_to_str(md_msg), MSG_RESP_LAST);

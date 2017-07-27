@@ -310,7 +310,10 @@ char *ep_local_to_str(LOCAL_EP *lep)
 {
 	if (!lep)
 		return NULL;
-	return json_to_str(ep_local_to_json(lep));
+	JSON* ep_json = ep_local_to_json(lep);
+	char* ep_str = json_to_str(ep_json);
+	json_free(ep_json);
+	return ep_str;
 }
 
 /* actual mapping given given the checks were done before */

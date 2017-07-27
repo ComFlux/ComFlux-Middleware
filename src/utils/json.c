@@ -412,10 +412,10 @@ int json_validate(JSON* schema, JSON* instance)
      * note that value returned by json_validate_instance is the number of errors! */
     if (json_validate_instance(instance->elem_json, schema->elem_json))
     {
-    	slog(SLOG_INFO, SLOG_INFO,
-    			"JSON valid:\n "
+    	printf(
+    			"JSON not valid:\n "
     			"\tinstance:\t*%s*\n"
-    			"\tschema\t*%s*",
+    			"\tschema\t*%s*\n",
 				json_to_str_pretty(instance), json_to_str_pretty(schema));
 
     	return JSON_NOT_VALID;

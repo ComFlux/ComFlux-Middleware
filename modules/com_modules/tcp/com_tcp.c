@@ -29,7 +29,7 @@
 #include "com.h"
 #include "com_tcp.h"
 #include "hashmap.h"
-#include <slog.h>
+//#include <slog.h>
 #include <json.h>
 
 void* thismodule = NULL;
@@ -60,7 +60,7 @@ char* com_init(void* module, const char* config_json)
     serversock = socket(AF_INET, SOCK_STREAM, 0);
     if (serversock == -1)
     {
-        slog(1, SLOG_ERROR, "CONN: Could not create server socket.");
+        //slog(1, SLOG_ERROR, "CONN: Could not create server socket.");
         return NULL;
     }
 
@@ -70,12 +70,12 @@ char* com_init(void* module, const char* config_json)
 
     if (bind(serversock, (struct sockaddr*)&serverin, sizeof(serverin)) < 0)
     {
-        slog(SLOG_ERROR, SLOG_ERROR, "CONN: Bind to %s:%d failed: %s", server_addr, server_port, strerror(errno));
+        //slog(SLOG_ERROR, SLOG_ERROR, "CONN: Bind to %s:%d failed: %s", server_addr, server_port, strerror(errno));
         free(server_addr);
         return NULL;
     }
 
-    slog(SLOG_INFO,SLOG_INFO,"CONN: Bind to %s:%d succeeded.", server_addr, server_port);
+    //slog(SLOG_INFO,SLOG_INFO,"CONN: Bind to %s:%d succeeded.", server_addr, server_port);
     free(server_addr);
     listen(serversock, 3);
     
@@ -88,20 +88,20 @@ int com_connect(const char* server_address)
 {
     if (!tcp_is_addr(server_address))
     {
-        slog(SLOG_ERROR, SLOG_ERROR, "CONN: Invalid address format given: %s", server_address);
+        //slog(SLOG_ERROR, SLOG_ERROR, "CONN: Invalid address format given: %s", server_address);
         return -1;
     }
 
     char* server_addr = tcp_get_addr(server_address);
     int server_port = tcp_get_port(server_address);
-    slog(SLOG_INFO, SLOG_INFO, "CONN: Connecting to server %s:%d", server_addr, server_port);
+    //slog(SLOG_INFO, SLOG_INFO, "CONN: Connecting to server %s:%d", server_addr, server_port);
 
     int peersock;
     struct sockaddr_in peerin;
 
     peersock = socket(AF_INET, SOCK_STREAM, 0);
     if (peersock == -1) {
-        slog(SLOG_ERROR, SLOG_ERROR, "CONN: Could not create client socket.");
+        //slog(SLOG_ERROR, SLOG_ERROR, "CONN: Could not create client socket.");
         return -2;
     }
 
@@ -111,7 +111,7 @@ int com_connect(const char* server_address)
 
     if (connect(peersock, (struct sockaddr*)&peerin, sizeof(peerin)) < 0)
     {
-        slog(SLOG_ERROR, SLOG_ERROR, "CONN: Could not connect to server %s:%d due to %s ", server_addr, server_port,strerror(errno));
+        //slog(SLOG_ERROR, SLOG_ERROR, "CONN: Could not connect to server %s:%d due to %s ", server_addr, server_port,strerror(errno));
         free(server_addr);
         return -3;
     }
@@ -129,15 +129,15 @@ int com_connection_close(int conn)
 int com_send_data(int conn, const char* msg)
 {
     if (conn <= 0) {
-        slog(SLOG_ERROR, SLOG_ERROR, "CONN: not established with (%d), can't send msg *%s*", conn, msg);
+        //slog(SLOG_ERROR, SLOG_ERROR, "CONN: not established with (%d), can't send msg *%s*", conn, msg);
         return -1;
     }
-    slog(SLOG_INFO, SLOG_INFO, "CONN: send to (%d) *%s*\n", conn, msg);
+    //slog(SLOG_INFO, SLOG_INFO, "CONN: send to (%d) *%s*\n", conn, msg);
 
     const uint32_t varSize = strlen(msg);
     int allBytesSent; /* sum of all sent sizes */
     ssize_t sentSize; /* one shot sent size */
-    slog(SLOG_INFO, SLOG_INFO, "CONN: About to send message using tcp on socket (%d)", conn);
+    //slog(SLOG_INFO, SLOG_INFO, "CONN: About to send message using tcp on socket (%d)", conn);
 
     allBytesSent = 0;
     while (allBytesSent < varSize)
@@ -149,7 +149,7 @@ int com_send_data(int conn, const char* msg)
                 sentSize = send(conn , msg+allBytesSent , 512 , 0);*/
         if (sentSize < 0)
         {
-        	slog(SLOG_ERROR, SLOG_ERROR, "CONN: error sending msg on sock (%d)", conn);
+        	//slog(SLOG_ERROR, SLOG_ERROR, "CONN: error sending msg on sock (%d)", conn);
         	break;
         }
         allBytesSent += sentSize;
@@ -256,7 +256,7 @@ char* tcp_receive_message(int _conn)
     int recvSize;     /* one pack received size */
     unsigned char recvEscape;
     char* buf;
-    slog(SLOG_INFO, SLOG_INFO, "CONN: About to receive message using tcp on socket (%d)", _conn);
+    //slog(SLOG_INFO, SLOG_INFO, "CONN: About to receive message using tcp on socket (%d)", _conn);
 
         /* reading msg */
         //allBytesRecv = 0;
@@ -264,7 +264,7 @@ char* tcp_receive_message(int _conn)
         memset(buf, '\0', (512 + 1));
         recvSize = recv(_conn, buf, 512, 0);
         if (recvSize <= 0) {
-            slog(SLOG_WARN, SLOG_WARN, "CONN: Recv msg failed from (%d). closing connection ", _conn);
+            //slog(SLOG_WARN, SLOG_WARN, "CONN: Recv msg failed from (%d). closing connection ", _conn);
             // connection_close(_conn);
             if (on_disconnect_handler)
                 (*on_disconnect_handler)(thismodule,_conn);
@@ -273,7 +273,7 @@ char* tcp_receive_message(int _conn)
             return NULL;
         }
 
-        slog(SLOG_INFO, SLOG_INFO, "CONN: received %d total bytes on sock (%d): *%s*", recvSize, _conn, buf);
+        //slog(SLOG_INFO, SLOG_INFO, "CONN: received %d total bytes on sock (%d): *%s*", recvSize, _conn, buf);
 
         return buf;
 }
@@ -284,19 +284,19 @@ void tcp_run_accept_thread(int serversock)
     int err;
     int* serversock_ptr = (int*)malloc(sizeof(int));
     *serversock_ptr = serversock;
-    slog(4, SLOG_INFO, "CONN: Waiting for incoming connections for server (%d).", serversock);
+    //slog(4, SLOG_INFO, "CONN: Waiting for incoming connections for server (%d).", serversock);
     pthread_t listenthread;
     err = pthread_create(&listenthread, NULL, &tcp_accept_function, (void*)serversock_ptr);
     if (err != 0) {
-        slog(SLOG_ERROR, SLOG_ERROR, "CONN: can't create listen thread"); //: %s", strerror(err));
+        //slog(SLOG_ERROR, SLOG_ERROR, "CONN: can't create listen thread"); //: %s", strerror(err));
         return;
     }
     err = pthread_detach(listenthread);
     if (err != 0) {
-        slog(SLOG_ERROR, SLOG_ERROR, "CONN: Could not detach listen thread ");
+        //slog(SLOG_ERROR, SLOG_ERROR, "CONN: Could not detach listen thread ");
         return;
     }
-    slog(SLOG_INFO, SLOG_INFO, "Listen thread created successfully.");
+    //slog(SLOG_INFO, SLOG_INFO, "Listen thread created successfully.");
 }
 
 void* tcp_accept_function(void* serversock)
@@ -309,10 +309,10 @@ void* tcp_accept_function(void* serversock)
     while (1) {
         peersock = accept(*((int*)serversock), (struct sockaddr*)&peerin, (socklen_t*)&c);
         if (peersock < 0) {
-            slog(1, SLOG_ERROR, "CONN: accept failed for (%d).", *((int*)serversock));
+            //slog(1, SLOG_ERROR, "CONN: accept failed for (%d).", *((int*)serversock));
             return NULL; // TODO
         }
-        slog(SLOG_INFO, SLOG_INFO, "CONN: connection accpeted by socket (%d) ", peersock);
+        //slog(SLOG_INFO, SLOG_INFO, "CONN: connection accpeted by socket (%d) ", peersock);
         tcp_run_receive_thread(peersock);
     }
     return NULL;
@@ -330,22 +330,22 @@ void tcp_run_receive_thread(int conn)
 
     err = pthread_create(&rcvthread, NULL, &tcp_receive_function, (void*)conn_ptr);
     if (err != 0) {
-        slog(1, SLOG_ERROR, "CONN: can't create receive thread  for (%d).", conn);
+        //slog(1, SLOG_ERROR, "CONN: can't create receive thread  for (%d).", conn);
         return;
     }
     err = pthread_detach(rcvthread);
     if (err != 0) {
-        slog(1, SLOG_ERROR, "CONN: Could not detach rcv thread for (%d) ", conn);
+        //slog(1, SLOG_ERROR, "CONN: Could not detach rcv thread for (%d) ", conn);
         return;
     }
-    slog(4, SLOG_INFO, "CONN: Receive thread created successfully for (%d).", *conn_ptr);
+    //slog(4, SLOG_INFO, "CONN: Receive thread created successfully for (%d).", *conn_ptr);
 }
 
 void* tcp_receive_function(void* conn)
 {
     int _conn = *((int*)conn);
     if (_conn <= 0) {
-        slog(SLOG_ERROR, SLOG_ERROR, "CONN: not established with (%d), can't recv", _conn);
+        //slog(SLOG_ERROR, SLOG_ERROR, "CONN: not established with (%d), can't recv", _conn);
         return NULL;
     }
     char* buf;

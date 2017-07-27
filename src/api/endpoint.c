@@ -12,7 +12,6 @@
 #include "json.h"
 #include <utils.h>
 #include <hashmap.h>
-#include <slog.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -34,8 +33,6 @@ ENDPOINT* endpoint_new( const char* name, const char *description, int type,
 						void (*callback_function)(MESSAGE*),
 						const char* id)
 {
-	slog(SLOG_INFO, SLOG_INFO,"ENDPOINT: endpoint_new");
-
 	/* basic param init */
 	ENDPOINT *ep = endpoint_init(name, description, type,
 								 msg_str, resp_str,

@@ -274,7 +274,7 @@ int mw_call_module_function(
 	json_set_str(msg_json, "return_type", return_type);
 	json_set_array(msg_json, "args", argv);
 
-	MESSAGE* send_msg =  message_new_id(msg_id, json_to_str(msg_json), MSG_CMD);
+	MESSAGE* send_msg =  message_new_id_json(msg_id, msg_json, MSG_CMD);
 	char* send_str = message_to_str(send_msg);
 	int result = (*(sockpair_module->fc_send_data))(app_core_conn, send_str);
 
@@ -317,7 +317,7 @@ void* mw_call_module_function_blocking(
 		_msg_id = message_generate_id();
 	}
 
-	MESSAGE* send_msg =  message_new_id(_msg_id, json_to_str(msg_json), MSG_CMD);
+	MESSAGE* send_msg =  message_new_id_json(_msg_id, msg_json, MSG_CMD);
 	char* send_str = message_to_str(send_msg);
 	(*(sockpair_module->fc_send_data))(app_core_conn, send_str);
 
