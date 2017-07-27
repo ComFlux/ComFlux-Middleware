@@ -12,7 +12,6 @@
 #include "json.h"
 #include <utils.h>
 #include <hashmap.h>
-#include <slog.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -34,8 +33,6 @@ ENDPOINT* endpoint_new( const char* name, const char *description, int type,
 						void (*callback_function)(MESSAGE*),
 						const char* id)
 {
-	slog(SLOG_INFO, SLOG_INFO,"ENDPOINT: endpoint_new");
-
 	/* basic param init */
 	ENDPOINT *ep = endpoint_init(name, description, type,
 								 msg_str, resp_str,
@@ -259,12 +256,12 @@ int endpoint_register(ENDPOINT *ep)
 		goto final;
 
 	ret_msg = message_parse(result);
-	ret_json = json_new(ret_msg->msg);
+	ret_json = ret_msg->_msg_json;
 	return_value = json_get_int(ret_json, "return_value");
 
 	final:
 	{
-		json_free(ret_json);
+		//json_free(ret_json);
 		message_free(ret_msg);
 		message_free(reg_msg);
 		//TODO: free(ep_str);
@@ -359,10 +356,7 @@ char* endpoint_send_request(ENDPOINT* endpoint, const char* msg)
 
 MESSAGE* endpoint_send_request_blocking(ENDPOINT* endpoint, const char* msg)
 {
-	if (!endpoint->queuing) {
-		slog(SLOG_ERROR, SLOG_ERROR,
-			 "Cannot block to wait for response on a non-queueing endpoint.");
-	}
+	//if (!endpoint->queuing) {}
 
 	const char* _msg;
 	if (msg != NULL)
@@ -449,7 +443,7 @@ int endpoint_more_messages(ENDPOINT* endpoint)
 
 	free(result);
 
-	return json_get_int(json_new(msg->msg), "return_value");
+	return json_get_int(msg->_msg_json, "return_value");
 }
 
 /* ask the core if there are queued requests for @ep */
@@ -467,7 +461,7 @@ int endpoint_more_requests(ENDPOINT* endpoint)
 
 	free(result);
 
-	return json_get_int(json_new(msg->msg), "return_value");
+	return json_get_int(msg->_msg_json, "return_value");
 }
 
 /* ask the core if there are queued responses for @ep */
@@ -485,7 +479,7 @@ int endpoint_more_responses(ENDPOINT* endpoint, const char* req_id)
 
 	free(result);
 
-	return json_get_int(json_new(msg->msg), "return_value");
+	return json_get_int(msg->_msg_json, "return_value");
 }
 
 /* receive queued message from the core */
@@ -623,7 +617,7 @@ Array* ep_get_all_connections(ENDPOINT* endpoint)
 			"core", "ep_get_all_connections", "string",
 			endpoint->id, NULL);
 	MESSAGE* resp_msg = message_parse(resp);
-	JSON* resp_json = json_new(resp_msg->msg);
+	JSON* resp_json = resp_msg->_msg_json;
 	char* return_value = json_get_str(resp_json, "return_value");
 
 	JSON* all_conns_json = json_new(return_value);
@@ -693,15 +687,11 @@ int endpoint_map_to(ENDPOINT* endpoint, const char* address, const char* ep_quer
 
 	if(endpoint == NULL)
 	{
-		slog(SLOG_WARN, SLOG_WARN,
-			 "MW: NULL endpoint, can't map");
 		return -2;
 	}
 
 	if(address == NULL)
 	{
-		slog(SLOG_WARN, SLOG_WARN,
-			 "MW: NULL address, can't map");
 		return -2;
 	}
 
@@ -710,9 +700,6 @@ int endpoint_map_to(ENDPOINT* endpoint, const char* address, const char* ep_quer
 	if(cpt_query == NULL)
 		cpt_query = "";
 
-	slog(SLOG_INFO, SLOG_INFO,
-		 "MW: Mapping address %s to endpoint %s (%s)",
-		 address, endpoint->name, endpoint->id);
 
 	result = (char*) mw_call_module_function_blocking(
 			NULL,
@@ -724,13 +711,12 @@ int endpoint_map_to(ENDPOINT* endpoint, const char* address, const char* ep_quer
 		return -1;
 
 	msg = message_parse(result);
-	map_json = json_new(msg->msg);
+	map_json = msg->_msg_json;
 	return_value = json_get_int(map_json, "return_value");
 
-	slog(SLOG_INFO, SLOG_INFO, "MW: Map result: %d", return_value);
 
 	message_free(msg);
-	json_free(map_json);
+	//json_free(map_json);
 
 	return return_value;
 }
@@ -745,15 +731,11 @@ int endpoint_map_module(ENDPOINT* endpoint, const char* module, const char* addr
 
 	if(endpoint == NULL)
 	{
-		slog(SLOG_WARN, SLOG_WARN,
-			 "MW: NULL endpoint, can't map");
 		return -2;
 	}
 
 	if(address == NULL || module == NULL)
 	{
-		slog(SLOG_WARN, SLOG_WARN,
-			 "MW: NULL module / address, can't map");
 		return -2;
 	}
 
@@ -761,10 +743,6 @@ int endpoint_map_module(ENDPOINT* endpoint, const char* module, const char* addr
 		ep_query = "";
 	if(cpt_query == NULL)
 		cpt_query = "";
-
-	slog(SLOG_INFO, SLOG_INFO,
-		 "MW: Mapping module:address %s:%s to endpoint %s (%s)",
-		 module, address, endpoint->name, endpoint->id);
 
 	result = (char*) mw_call_module_function_blocking(
 			NULL,
@@ -776,13 +754,11 @@ int endpoint_map_module(ENDPOINT* endpoint, const char* module, const char* addr
 		return -1;
 
 	msg = message_parse(result);
-	map_json = json_new(msg->msg);
+	map_json = msg->_msg_json;
 	return_value = json_get_int(map_json, "return_value");
 
-	slog(SLOG_INFO, SLOG_INFO, "MW: Map result: %d", return_value);
-
 	message_free(msg);
-	json_free(map_json);
+	//json_free(map_json);
 
 	return return_value;
 }
@@ -793,8 +769,6 @@ void endpoint_map_lookup(ENDPOINT* endpoint, const char* ep_query, const char* c
 
 	if(endpoint == NULL)
 	{
-		slog(SLOG_WARN, SLOG_WARN,
-			 "MW: NULL endpoint, can't map");
 		return;
 	}
 
@@ -804,9 +778,6 @@ void endpoint_map_lookup(ENDPOINT* endpoint, const char* ep_query, const char* c
 		cpt_query = "";
 
 	sprintf(max_nb_str, "%d", max_maps);
-	slog(SLOG_INFO, SLOG_INFO,
-		 "MW: Mapping %s (id: %s), lookup ep query %s, cpt query: %s",
-		 endpoint->name, endpoint->id, ep_query, cpt_query);
 
 	mw_call_module_function(
 			NULL,
@@ -819,10 +790,6 @@ void endpoint_map_lookup(ENDPOINT* endpoint, const char* ep_query, const char* c
 
 int endpoint_unmap_from(ENDPOINT* endpoint, const char* addr)
 {
-	slog(SLOG_INFO, SLOG_INFO,
-		 "MW: Unmapping address %s from endpoint %s (%s)",
-		 addr, endpoint->name, endpoint->id);
-
 	char* result = (char*) mw_call_module_function_blocking(
 			NULL,
 			"core", "unmap", "int",
@@ -832,22 +799,18 @@ int endpoint_unmap_from(ENDPOINT* endpoint, const char* addr)
 		return -1;
 
 	MESSAGE* msg = message_parse(result);
-	JSON* map_json = json_new(msg->msg);
+	JSON* map_json = msg->_msg_json;
 	int return_value = json_get_int(map_json, "return_value");
 
 	//free(result);
 	message_free(msg);
-	json_free(map_json);
+	//json_free(map_json);
 
 	return return_value;
 }
 
 int endpoint_unmap_connection(ENDPOINT* endpoint, const char* module, int conn)
 {
-	slog(SLOG_INFO, SLOG_INFO,
-		 "MW: Unmapping connection (%s:%d) from endpoint %s (%s)",
-		 module, conn, endpoint->name, endpoint->id);
-
 	char conn_str[10];
 	sprintf(conn_str, "%d", conn);
 
@@ -860,29 +823,25 @@ int endpoint_unmap_connection(ENDPOINT* endpoint, const char* module, int conn)
 		return -1;
 
 	MESSAGE* msg = message_parse(result);
-	JSON* map_json = json_new(msg->msg);
+	JSON* map_json = msg->_msg_json;
 	int return_value = json_get_int(map_json, "return_value");
 
 	//free(result);
 	message_free(msg);
-	json_free(map_json);
+	//json_free(map_json);
 
 	return return_value;
 }
 
 int endpoint_unmap_all(ENDPOINT* endpoint)
 {
-	slog(SLOG_INFO, SLOG_INFO,
-		 "MW: Unmapping all from endpoint %s (%s)",
-		 endpoint->name, endpoint->id);
-
 	char* result = (char*) mw_call_module_function_blocking(
 			NULL,
 			"core", "unmap_all", "int",
 			endpoint->id, NULL);
 
 	MESSAGE* msg = message_parse(result);
-	JSON* msg_json = json_new(msg->msg);
+	JSON* msg_json = msg->_msg_json;
 	int return_value = json_get_int(msg_json, "return_value");
 
 	return return_value;
@@ -900,15 +859,13 @@ int endpoint_divert(ENDPOINT *ep, char *ep_id_from, char* addr, char *ep_id_to)
 	if (result == NULL)
 		return -1;
 
-	slog(SLOG_DEBUG, SLOG_DEBUG, "MW: Divert result: %s", result);
-
 	MESSAGE* msg = message_parse(result);
-	JSON* divert_json = json_new(msg->msg);
+	JSON* divert_json = msg->_msg_json;
 	int return_value = json_get_int(divert_json, "return_value");
 
 	//free(result);
 	message_free(msg);
-	json_free(divert_json);
+	//json_free(divert_json);
 
 	return return_value;
 }

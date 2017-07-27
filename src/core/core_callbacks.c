@@ -37,21 +37,19 @@ void core_on_data(COM_MODULE* module, int conn, const char* data)
 extern int map_sync_pipe[2];
 void core_on_connect(COM_MODULE* module, int conn)
 {
-	slog(SLOG_INFO, SLOG_INFO, "CORE:core_on_connect:\n"
-			"\tconnected to (%s:%d)", module->name, conn);
 	/*
 	 * these cases should not occur as long as the core connects to the app with sockpair
 	 */
 	if (app_state == NULL)
 	{
 		core_terminate();
-		slog(SLOG_FATAL, SLOG_FATAL, "CORE:core_on_connect: Component not connected.");
+		//slog(SLOG_FATAL, SLOG_FATAL, "CORE:core_on_connect: Component not connected.");
 		exit(EXIT_FAILURE);
 	}
 	if (module == app_state->module && conn == app_state->conn)
 	{
 		core_terminate();
-		slog(SLOG_FATAL, SLOG_FATAL, "CORE:core_on_connect: Something went wrong.");
+		//slog(SLOG_FATAL, SLOG_FATAL, "CORE:core_on_connect: Something went wrong.");
 		exit(EXIT_FAILURE);
 	}
 
@@ -95,14 +93,13 @@ void core_on_disconnect(COM_MODULE* module, int conn)
 
 	if(state_ptr == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "CORE:core_on_disconnect: invalid null state");
+		//slog(SLOG_ERROR, SLOG_ERROR, "CORE:core_on_disconnect: invalid null state");
 		return;
 	}
 
 	if (state_ptr == app_state)
 	{
 		core_terminate();
-		slog(SLOG_FATAL, SLOG_FATAL, "CORE: Component disconnected unexpectedly.");
 
 		exit(EXIT_FAILURE);
 	}
@@ -114,8 +111,6 @@ void core_on_disconnect(COM_MODULE* module, int conn)
 
 	state_free(state_ptr);
 
-	slog(SLOG_INFO, SLOG_INFO, "CORE:core_on_disconnect:\n"
-			"\tfrom (%s:%d)", module->name, conn);
 
 	(*module->fc_connection_close)(conn);
 }
@@ -133,23 +128,15 @@ void core_on_proto_message(STATE* state_ptr, MESSAGE* _msg)
 {
 	if(state_ptr == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "CORE: on_proto_message: invalid null state");
 		return;
 	}
 	if(_msg == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "CORE: on_proto_message: invalid null message");
 		return;
 	}
 
 	COM_MODULE* module = state_ptr->module;
 	int conn = state_ptr->conn;
-
-	slog(SLOG_INFO, SLOG_INFO, "CORE:core_on_proto_message\n"
-		 "\tMessage status: %d: %s\n"
-		 "\tstate: %d: %s"
-		 "\tconnection: (%s:%d)",
-		 _msg->status, message_status_to_str(_msg->status), state_ptr->state, state_get_str(state_ptr->state), module->name, conn);
 
 
 	/* check message type and connection state */
@@ -169,7 +156,7 @@ void core_on_proto_message(STATE* state_ptr, MESSAGE* _msg)
 			core_proto_check_auth(state_ptr, _msg);
 		if(state_ptr->am_auth && state_ptr->is_auth)
 		{
-			slog(SLOG_INFO, SLOG_INFO, "CORE:change callback 1\n");
+			//slog(SLOG_INFO, SLOG_INFO, "CORE:change callback 1\n");
 			state_ptr->on_message = &core_on_message;
 		}
 		break;
@@ -178,16 +165,14 @@ void core_on_proto_message(STATE* state_ptr, MESSAGE* _msg)
 			core_proto_check_auth_ack(state_ptr, _msg);
 		if(state_ptr->am_auth && state_ptr->is_auth)
 		{
-			slog(SLOG_INFO, SLOG_INFO, "CORE:change callback 2\n");
+			//slog(SLOG_INFO, SLOG_INFO, "CORE:change callback 2\n");
 			state_ptr->on_message = &core_on_message;
 		}
 		break;
 
 	default:
 		/* bad message status */
-		slog(SLOG_ERROR, SLOG_ERROR,
-			"CORE:core_on_message: bad command status: %d:%s",
-			_msg->status, message_status_to_str(_msg->status));
+		;
 	}
 
 	message_free(_msg);
@@ -202,23 +187,15 @@ void core_on_message(STATE* state_ptr, MESSAGE* _msg)
 {
 	if(state_ptr == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "CORE: on_message: invalid null state");
 		return;
 	}
 	if(_msg == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "CORE: on_message: invalid null message");
 		return;
 	}
 
 	COM_MODULE* module = state_ptr->module;
 	int conn = state_ptr->conn;
-
-	slog(SLOG_INFO, SLOG_INFO, "CORE:\n"
-		 "\tMessage status: %d: %s\n"
-		 "\tstate: %d: %s"
-		 "\tconnection: (%s:%d)",
-		 _msg->status, message_status_to_str(_msg->status), state_ptr->state, state_get_str(state_ptr->state), module->name, conn);
 
 
 	/* check message type and connection state */
@@ -230,7 +207,6 @@ void core_on_message(STATE* state_ptr, MESSAGE* _msg)
 			core_proto_map(state_ptr, _msg);
 		break;
 	case MSG_MAP_ACK:
-		slog(SLOG_DEBUG, SLOG_DEBUG, "\n\n State: %d -- %s\n", state_ptr->state, state_get_str(state_ptr->state));
 		if(state_ptr->state == STATE_MAP_ACK)
 			core_proto_map_ack(state_ptr, _msg);
 		break;
@@ -265,9 +241,7 @@ void core_on_message(STATE* state_ptr, MESSAGE* _msg)
 	case MSG_NONE:
 	default:
 		/* bad message status */
-		slog(SLOG_ERROR, SLOG_ERROR,
-			"CORE:core_on_message: bad command status: %d:%s",
-			_msg->status, message_status_to_str(_msg->status));
+		;
 	}
 	message_free(_msg);
 }
@@ -279,34 +253,27 @@ void core_on_component_message(STATE* state_ptr, MESSAGE* msg)
 	/* checking errors */
 	if(state_ptr == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "CORE: %s: invalid null state", __func__);
 		return;
 	}
 	if(msg == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "CORE: %s: invalid null message", __func__);
 		return;
 	}
 	if(state_ptr != app_state)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "CORE: %s: invalid state, not app_state", __func__);
 		return;
 	}
 	if(msg->status != MSG_CMD)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "CORE: %s: invalid message status, %d:%s\n"
-				"\t should be: %d:%s", __func__, msg->status, message_status_to_str(msg->status),
-				MSG_CMD, message_status_to_str(MSG_CMD));
 		return;
 	}
 	if(state_ptr->state != STATE_APP_MSG)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "CORE: %s: invalid message sequence", __func__);
 		return;
 	}
 
 	/* all is good, parse function call signature */
-	JSON* cmd_json = json_new(msg->msg);
+	JSON* cmd_json = msg->_msg_json;
 	char *module_id = json_get_str(cmd_json, "module_id");
 	char *function_id = json_get_str(cmd_json, "function_id");
 	char *return_type = json_get_str(cmd_json, "return_type");
@@ -325,7 +292,7 @@ void core_on_component_message(STATE* state_ptr, MESSAGE* msg)
 	array_free(args);
 	message_free(return_msg);
 	message_free(msg);
-	json_free(cmd_json);
+	//json_free(cmd_json);
 }
 
 
@@ -334,16 +301,12 @@ void core_on_first_message(STATE* state_ptr, MESSAGE* msg)
 {
 	if(state_ptr != app_state)
 	{
-		slog(SLOG_FATAL, SLOG_FATAL, "CORE: core_on_first_message: invalid state\n"
-				"\tstate should be app state");
 		exit(EXIT_FAILURE);
 	}
 	if(state_ptr->state != STATE_FIRST_MSG)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "CORE: core_on_first_message: invalid message sequence; ignoring");
 		return;
 	}
-	slog(SLOG_INFO, SLOG_INFO, "CORE: on first message; checking if app: *%s*", msg->msg);
 
 	/*if (!strcmp(data, app_key))
 	{
@@ -371,7 +334,6 @@ void call_external_command_handler(STATE* state_ptr, MESSAGE* msg)
 
 	if(msg->status == MSG_UNMAP)
 	{
-		slog(SLOG_WARN, SLOG_WARN, "CORE: STATUS is UNMAP %s", state_ptr->lep->id);
 		ep_unmap_recv(state_ptr->lep, state_ptr); //TODO:state
 		(*(state_ptr->module->fc_connection_close))(state_ptr->conn);
 		return;
@@ -380,16 +342,13 @@ void call_external_command_handler(STATE* state_ptr, MESSAGE* msg)
 			state_ptr->lep->fifo != 0)
 		    //(msg->status == MSG_STREAM || sta)
 	{
-		slog(SLOG_INFO, SLOG_INFO, "CORE: STATUS is MSG_STREAM %s", state_ptr->lep->id);
-		fifo_send_message(state_ptr->lep->fifo, msg->msg);
+		fifo_send_message(state_ptr->lep->fifo, msg->msg_id); //was str
 		return;
 	}
 
-
-	MESSAGE *in_msg = message_parse(msg->msg);
+	MESSAGE *in_msg = message_parse_json(msg->_msg_json);
 	if(in_msg == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "CORE: received empty message on fd (%s:%d)", state_ptr->module, state_ptr->conn);
 		//message_free(msg);
 		return;
 	}
@@ -423,18 +382,16 @@ void recv_stream_cmd(MESSAGE* msg)
 		return;
 
 
-	slog(SLOG_INFO, SLOG_INFO, "CORE: STATUS is MSG_STREAM_CMD:\n"
-			"\tep_id %s", msg->ep->id);
 
 	LOCAL_EP* lep = (LOCAL_EP*)msg->ep->data;
 
-	JSON* msg_json = json_new(msg->msg);
+	JSON* msg_json = msg->_msg_json;
 	int command = json_get_int(msg_json, "command");
 	if(command == 1 && lep->fifo <= 0)
 	{
 		sprintf(lep->fifo_name, "/tmp/%s", randstring(5));
 		lep->fifo = fifo_init_server(lep->fifo_name);
-		msg->msg = lep->fifo_name;
+		msg->msg_id = lep->fifo_name; //was str
 		state_send_message(app_state, msg);
 		return;
 	}
@@ -457,13 +414,13 @@ void recv_stream_msg(MESSAGE* msg)
 		return;
 
 	LOCAL_EP* lep = (LOCAL_EP*)msg->ep->data;
-	fifo_send_message(lep->fifo, msg->msg);
+	fifo_send_message(lep->fifo, msg->msg_id);//was str
 
 }
 
 
 void send_error_message(STATE* state_ptr, char *msg)
 {
-	slog(SLOG_ERROR, SLOG_ERROR, "CORE: send error %s to (%s:%d)", msg, state_ptr->module->name, state_ptr->conn);
+	//slog(SLOG_ERROR, SLOG_ERROR, "CORE: send error %s to (%s:%d)", msg, state_ptr->module->name, state_ptr->conn);
 	//conn_send_message(conn, msg);
 }

@@ -18,7 +18,7 @@ void print_callback(MESSAGE *msg)
 	ENDPOINT *ep = msg->ep;
 
 	/* parsing the message and extracting the values */
-	JSON* elem_msg = json_new(msg->msg);
+	JSON* elem_msg = msg->_msg_json;
 	int value = json_get_int(elem_msg, "value");
 	char* datetime = json_get_str(elem_msg, "datetime");
 

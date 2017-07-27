@@ -14,7 +14,7 @@
 void print_callback(MESSAGE *msg)
 {
 	/* process the extracted values */
-	printf("Sink ep handler: %s\n ", msg->msg);
+	printf("Sink ep handler: %s\n ", json_to_str(msg->_msg_json));
 }
 
 

@@ -15,7 +15,7 @@
 #include "hashmap.h"
 #include "json.h"
 #include "com_wrapper.h"
-#include "slog.h"
+//#include "slog.h"
 #include "file.h"
 #include "sync.h"
 
@@ -126,7 +126,7 @@ char* mw_init(const char* cpt_name, int log_lvl, bool use_socketpair)
 	int sockpair_err = socketpair(AF_LOCAL, SOCK_STREAM, 0, fds_blocking_call);
 	if(sockpair_err)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "MW: Blocking call socketpair error: %d.", sockpair_err);
+		//slog(SLOG_ERROR, SLOG_ERROR, "MW: Blocking call socketpair error: %d.", sockpair_err);
 		return NULL;
 	}
 
@@ -135,7 +135,7 @@ char* mw_init(const char* cpt_name, int log_lvl, bool use_socketpair)
 	sockpair_err = setsockopt(fds_blocking_call[1], SOL_SOCKET, SO_RCVTIMEO, (char*)&sock_timeout, sizeof(sock_timeout));
 	if(sockpair_err)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "MW: Blocking call socketpair error: %d.", sockpair_err);
+		//slog(SLOG_ERROR, SLOG_ERROR, "MW: Blocking call socketpair error: %d.", sockpair_err);
 		return NULL;
 	}
 
@@ -168,7 +168,7 @@ char* mw_init(const char* cpt_name, int log_lvl, bool use_socketpair)
 	/* spawn the core mw and block connect to it */
 #ifdef __ANDROID__ // On Android the core runs in a separate service.
 	if (core_connection < 0) {
-		slog(SLOG_FATAL, SLOG_FATAL, "MW: Unable to connect to core.");
+		//slog(SLOG_FATAL, SLOG_FATAL, "MW: Unable to connect to core.");
 		exit(1);
 	}
 #else // __ANDROID__
@@ -193,9 +193,6 @@ char* mw_init(const char* cpt_name, int log_lvl, bool use_socketpair)
 
 		if (sockpair_module == NULL)
 		{
-			slog(SLOG_ERROR, SLOG_ERROR,
-				 "MW: Failed to create IPC socket pair: %s",
-				 strerror(errno));
 			return NULL;
 		}
 		app_core_conn =(*(sockpair_module->fc_connect))(NULL);
@@ -207,7 +204,7 @@ char* mw_init(const char* cpt_name, int log_lvl, bool use_socketpair)
 		app_core_conn = fifo_init_server(app_name);
 		if (app_core_conn <= 0)
 		{
-			slog(SLOG_FATAL, SLOG_FATAL, "MW: Unable to start fifo with the core.");
+			//slog(SLOG_FATAL, SLOG_FATAL, "MW: Unable to start fifo with the core.");
 			exit(1);
 		}
 		fifo_run_receive_thread(app_core_conn);
@@ -274,7 +271,7 @@ int mw_call_module_function(
 	json_set_str(msg_json, "return_type", return_type);
 	json_set_array(msg_json, "args", argv);
 
-	MESSAGE* send_msg =  message_new_id(msg_id, json_to_str(msg_json), MSG_CMD);
+	MESSAGE* send_msg =  message_new_id_json(msg_id, msg_json, MSG_CMD);
 	char* send_str = message_to_str(send_msg);
 	int result = (*(sockpair_module->fc_send_data))(app_core_conn, send_str);
 
@@ -317,7 +314,7 @@ void* mw_call_module_function_blocking(
 		_msg_id = message_generate_id();
 	}
 
-	MESSAGE* send_msg =  message_new_id(_msg_id, json_to_str(msg_json), MSG_CMD);
+	MESSAGE* send_msg =  message_new_id_json(_msg_id, msg_json, MSG_CMD);
 	char* send_str = message_to_str(send_msg);
 	(*(sockpair_module->fc_send_data))(app_core_conn, send_str);
 
@@ -345,8 +342,6 @@ void* mw_call_module_function_blocking(
 
 void mw_add_rdc(const char* module, const char* address)
 {
-	slog(SLOG_INFO, SLOG_INFO, "MW: Adding RDC at address %s:%s", module, address);
-
 	mw_call_module_function(
 			NULL,
 			"core", "add_rdc", "void",
@@ -355,8 +350,6 @@ void mw_add_rdc(const char* module, const char* address)
 
 void mw_register_rdcs()
 {
-	slog(SLOG_INFO, SLOG_INFO, "MW: Registering with RDCs.");
-
 	mw_call_module_function(
 			NULL,
 			"core", "rdc_register", "void",
@@ -368,8 +361,6 @@ void mw_tell_register_rdcs(const char* address)  // TODO: maybe a better alterna
 	if (address == NULL)
 		return;
 
-	slog(SLOG_INFO, SLOG_INFO, "MW: Telling component at %s to register with RDCs.", address);
-
 	mw_call_module_function(
 			NULL,
 			"core", "rdc_register", "void",
@@ -378,8 +369,6 @@ void mw_tell_register_rdcs(const char* address)  // TODO: maybe a better alterna
 
 void mw_unregister_rdcs()
 {
-	slog(SLOG_INFO, SLOG_INFO, "MW: Unregistering with RDCs.");
-
 	mw_call_module_function(
 			NULL,
 			"core", "rdc_unregister", "void",
@@ -390,8 +379,6 @@ void mw_tell_unregister_rdcs(const char* address)
 {
 	if (address == NULL)
 		return;
-
-	slog(SLOG_INFO, SLOG_INFO, "MW: Telling component at %s to unregister with RDCs.", address);
 
 	mw_call_module_function(
 			NULL,
@@ -407,16 +394,15 @@ int mw_load_com_module(const char* libpath, const char* cfgpath)
 
 	if(abs_lib_path==NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "MW: Com module invalid path %s.", libpath);
+		//slog(SLOG_ERROR, SLOG_ERROR, "MW: Com module invalid path %s.", libpath);
 		return -1;
 	}
 	if(abs_cfg_path==NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "MW: Cfg file invalid path %s.", cfgpath);
+		//slog(SLOG_ERROR, SLOG_ERROR, "MW: Cfg file invalid path %s.", cfgpath);
 		return -1;
 	}
-	slog(SLOG_INFO, SLOG_INFO, "MW: Loading com module %s.", abs_lib_path);
-	slog(SLOG_INFO, SLOG_INFO, "MW: Loading cfg file %s.", abs_cfg_path);
+
 	char* config_json = text_load_from_file(cfgpath);
 
 	char* result = (char*) mw_call_module_function_blocking(
@@ -428,7 +414,7 @@ int mw_load_com_module(const char* libpath, const char* cfgpath)
 		return -1;
 
 	MESSAGE* msg = message_parse(result);
-	JSON* map_json = json_new(msg->msg);
+	JSON* map_json = msg->_msg_json;
 	int return_value = json_get_int(map_json, "return_value");
 
 	//free(result);
@@ -446,16 +432,12 @@ int mw_load_access_module(const char* libpath, const char* cfgpath)
 
 	if(abs_lib_path==NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "MW: Auth module invalid path %s.", libpath);
 		return -1;
 	}
 	if(abs_cfg_path==NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "MW: Cfg file invalid path %s.", cfgpath);
 		return -1;
 	}
-	slog(SLOG_INFO, SLOG_INFO, "MW: Loading access module %s.", abs_lib_path);
-	slog(SLOG_INFO, SLOG_INFO, "MW: Loading cfg file %s.", abs_cfg_path);
 
 	char* config_json = text_load_from_file(cfgpath);
 
@@ -468,7 +450,7 @@ int mw_load_access_module(const char* libpath, const char* cfgpath)
 		return -1;
 
 	MESSAGE* msg = message_parse(result);
-	JSON* map_json = json_new(msg->msg);
+	JSON* map_json = msg->_msg_json;
 	int return_value = json_get_int(map_json, "return_value");
 
 	//free(result);
@@ -493,7 +475,7 @@ char* mw_get_remote_metdata(const char* module, int conn)
 		return NULL;
 
 	MESSAGE* resp_msg = message_parse(resp);
-	JSON* resp_json = json_new(resp_msg->msg);
+	JSON* resp_json = resp_msg->_msg_json;
 
 	return json_get_str(resp_json, "return_value");
 }
@@ -508,9 +490,6 @@ int core_spawn_addr(char *core_addr)
 	if (core_pid == 0)/*child*/
 	{
 		chdir(BIN);
-		slog(SLOG_DEBUG, SLOG_DEBUG,
-			 "In child; calling >core %s %s\n",
-			 core_addr, rand_key);
 
 		char* args[] = {
 				"core",
@@ -531,7 +510,6 @@ int core_spawn_addr(char *core_addr)
 	}
 	else /* error */
 	{   /*todo error handling*/
-		slog(SLOG_FATAL, SLOG_FATAL, "MW: Error forking.");
 		exit(1);
 	}
 
@@ -550,9 +528,6 @@ int core_spawn_fd(int fds, char* app_name)
 		//close(fds[1]);
 		chdir(BIN);
 
-		slog(SLOG_DEBUG, SLOG_DEBUG,
-			 "In child; calling >core -f %d -a %s -k %s -c %s",
-			 core_fd, app_name, rand_key,config_get_absolute_path());
 
 		char fd_str[11];
 		snprintf(fd_str, 11, "%d", core_fd);
@@ -565,7 +540,6 @@ int core_spawn_fd(int fds, char* app_name)
 		const char* path = "core";
 		execv(path, args);
 
-		slog(SLOG_FATAL, SLOG_FATAL, "MW: Bad core middleware executable path.");
 		printf("MW: Bad core middleware executable path.\n");
 		exit(1);
 	}
@@ -579,7 +553,6 @@ int core_spawn_fd(int fds, char* app_name)
 	}
 	else /* error */
 	{   /*todo error handling*/
-		slog(SLOG_FATAL, SLOG_FATAL, "MW: Error forking.");
 		printf("MW: Error forking\n");
 		exit(1);
 	}
@@ -595,10 +568,6 @@ int core_spawn_fifo(char* app_name)
 	{
 		chdir(BIN);
 
-		slog(SLOG_DEBUG, SLOG_DEBUG,
-			 "In child; calling >core -f 0 -a %s -k %s",
-			 app_name, rand_key);
-
 		char* args[] = {
 				"core",
 				"-f", "0",
@@ -608,7 +577,6 @@ int core_spawn_fifo(char* app_name)
 		const char* path = "core";
 		execv(path, args);
 
-		slog(SLOG_FATAL, SLOG_FATAL, "MW: Bad core middleware executable path.");
 		exit(1);
 	}
 	else if(core_pid>0)/*parent*/
@@ -619,7 +587,6 @@ int core_spawn_fifo(char* app_name)
 	}
 	else /* error */
 	{   /*todo error handling*/
-		slog(SLOG_FATAL, SLOG_FATAL, "MW: Error forking.");
 		exit(1);
 	}
 
@@ -628,7 +595,6 @@ int core_spawn_fifo(char* app_name)
 
 void api_on_first_data(COM_MODULE* module, int conn, const char* msg)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "MW: On first message: %s", msg);
 	(*(sockpair_module->fc_set_on_data))((void (*)(void *, int, const char *))api_on_data);
 	waiting_blocking_call = 0;
 	sync_trigger(fds_blocking_call[0], msg);
@@ -637,7 +603,6 @@ void api_on_first_data(COM_MODULE* module, int conn, const char* msg)
 void* api_on_message(void* data)
 {
 	const char * msg = (const char*) data;
-	slog(SLOG_DEBUG, SLOG_DEBUG, "MW: On message.");
 
 	MESSAGE *msg_ = message_parse(msg);
 
@@ -650,14 +615,14 @@ void* api_on_message(void* data)
 	}
 
 	if (msg_->ep==NULL) {
-		slog(SLOG_WARN, SLOG_WARN, "MW: Can't find endpoint for msg: *%s*", msg);
+		//slog(SLOG_WARN, SLOG_WARN, "MW: Can't find endpoint for msg: *%s*", msg);
 		return NULL;
 	}
 	else if(msg_->status == MSG_STREAM_CMD && msg_->ep->type == EP_STR_SNK)
 	{
-		printf("\n\nstream start ..... %s \n\n", msg_->msg);
+		printf("\n\nstream start ..... %s \n\n", msg_->msg_id);//was str
 		//JSON* msg_json = json_new(msg_->msg);
-		char * fifo_name = msg_->msg;
+		char * fifo_name = msg_->msg_id; //was str
 		//int stream_fd = json_get_str(msg_json, "fifo_name");
 		stream_fd_global = fifo_init_client(fifo_name);
 		return NULL;
@@ -673,21 +638,18 @@ void* api_on_message(void* data)
 
 void api_on_connect(void* module, int conn)
 {
-	slog(SLOG_INFO, SLOG_INFO, "MW: Core connected.");
+	//slog(SLOG_INFO, SLOG_INFO, "MW: Core connected.");
 }
 
 void api_on_disconnect(void* module, int conn)
 {
-	slog(SLOG_WARN, SLOG_WARN, "MW: Core disconnected.");
+	//slog(SLOG_WARN, SLOG_WARN, "MW: Core disconnected.");
 	shutdown(app_core_conn,1);
 	exit(0);
 }
 
 void api_on_data(COM_MODULE* module, int conn, const char* data)
 {
-	slog(SLOG_INFO, SLOG_INFO, "MW:api_on_data\n"
-			"\tfrom: (%s:%d)\n"
-			"\tdata: *%s*", module->name, conn, data);
 	buffer_update(api_buffer, data, strlen(data));
 }
 
@@ -740,7 +702,7 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 					case ' ': case '\n': case '\r':
 						break;
 					default:
-						slog(SLOG_ERROR, SLOG_ERROR, "%c", new_data[i]);
+						//slog(SLOG_ERROR, SLOG_ERROR, "%c", new_data[i]);
 						continue;
 
 				}

@@ -60,7 +60,7 @@ void buffer_set(BUFFER* buffer, const char* new_buf, int new_start, int new_end)
 	buffer->size = buffer->size + new_size;
 	buffer->data[buffer->size] = '\0';
 
-	//printf("----buffer set %d %d %d: %s\n\n", new_start, new_end, buffer->size, buffer->data);
+	//printf("----buffer set %d %d %d: %s\n", new_start, new_end, buffer->size, buffer->data);
 	free(old_buf);
 }
 
@@ -85,7 +85,7 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size) //size sh
 					case ' ': case '\n': case '\r':
 						break;
 					default:
-						slog(SLOG_ERROR, SLOG_ERROR, "%c", new_data[i]);
+						//slog(SLOG_ERROR, SLOG_ERROR, "%c", new_data[i]);
 						continue;
 
 				}
@@ -230,11 +230,11 @@ int state_send_json(STATE* state, const char* id, JSON* json, int status)
 	if(state == NULL)
 		return STATE_BAD;
 
-	char* msg_str = json_to_str(json);
+	//char* msg_str = json_to_str(json);
 
-	MESSAGE* msg = message_new_id(id, msg_str, status);
+	MESSAGE* msg = message_new_id_json(id, json, status);
 	int result = state_send_message(state, msg);
-	free(msg_str);
+	//free(msg_str);
 	message_free(msg);
 
 	return result;
@@ -296,12 +296,11 @@ int states_set(COM_MODULE* module, int conn, STATE* state)
 {
 	if(state == NULL)
 	{
-		slog(SLOG_INFO, SLOG_INFO, "state is null");
 		return -1;
 	}
 
 	char* conn_str=(char*) malloc(105*sizeof(char));
 	sprintf(conn_str, "%s:%d", module->name, conn);
-	slog(SLOG_INFO, SLOG_INFO, "inserting %s", conn_str);
+
 	return map_insert(conn_state, conn_str, state);
 }

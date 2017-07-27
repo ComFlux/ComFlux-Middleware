@@ -8,7 +8,6 @@
 #include "core_module_api.h"
 
 #include "core_module.h"
-#include "slog.h"
 
 //extern HashMap *endpoints;
 extern HashMap *locales;
@@ -64,7 +63,7 @@ int core_map_all_modules_array(Array* argv)
 
 int core_map_module_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_map_module_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_map_module_array");
 	if (array_size(argv) < 4)
 		return -1;
 
@@ -74,12 +73,6 @@ int core_map_module_array(Array* argv)
 
 	char* ep_query_str = (char*)array_get( argv, 3 );
 	char* cpt_query_str = (char*)array_get( argv, 4 );
-	slog(SLOG_DEBUG, SLOG_DEBUG, "Args: \n"
-			"ep: %s\n"
-			"module: %s\n"
-			"addr: %s\n"
-			"ep_query_str: %s\n"
-			"cpt_query_str %s",local_ep_id, module, addr, ep_query_str, cpt_query_str);
 
 	LOCAL_EP* lep = map_get(locales, local_ep_id);
 	JSON* ep_query = json_new(ep_query_str);
@@ -100,7 +93,7 @@ int core_map_module_array(Array* argv)
 
 void core_map_lookup_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: map lookup array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: map lookup array");
 	if (array_size(argv) < 3)
 		return ;
 
@@ -120,7 +113,7 @@ void core_map_lookup_array(Array* argv)
 
 int core_unmap_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: unmap array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: unmap array");
 
 	if (array_size(argv) < 2)
 		return -1;
@@ -137,7 +130,7 @@ int core_unmap_array(Array* argv)
 
 int core_unmap_connection_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: unmap connection array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: unmap connection array");
 
 	if (array_size(argv) < 3)
 		return -1;
@@ -158,7 +151,7 @@ int core_unmap_connection_array(Array* argv)
 
 int core_unmap_all_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: unmap all array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: unmap all array");
 
 	if (array_size(argv) < 1)
 		return -1;
@@ -173,7 +166,7 @@ int core_unmap_all_array(Array* argv)
 
 int core_divert_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core divert array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core divert array");
 
 	if (array_size(argv) < 3)
 		return -1;
@@ -191,7 +184,7 @@ int core_divert_array(Array* argv)
 
 int core_ep_send_message_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core send message array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core send message array");
 
 	if (array_size(argv) < 3)
 		return -1;
@@ -209,7 +202,7 @@ int core_ep_send_message_array(Array* argv)
 
 int core_ep_send_request_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core send request array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core send request array");
 
 	if (array_size(argv) < 3)
 		return -1;
@@ -227,7 +220,7 @@ int core_ep_send_request_array(Array* argv)
 
 int core_ep_send_response_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core send response array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core send response array");
 
 	if (array_size(argv) < 3)
 		return -1;
@@ -245,7 +238,7 @@ int core_ep_send_response_array(Array* argv)
 
 int core_ep_more_messages_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_more_messages array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_more_messages array");
 
 	if (array_size(argv) < 1)
 		return -1;
@@ -261,7 +254,7 @@ int core_ep_more_messages_array(Array* argv)
 
 int core_ep_more_requests_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_more_requests array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_more_requests array");
 
 	if (array_size(argv) < 1)
 		return -1;
@@ -277,7 +270,7 @@ int core_ep_more_requests_array(Array* argv)
 
 int core_ep_more_responses_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_more_responses array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_more_responses array");
 
 	if (array_size(argv) < 2)
 		return -1;
@@ -294,7 +287,7 @@ int core_ep_more_responses_array(Array* argv)
 
 MESSAGE* core_ep_fetch_message_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_receive_message array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_receive_message array");
 	if (array_size(argv) < 1)
 		return NULL;
 
@@ -309,7 +302,7 @@ MESSAGE* core_ep_fetch_message_array(Array* argv)
 
 MESSAGE* core_ep_fetch_request_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_receive_request_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_receive_request_array");
 
 	if (array_size(argv) < 1)
 		return NULL;
@@ -325,7 +318,7 @@ MESSAGE* core_ep_fetch_request_array(Array* argv)
 
 MESSAGE* core_ep_fetch_response_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_receive_response_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_receive_response_array");
 
 	if (array_size(argv) < 2)
 		return NULL;
@@ -342,7 +335,7 @@ MESSAGE* core_ep_fetch_response_array(Array* argv)
 
 void core_ep_stream_start_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_stream_start_Array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_stream_start_Array");
 
 	if (array_size(argv) < 1)
 		return;
@@ -358,7 +351,7 @@ void core_ep_stream_start_array(Array* argv)
 
 void core_ep_stream_stop_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_stream_stop_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_stream_stop_array");
 
 	if (array_size(argv) < 1)
 		return ;
@@ -374,7 +367,7 @@ void core_ep_stream_stop_array(Array* argv)
 
 void core_ep_stream_send_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_stream_send_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_stream_send_array");
 
 	if (array_size(argv) < 2)
 		return ;
@@ -391,7 +384,7 @@ void core_ep_stream_send_array(Array* argv)
 
 int core_add_manifest_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_add_manifest_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_add_manifest_array");
 
 	if (array_size(argv) < 1)
 		return -1;
@@ -403,14 +396,14 @@ int core_add_manifest_array(Array* argv)
 
 char* core_get_manifest_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_get_manifest_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_get_manifest_array");
 
 	return core_get_manifest();
 }
 
 void core_add_rdc_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_add_rdc_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_add_rdc_array");
 
 	if (array_size(argv) < 2)
 		return ;
@@ -421,9 +414,9 @@ void core_add_rdc_array(Array* argv)
 	COM_MODULE* module = com_get_module(module_name);
 	if(module == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "CORE FUNC: core_add_rdc_array:\n"
-			"\tcould not find COM module %s",
-			module_name);
+		//slog(SLOG_ERROR, SLOG_ERROR, "CORE FUNC: core_add_rdc_array:\n"
+		//	"\tcould not find COM module %s",
+		//	module_name);
 	}
 	else
 	{
@@ -433,7 +426,7 @@ void core_add_rdc_array(Array* argv)
 
 void core_rdc_register_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_rdc_deregister_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_rdc_deregister_array");
 
 	if (array_size(argv) < 2)
 		core_rdc_register(NULL, NULL) ;
@@ -449,7 +442,7 @@ void core_rdc_register_array(Array* argv)
 
 void core_rdc_unregister_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_rdc_deregister_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_rdc_deregister_array");
 
 	if (array_size(argv) < 1)
 		core_rdc_unregister(NULL) ;
@@ -462,7 +455,7 @@ void core_rdc_unregister_array(Array* argv)
 
 void core_add_filter_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_add_filter_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_add_filter_array");
 
 	if (array_size(argv) < 2)
 		return ;
@@ -480,7 +473,7 @@ void core_add_filter_array(Array* argv)
 
 void core_reset_filter_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_reset_filter_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_reset_filter_array");
 
 	if (array_size(argv) < 1)
 		return ;
@@ -508,7 +501,7 @@ void core_reset_filter_array(Array* argv)
 
 void core_ep_set_access_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_set_access_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_set_access_array");
 
 	if (array_size(argv) < 2)
 		return;
@@ -523,7 +516,7 @@ void core_ep_set_access_array(Array* argv)
 
 void core_ep_reset_access_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_reset_access_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_reset_access_array");
 
 	if (array_size(argv) < 2)
 		return;
@@ -539,7 +532,7 @@ void core_ep_reset_access_array(Array* argv)
 
 char* core_ep_get_all_connections_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_get_all_conections_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_ep_get_all_conections_array");
 
 	if (array_size(argv) < 1)
 		return NULL;
@@ -554,7 +547,7 @@ char* core_ep_get_all_connections_array(Array* argv)
 
 char* core_get_remote_metdata_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_get_remote_metdata_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_get_remote_metdata_array");
 
 	if (array_size(argv) < 2)
 		return NULL;
@@ -575,7 +568,7 @@ void core_terminate_array(Array* argv)
 
 int core_load_com_module_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_load_com_module_array");
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: core_load_com_module_array");
 
 	if (array_size(argv) < 1)
 		return -1;
@@ -588,7 +581,7 @@ int core_load_com_module_array(Array* argv)
 
 int core_load_access_module_array(Array* argv)
 {
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: %s", __func__);
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: %s", __func__);
 
 	if (array_size(argv) < 1)
 		return -1;
@@ -603,7 +596,7 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 {
 	char *fc_id = _core_get_id(module_id, function_id, return_type);
 
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: function call %s %s %s (%s)", module_id, function_id, return_type, fc_id);
+	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: function call %s %s %s (%s)", module_id, function_id, return_type, fc_id);
 	//char *fc_res_str = NULL;
 	JSON *fc_res_json = json_new(NULL);
 	/* the following are reduntant, just for debug */
@@ -616,13 +609,13 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 		void (*fc)(Array*) = map_get(void_function_table_array, fc_id);
 		if (fc == NULL)
 		{
-			slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s ", fc_id);
+			//slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s ", fc_id);
 			free(fc_id);
 			json_free(fc_res_json);
 			return NULL;
 		}
 		(*fc)(args);
-		slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: function call %s done ",fc_id);
+		//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: function call %s done ",fc_id);
 
 		free(fc_id);
 		json_free(fc_res_json);
@@ -633,7 +626,7 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 		int (*fc)(Array*) = map_get(int_function_table_array, fc_id);
 		if (fc == NULL)
 		{
-			slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s", fc_id);
+			//slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s", fc_id);
 			free(fc_id);
 			json_free(fc_res_json);
 			return NULL;
@@ -652,7 +645,7 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 		char* (*fc)(Array*) = map_get(string_function_table_array, fc_id);
 		if (fc == NULL)
 		{
-			slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s", fc_id);
+			//slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s", fc_id);
 			free(fc_id);
 			json_free(fc_res_json);
 			return NULL;
@@ -665,7 +658,7 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 		char* (*fc)(Array*) = map_get(message_function_table_array, fc_id);
 		if (fc == NULL)
 		{
-			slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s", fc_id);
+			//slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s", fc_id);
 			free(fc_id);
 			json_free(fc_res_json);
 			return NULL;
@@ -675,7 +668,7 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 	}
 
 
-	msg = message_new(json_to_str(fc_res_json), MSG_CMD);
+	msg = message_new_json(fc_res_json, MSG_CMD);
 
 	free(fc_id);
 	json_free(fc_res_json);

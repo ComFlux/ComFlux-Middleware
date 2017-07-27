@@ -40,10 +40,10 @@ unsigned int count_msg = 0;
 
 void* api_on_message(void* data)
 {
-	printf("callback\n");
+	//printf("callback\n");
 	char* buf  = (char*) data;
 
-	printf("%s\n", buf);
+	//printf("%s\n", buf);
 	if(started_flag == 0 && stopped_flag ==0)
 	{
 		started_flag = 1;
@@ -135,7 +135,7 @@ char* tcp_receive_message(int _conn)
     int recvSize;     /* one pack received size */
     unsigned char recvEscape;
     char* buf;
-    printf("About to receive message using tcp on socket (%d)", _conn);
+    //printf("About to receive message using tcp on socket (%d)", _conn);
 
         /* reading msg */
         //allBytesRecv = 0;
@@ -150,7 +150,7 @@ char* tcp_receive_message(int _conn)
             return NULL;
         }
 
-       printf("received %d total bytes on sock (%d): *%s*", recvSize, _conn, buf);
+       //printf("received %d total bytes on sock (%d): *%s*", recvSize, _conn, buf);
 
         return buf;
 }

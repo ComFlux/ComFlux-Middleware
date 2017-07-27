@@ -9,7 +9,6 @@
 
 #include "array.h"
 #include "hashmap.h"
-#include <slog.h>
 #include <string.h>
 #include <utils.h>
 
@@ -81,12 +80,6 @@ int json_filter_validate_one(JSON *json, char *path)
 		return 0;
 	if (path == NULL)
 		return 1;
-
-	char* json_pretty = json_to_str_pretty(json);
-	slog(SLOG_DEBUG, SLOG_DEBUG,
-         "EP QUERY: Checking endpoint [%s] against criterion: %s",
-         json_pretty, path);
-	free(json_pretty);
 
 	_json_path*  jp = _json_path_new(path);
 

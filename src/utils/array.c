@@ -43,31 +43,24 @@ void array_free(Array *array)
 
 int array_add(Array *array, void *elem)
 {
-	//slog(SLOG_ERROR, SLOG_ERROR, "array add");
 	if(array->elem_type == ELEM_TYPE_INT)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR, "array int");
 		utarray_push_back(array->ua, elem);
 	}
 	else if(array->elem_type == ELEM_TYPE_STR)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR, "--------------array str: %s", elem);
 		utarray_push_back(array->ua, &elem);
 	}
 	else if(array->elem_type == ELEM_TYPE_PTR)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR, "array ptr");
 		utarray_push_back(array->ua, &elem);
 	}
 
 	else
 	{
-
-		//slog(SLOG_ERROR, SLOG_ERROR, "array type ??");
 		return -1;
 	}
 
-	//slog(SLOG_ERROR, SLOG_ERROR, "array add done");
 	return 0;
 }
 
