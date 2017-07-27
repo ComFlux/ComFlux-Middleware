@@ -18,7 +18,26 @@ extern HashMap* endpoints;
 MESSAGE* message_new(const char* msg_, unsigned int status_)
 {
 	MESSAGE* message = (MESSAGE*)malloc(sizeof(MESSAGE));
-	message->msg = strdup_null(msg_);
+	message->_msg_json = json_new(msg_);
+	message->msg_str = NULL;//strdup_null(msg_);
+	message->status = status_;
+
+	message->msg_id = message_generate_id();
+
+	message->ep = NULL;
+
+
+	message->conn = 0;
+	message->module = NULL;
+
+	return message;
+}
+
+MESSAGE* message_new_json(JSON* msg_, unsigned int status_)
+{
+	MESSAGE* message = (MESSAGE*)malloc(sizeof(MESSAGE));
+	message->_msg_json = json_new(json_to_str(msg_));
+	message->msg_str = NULL;//json_to_str(msg_);
 	message->status = status_;
 
 	message->msg_id = message_generate_id();
@@ -36,7 +55,26 @@ MESSAGE* message_new_id(const char* msg_id, const char* msg_, unsigned int statu
 {
 	MESSAGE* message = (MESSAGE*)malloc(sizeof(MESSAGE));
 	message->msg_id = strdup_null(msg_id);
-	message->msg = strdup_null(msg_);
+	message->_msg_json = json_new(msg_);
+	message->msg_str = NULL;//strdup_null(msg_);
+
+	message->status = status_;
+
+	message->ep = NULL;
+
+
+	message->conn = 0;
+	message->module = NULL;
+
+	return message;
+}
+
+MESSAGE* message_new_id_json(const char* msg_id, JSON* msg_, unsigned int status_)
+{
+	MESSAGE* message = (MESSAGE*)malloc(sizeof(MESSAGE));
+	message->msg_id = strdup_null(msg_id);
+	message->_msg_json = msg_;
+	message->msg_str = NULL;//json_to_str(msg_);
 
 	message->status = status_;
 
@@ -54,7 +92,13 @@ void message_free(MESSAGE* msg)
 	if(msg == NULL)
 		return;
 
-	free(msg->msg);
+	if(msg->_msg_json)
+	{
+		//wjson_free(msg->_msg_json);
+		msg->_msg_json = NULL;
+	}
+
+	//free(msg->msg_str);
 	free(msg->msg_id);
 	free(msg);
 }
@@ -64,16 +108,25 @@ MESSAGE* message_parse(const char* msg)
 	if(msg == NULL)
 		return NULL;
 	JSON* json_msg = json_new(msg);
+	MESSAGE* ret_msg = message_parse_json(json_msg);
+
+	return ret_msg;
+}
+
+MESSAGE* message_parse_json(JSON* json_msg)
+{
 	if(json_msg == NULL)
 		return NULL;
+
 	MESSAGE* ret_msg = malloc(sizeof(MESSAGE));
 	char* ep_id = json_get_str(json_msg, "ep_id");
 	if (ep_id != NULL)
 		ret_msg->ep = (ENDPOINT*)map_get(endpoints, ep_id);
 	else
 		ret_msg->ep = NULL;
-	ret_msg->msg_id = (json_get_str(json_msg, "msg_id"));
-	ret_msg->msg = (json_get_str(json_msg, "msg"));
+	ret_msg->msg_id = json_get_str(json_msg, "msg_id");
+	ret_msg->_msg_json = json_get_json(json_msg, "msg_json");
+	ret_msg->msg_str = NULL;//json_get_str(json_msg, "msg");
 	ret_msg->status = (unsigned int) json_get_int(json_msg, "status");
 
 	char* module = json_get_str(json_msg, "module");
@@ -99,8 +152,11 @@ JSON* message_to_json(MESSAGE* msg)
 
 	json_set_int(msg_json, "status", (int)(msg->status));
 
-	if(msg->msg)
-		json_set_str(msg_json, "msg", msg->msg);
+	if(msg->_msg_json)
+		json_set_json(msg_json, "msg_json", msg->_msg_json);
+
+	//if(msg->msg_str)
+	//	json_set_str(msg_json, "msg", msg->msg_str);
 
 	if (msg->ep)
 		json_set_str(msg_json, "ep_id", msg->ep->id);

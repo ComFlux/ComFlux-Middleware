@@ -306,7 +306,7 @@ void core_on_component_message(STATE* state_ptr, MESSAGE* msg)
 	}
 
 	/* all is good, parse function call signature */
-	JSON* cmd_json = json_new(msg->msg);
+	JSON* cmd_json = msg->_msg_json;
 	char *module_id = json_get_str(cmd_json, "module_id");
 	char *function_id = json_get_str(cmd_json, "function_id");
 	char *return_type = json_get_str(cmd_json, "return_type");
@@ -325,7 +325,7 @@ void core_on_component_message(STATE* state_ptr, MESSAGE* msg)
 	array_free(args);
 	message_free(return_msg);
 	message_free(msg);
-	json_free(cmd_json);
+	//json_free(cmd_json);
 }
 
 
@@ -343,7 +343,7 @@ void core_on_first_message(STATE* state_ptr, MESSAGE* msg)
 		slog(SLOG_ERROR, SLOG_ERROR, "CORE: core_on_first_message: invalid message sequence; ignoring");
 		return;
 	}
-	slog(SLOG_INFO, SLOG_INFO, "CORE: on first message; checking if app: *%s*", msg->msg);
+	slog(SLOG_INFO, SLOG_INFO, "CORE: on first message; checking if app: *%s*", "");
 
 	/*if (!strcmp(data, app_key))
 	{
@@ -381,15 +381,14 @@ void call_external_command_handler(STATE* state_ptr, MESSAGE* msg)
 		    //(msg->status == MSG_STREAM || sta)
 	{
 		slog(SLOG_INFO, SLOG_INFO, "CORE: STATUS is MSG_STREAM %s", state_ptr->lep->id);
-		fifo_send_message(state_ptr->lep->fifo, msg->msg);
+		fifo_send_message(state_ptr->lep->fifo, msg->msg_id); //was str
 		return;
 	}
 
-
-	MESSAGE *in_msg = message_parse(msg->msg);
+	MESSAGE *in_msg = message_parse_json(msg->_msg_json);
 	if(in_msg == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "CORE: received empty message on fd (%s:%d)", state_ptr->module, state_ptr->conn);
+		slog(SLOG_ERROR, SLOG_ERROR, "CORE: received empty message on fd (%s:%d)", state_ptr->module->name, state_ptr->conn);
 		//message_free(msg);
 		return;
 	}
@@ -428,13 +427,13 @@ void recv_stream_cmd(MESSAGE* msg)
 
 	LOCAL_EP* lep = (LOCAL_EP*)msg->ep->data;
 
-	JSON* msg_json = json_new(msg->msg);
+	JSON* msg_json = msg->_msg_json;
 	int command = json_get_int(msg_json, "command");
 	if(command == 1 && lep->fifo <= 0)
 	{
 		sprintf(lep->fifo_name, "/tmp/%s", randstring(5));
 		lep->fifo = fifo_init_server(lep->fifo_name);
-		msg->msg = lep->fifo_name;
+		msg->msg_id = lep->fifo_name; //was str
 		state_send_message(app_state, msg);
 		return;
 	}
@@ -457,7 +456,7 @@ void recv_stream_msg(MESSAGE* msg)
 		return;
 
 	LOCAL_EP* lep = (LOCAL_EP*)msg->ep->data;
-	fifo_send_message(lep->fifo, msg->msg);
+	fifo_send_message(lep->fifo, msg->msg_id);//was str
 
 }
 

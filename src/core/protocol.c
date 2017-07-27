@@ -43,7 +43,7 @@ void core_proto_hello(STATE *state_ptr, MESSAGE *hello_msg)
 	 * if(hello_msg->status != MSG_HELLO)
 	 */
 
-	JSON *hello_json = json_new(hello_msg->msg);
+	JSON *hello_json = hello_msg->_msg_json;
 	/* validate */
 	int hello_validation =  json_validate_hello(hello_json);
 	if(hello_validation != 0)
@@ -69,7 +69,7 @@ void core_proto_hello(STATE *state_ptr, MESSAGE *hello_msg)
 		JSON* hello_ack_json = json_build_hello_ack(hello_validation, manifest);
 		state_send_json(state_ptr, NULL, hello_ack_json, MSG_HELLO_ACK);
 
-		json_free(hello_json);
+		//json_free(hello_json);
 		json_free(hello_ack_json);
 		json_free(manifest);
 	}
@@ -86,7 +86,7 @@ void core_proto_hello_ack(STATE *state_ptr, MESSAGE *hello_ack_msg)
 	 * if(hello_ack_msg->status != MSG_HELLO_ACK)
 	 */
 
-	JSON *hello_ack_json = json_new(hello_ack_msg->msg);
+	JSON *hello_ack_json = hello_ack_msg->_msg_json;
 
 	/* validate */
 	int hello_ack_validation = json_validate_hello_ack(hello_ack_json);
@@ -106,7 +106,7 @@ void core_proto_hello_ack(STATE *state_ptr, MESSAGE *hello_ack_msg)
 
 	final:
 	{
-		json_free(hello_ack_json);
+		//json_free(hello_ack_json);
 		core_proto_send_auth(state_ptr);
 	}
 }
@@ -200,7 +200,7 @@ void core_proto_check_auth(STATE *state_ptr, MESSAGE *auth_msg)
 	JSON* auth_ack_json = NULL;
 	Array* auth_creds_array = NULL;
 
-	JSON *auth_json = json_new(auth_msg->msg);
+	JSON *auth_json = auth_msg->_msg_json;
 	int auth_validate = json_validate_auth(auth_json);
 	if(auth_validate != 0)
 	{
@@ -263,7 +263,7 @@ void core_proto_check_auth(STATE *state_ptr, MESSAGE *auth_msg)
 		state_send_json(state_ptr, NULL, auth_ack_json, MSG_AUTH_ACK);
 		json_free(auth_ack_json);
 		array_free(auth_creds_array);
-		json_free(auth_json);
+		//json_free(auth_json);
 	}
 }
 
@@ -277,7 +277,7 @@ void core_proto_check_auth_ack(STATE *state_ptr, MESSAGE *auth_ack_msg)
 	 * if(auth_ack_msg->status != MSG_AUTH_ACK)
 	 */
 
-	JSON *auth_ack_json = json_new(auth_ack_msg->msg);
+	JSON *auth_ack_json = auth_ack_msg->_msg_json;
 	int auth_ack_validate = json_validate_auth_ack(auth_ack_json);
 
 	if(auth_ack_validate != 0)
@@ -303,7 +303,7 @@ void core_proto_check_auth_ack(STATE *state_ptr, MESSAGE *auth_ack_msg)
 
 	final:
 	{
-		json_free(auth_ack_json);
+		;//json_free(auth_ack_json);
 	}
 }
 
@@ -336,7 +336,7 @@ void core_proto_map_ack(STATE *state_ptr, MESSAGE *map_ack_msg)
 	 * if(map_ack_msg->status != MSG_MAP_ACK)
 	 */
 
-	JSON *map_ack_json = json_new(map_ack_msg->msg);
+	JSON *map_ack_json = map_ack_msg->_msg_json;
 	int map_ack_validate = json_validate_map_ack(map_ack_json);
 
 	if(map_ack_validate == 0)
@@ -375,7 +375,7 @@ void core_proto_map_ack(STATE *state_ptr, MESSAGE *map_ack_msg)
 
 	final:
 	{
-		json_free(map_ack_json);
+		;//json_free(map_ack_json);
 	}
 }
 
@@ -389,7 +389,7 @@ void core_proto_map(STATE *state_ptr, MESSAGE *map_msg)
 	 * if(map_ack_msg->status != MSG_MAP)
 	 */
 
-	JSON *map_json = json_new(map_msg->msg);
+	JSON *map_json = map_msg->_msg_json;
 	int map_validate = json_validate_map(map_json);
 	LOCAL_EP *lep = NULL;
 
@@ -422,7 +422,7 @@ void core_proto_map(STATE *state_ptr, MESSAGE *map_msg)
 	state_send_json(state_ptr, NULL, map_ack_json, MSG_MAP_ACK);
 
 	json_free(map_ack_json);
-	json_free(map_json);
+	//json_free(map_json);
 }
 
 

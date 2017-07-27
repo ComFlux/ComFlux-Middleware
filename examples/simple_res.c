@@ -28,7 +28,7 @@ void print_callback(MESSAGE* msg) {
 
 	if (msg != NULL)
 	{
-		printf("Recved req: %s\n", msg->msg);
+		printf("Recved req: %s\n", json_to_str(msg->_msg_json));
 		reqid = msg->msg_id;
 	}
 

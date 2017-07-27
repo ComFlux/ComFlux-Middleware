@@ -28,6 +28,7 @@ JSON* args_json = NULL;
 int   clean     = 1;
 char* appid     = NULL;
 #define TOPIC_SIZE 10
+#define QoS 0
 
 typedef struct _mqtt_channel__
 {
@@ -78,7 +79,7 @@ _mqtt_channel* channel_new(const char* host, int port, const char* topic,
 
 	mosquitto_connect(channel->mosq, host, port, 60); // != MOSQ_ERR_SUCCESS FIXME
 	if(channel->subscribe)
-		mosquitto_subscribe(channel->mosq, NULL, topic, 2);
+		mosquitto_subscribe(channel->mosq, NULL, topic, QoS);
 
 	channel->fd = ++conn_counter;
 	channel->fd_str = (char*)malloc(20*sizeof(char));
@@ -161,15 +162,17 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
 
 	sprintf(data, "%.*s", message->payloadlen, (char*) message->payload);
 	json_to_core = json_new(NULL);
-	json_set_str(json_to_core, "msg", data);
+	json_set_json(json_to_core, "msg_json", json_new(data));
+	//json_set_str(json_to_core, "msg", data);
 	json_set_int(json_to_core, "status", 9);
 
 	outer_json_to_core = json_new(NULL);
-	json_set_str(outer_json_to_core, "msg", json_to_str(json_to_core));
+	json_set_json(outer_json_to_core, "msg_json", json_to_core);
+	//json_set_str(outer_json_to_core, "msg", json_to_str(json_to_core));
 	json_set_int(outer_json_to_core, "status", 9);
 
 	msg_to_core = json_to_str(outer_json_to_core);
-	//printf("-------- send to core %s\n\n", msg_to_core);
+	//printf("-------- send to core %s\n", msg_to_core);
 
 	/* send data to the core */
 	if(on_data_handler)
@@ -293,7 +296,8 @@ int com_send_data(int conn, const char *data)
 		json_set_str(ep_md_json, "ep_id", "mqtt");
 		json_set_json(msg_json, "ep_metadata", ep_md_json);
 		json_set_int(ack_json, "status", 6);
-		json_set_str(ack_json, "msg", json_to_str(msg_json));
+		//json_set_str(ack_json, "msg", json_to_str(msg_json));
+		json_set_json(ack_json, "msg_json", msg_json);
 
 		//printf("send back: %s\n\n", json_to_str(ack_json));
 		(*on_data_handler)(thismodule, channel->fd,
@@ -303,7 +307,7 @@ int com_send_data(int conn, const char *data)
 
 	if(channel->publish && msg_status == 9) /* MSG_MSG */
 	{
-		err = mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, 2, true);
+		err = mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, QoS, true);
 	}
 	else
 	{

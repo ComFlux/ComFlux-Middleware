@@ -60,7 +60,7 @@ void buffer_set(BUFFER* buffer, const char* new_buf, int new_start, int new_end)
 	buffer->size = buffer->size + new_size;
 	buffer->data[buffer->size] = '\0';
 
-	//printf("----buffer set %d %d %d: %s\n\n", new_start, new_end, buffer->size, buffer->data);
+	//printf("----buffer set %d %d %d: %s\n", new_start, new_end, buffer->size, buffer->data);
 	free(old_buf);
 }
 
@@ -230,11 +230,11 @@ int state_send_json(STATE* state, const char* id, JSON* json, int status)
 	if(state == NULL)
 		return STATE_BAD;
 
-	char* msg_str = json_to_str(json);
+	//char* msg_str = json_to_str(json);
 
-	MESSAGE* msg = message_new_id(id, msg_str, status);
+	MESSAGE* msg = message_new_id_json(id, json, status);
 	int result = state_send_message(state, msg);
-	free(msg_str);
+	//free(msg_str);
 	message_free(msg);
 
 	return result;

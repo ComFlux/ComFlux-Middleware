@@ -19,11 +19,11 @@ char* data = NULL;
 
 void print_json_handler(MESSAGE* msg)
 {
-	JSON* resp_json = json_new(msg->msg);
+	JSON* resp_json = msg->_msg_json;
 
 	printf("\tresponse:*** %s\n***\n", json_to_str_pretty(resp_json));
-	if(msg->msg)
-		data = strdup(msg->msg);
+	if(msg->_msg_json)
+		data = json_to_str(msg->_msg_json);
 	operation_done = 1;
 }
 

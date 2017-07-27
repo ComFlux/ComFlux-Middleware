@@ -41,7 +41,7 @@ extern HashMap* rdcs;
 
 void map_handler(MESSAGE* msg)
 {
-	JSON* map_json = json_new(msg->msg);
+	JSON* map_json = msg->_msg_json;
 
 	Array* ep_array = json_get_array(map_json, "endpoint");
 	JSON* ep_json = json_new(NULL);
@@ -74,7 +74,7 @@ void map_handler(MESSAGE* msg)
 
 void map_lookup_handler(MESSAGE* msg)
 {
-	JSON *map_json = json_new(msg->msg);
+	JSON *map_json = msg->_msg_json;
 
 	Array* ep_array = json_get_array(map_json, "endpoint");
 	JSON* ep_json = json_new(NULL);
@@ -108,7 +108,7 @@ void map_lookup_handler(MESSAGE* msg)
 void unmap_handler(MESSAGE* msg)
 {
 	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE: map handler");
-	JSON *unmap_json = json_new(msg->msg);
+	JSON *unmap_json = msg->_msg_json;
 	JSON *ep_json = json_get_json(unmap_json, "endpoint");
 	char* ep_name = json_get_str(ep_json, "ep_name");
 	//char* address = json_get_str(map_json, "address");
@@ -162,7 +162,7 @@ void lookup_handler(MESSAGE* msg)
 		return;
 	}
 
-	JSON* lookup_json = json_new(msg->msg);
+	JSON* lookup_json = msg->_msg_json;
 	Array *results_array  = json_get_jsonarray(lookup_json, "results");
 
 
@@ -197,7 +197,7 @@ void md_handler(MESSAGE* msg)
 
 	//ep_send_str_message(default_ep_md, resp_str); //TODO: check
 	int r = ep_send_json(default_ep_md,
-			json_new(resp_msg->msg),
+			resp_msg->_msg_json,
 			resp_msg->msg_id,
 			MSG_RESP_LAST);
 
@@ -212,15 +212,13 @@ void md_handler(MESSAGE* msg)
 void add_rdc_handler(MESSAGE* msg)
 {
 	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE: add rdc handler %s", message_to_str(msg));
-	JSON *add_rdc_json = json_new(msg->msg);
+	JSON *add_rdc_json = msg->_msg_json;
 	char* rdc_module_name = strdup_null(json_get_str(add_rdc_json, "module"));
 	char* rdc_addr = strdup_null(json_get_str(add_rdc_json, "address"));
 
 	COM_MODULE* module = com_get_module(rdc_module_name);
 
 	core_add_rdc(module, rdc_addr);
-
-	json_free(add_rdc_json);
 }
 
 void terminate_handler(MESSAGE* msg)
@@ -231,7 +229,7 @@ void terminate_handler(MESSAGE* msg)
 
 void load_com_module_ep_handler(MESSAGE* msg)
 {
-	JSON* msg_json = json_new(msg->msg);
+	JSON* msg_json = msg->_msg_json;
 	char* module_path = json_get_str(msg_json, "module_path");
 	char* config_path = json_get_str(msg_json, "config_path");
 
@@ -240,7 +238,7 @@ void load_com_module_ep_handler(MESSAGE* msg)
 
 void load_access_module_ep_handler(MESSAGE* msg)
 {
-	JSON* msg_json = json_new(msg->msg);
+	JSON* msg_json = msg->_msg_json;
 	char* module_path = json_get_str(msg_json, "module_path");
 	char* config_pth = json_get_str(msg_json, "config_pth");
 

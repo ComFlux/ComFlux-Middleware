@@ -259,12 +259,12 @@ int endpoint_register(ENDPOINT *ep)
 		goto final;
 
 	ret_msg = message_parse(result);
-	ret_json = json_new(ret_msg->msg);
+	ret_json = ret_msg->_msg_json;
 	return_value = json_get_int(ret_json, "return_value");
 
 	final:
 	{
-		json_free(ret_json);
+		//json_free(ret_json);
 		message_free(ret_msg);
 		message_free(reg_msg);
 		//TODO: free(ep_str);
@@ -449,7 +449,7 @@ int endpoint_more_messages(ENDPOINT* endpoint)
 
 	free(result);
 
-	return json_get_int(json_new(msg->msg), "return_value");
+	return json_get_int(msg->_msg_json, "return_value");
 }
 
 /* ask the core if there are queued requests for @ep */
@@ -467,7 +467,7 @@ int endpoint_more_requests(ENDPOINT* endpoint)
 
 	free(result);
 
-	return json_get_int(json_new(msg->msg), "return_value");
+	return json_get_int(msg->_msg_json, "return_value");
 }
 
 /* ask the core if there are queued responses for @ep */
@@ -485,7 +485,7 @@ int endpoint_more_responses(ENDPOINT* endpoint, const char* req_id)
 
 	free(result);
 
-	return json_get_int(json_new(msg->msg), "return_value");
+	return json_get_int(msg->_msg_json, "return_value");
 }
 
 /* receive queued message from the core */
@@ -623,7 +623,7 @@ Array* ep_get_all_connections(ENDPOINT* endpoint)
 			"core", "ep_get_all_connections", "string",
 			endpoint->id, NULL);
 	MESSAGE* resp_msg = message_parse(resp);
-	JSON* resp_json = json_new(resp_msg->msg);
+	JSON* resp_json = resp_msg->_msg_json;
 	char* return_value = json_get_str(resp_json, "return_value");
 
 	JSON* all_conns_json = json_new(return_value);
@@ -724,13 +724,13 @@ int endpoint_map_to(ENDPOINT* endpoint, const char* address, const char* ep_quer
 		return -1;
 
 	msg = message_parse(result);
-	map_json = json_new(msg->msg);
+	map_json = msg->_msg_json;
 	return_value = json_get_int(map_json, "return_value");
 
 	slog(SLOG_INFO, SLOG_INFO, "MW: Map result: %d", return_value);
 
 	message_free(msg);
-	json_free(map_json);
+	//json_free(map_json);
 
 	return return_value;
 }
@@ -776,13 +776,13 @@ int endpoint_map_module(ENDPOINT* endpoint, const char* module, const char* addr
 		return -1;
 
 	msg = message_parse(result);
-	map_json = json_new(msg->msg);
+	map_json = msg->_msg_json;
 	return_value = json_get_int(map_json, "return_value");
 
 	slog(SLOG_INFO, SLOG_INFO, "MW: Map result: %d", return_value);
 
 	message_free(msg);
-	json_free(map_json);
+	//json_free(map_json);
 
 	return return_value;
 }
@@ -832,12 +832,12 @@ int endpoint_unmap_from(ENDPOINT* endpoint, const char* addr)
 		return -1;
 
 	MESSAGE* msg = message_parse(result);
-	JSON* map_json = json_new(msg->msg);
+	JSON* map_json = msg->_msg_json;
 	int return_value = json_get_int(map_json, "return_value");
 
 	//free(result);
 	message_free(msg);
-	json_free(map_json);
+	//json_free(map_json);
 
 	return return_value;
 }
@@ -860,12 +860,12 @@ int endpoint_unmap_connection(ENDPOINT* endpoint, const char* module, int conn)
 		return -1;
 
 	MESSAGE* msg = message_parse(result);
-	JSON* map_json = json_new(msg->msg);
+	JSON* map_json = msg->_msg_json;
 	int return_value = json_get_int(map_json, "return_value");
 
 	//free(result);
 	message_free(msg);
-	json_free(map_json);
+	//json_free(map_json);
 
 	return return_value;
 }
@@ -882,7 +882,7 @@ int endpoint_unmap_all(ENDPOINT* endpoint)
 			endpoint->id, NULL);
 
 	MESSAGE* msg = message_parse(result);
-	JSON* msg_json = json_new(msg->msg);
+	JSON* msg_json = msg->_msg_json;
 	int return_value = json_get_int(msg_json, "return_value");
 
 	return return_value;
@@ -903,12 +903,12 @@ int endpoint_divert(ENDPOINT *ep, char *ep_id_from, char* addr, char *ep_id_to)
 	slog(SLOG_DEBUG, SLOG_DEBUG, "MW: Divert result: %s", result);
 
 	MESSAGE* msg = message_parse(result);
-	JSON* divert_json = json_new(msg->msg);
+	JSON* divert_json = msg->_msg_json;
 	int return_value = json_get_int(divert_json, "return_value");
 
 	//free(result);
 	message_free(msg);
-	json_free(divert_json);
+	//json_free(divert_json);
 
 	return return_value;
 }

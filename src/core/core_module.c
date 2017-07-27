@@ -618,11 +618,11 @@ int core_add_manifest(const char* msg)
     slog(SLOG_INFO, SLOG_INFO, "CORE:add_manifest: %s", msg);
 
     MESSAGE* md_msg = message_parse(msg);
-    JSON* md_json = json_new(md_msg->msg);
+    JSON* md_json = md_msg->_msg_json;
 
     int ret = manifest_update(md_json);
 
-    json_free(md_json);
+    //json_free(md_json);
     message_free(md_msg);
 
     return ret;

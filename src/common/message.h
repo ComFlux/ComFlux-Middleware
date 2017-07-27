@@ -41,7 +41,8 @@
 typedef struct _MESSAGE{
 	char * msg_id; 		/* general message_id */
 	ENDPOINT *ep;		/* source or destination */
-	char * msg; 		/* actual message */
+	JSON * _msg_json;
+	char * msg_str; 		/* actual message */
 
 	 /* int value if the message status as defined above
 	 	e.g., last message for resp+, req message, src/snk msg
@@ -54,11 +55,15 @@ typedef struct _MESSAGE{
 
 
 MESSAGE* message_new(const char *msg_, unsigned int status_);
+MESSAGE* message_new_json(JSON *msg_, unsigned int status_);
 MESSAGE* message_new_id(const char* msg_id, const char *msg_, unsigned int status_);
+MESSAGE* message_new_id_json(const char* msg_id, JSON *msg_, unsigned int status_);
 
 void message_free(MESSAGE *msg);
 
 MESSAGE* message_parse(const char *msg);
+MESSAGE* message_parse_json(JSON *msg);
+
 JSON* message_to_json(MESSAGE *msg);
 char* message_to_str(MESSAGE *msg);
 

@@ -95,7 +95,7 @@ void rdc_register_handler(MESSAGE *msg)
 {
 	printf("\nRegistration message received:\n");
 
-	JSON* registration_json = json_new(msg->msg);
+	JSON* registration_json = msg->_msg_json;
 
 	char* reg_json_pretty = json_to_str_pretty(registration_json);
 	printf("%s\n\n", reg_json_pretty);
@@ -143,7 +143,7 @@ void rdc_register_handler(MESSAGE *msg)
 	}
 
 	printf("Cpts size: %d\n", map_size(cpts));
-	json_free(registration_json);
+	//json_free(registration_json);
 	//mw_unmap_all(ep_snk_register);
 }
 
@@ -151,7 +151,7 @@ void rdc_register_handler(MESSAGE *msg)
 void rdc_getmd_handler(MESSAGE *msg)
 {
 	printf("\nMetadata received:\n");
-	JSON* manifest_json = json_new(msg->msg);
+	JSON* manifest_json = msg->_msg_json;
 	printf("%s\n\n", json_to_str_pretty(manifest_json));
 
 	Cpt* cpt = (Cpt*)malloc(sizeof(Cpt));
@@ -171,7 +171,7 @@ void rdc_getmd_handler(MESSAGE *msg)
 	{
 		printf("Malformed message, no enpoints, addr or modules provided\n"
 				"messafe is:\n"
-				"%s\n", json_to_str_pretty(json_new(msg->msg)));
+				"%s\n", json_to_str_pretty(msg->_msg_json));
 		return;
 	}
 
@@ -192,7 +192,7 @@ void rdc_getmd_handler(MESSAGE *msg)
 
 void rdc_lookup_handler(MESSAGE *msg)
 {
-	JSON* lookup_json = json_new(msg->msg);
+	JSON* lookup_json = msg->_msg_json;
 
 	printf("\nLookup request received: %d\n", map_size(cpts));
 	printf("%s\n\n", json_to_str_pretty(lookup_json));
@@ -245,7 +245,7 @@ void rdc_lookup_handler(MESSAGE *msg)
 
 	// Cleanup:
 	free(json_str);
-	json_free(lookup_json);
+	//json_free(lookup_json);
 	json_free(result);
 	array_free(keys);
 	array_free(results);
@@ -260,7 +260,7 @@ void rdc_list_handler(MESSAGE *msg)
 	//printf("all connections size = %d\n\n", array_size(connections));
 
 	printf("\nList request received:\n");
-	JSON* list_json = json_new(msg->msg);
+	JSON* list_json = msg->_msg_json;
 
 	char* list_str = json_to_str_pretty(list_json);
 	printf("\n\n%s\n\n", list_str);
@@ -294,7 +294,7 @@ void rdc_list_handler(MESSAGE *msg)
 
 	// Cleanup:
 	free(json_str);
-	json_free(list_json);
+	//json_free(list_json);
 	json_free(result);
 	array_free(keys);
 	array_free(results);

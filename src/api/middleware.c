@@ -428,7 +428,7 @@ int mw_load_com_module(const char* libpath, const char* cfgpath)
 		return -1;
 
 	MESSAGE* msg = message_parse(result);
-	JSON* map_json = json_new(msg->msg);
+	JSON* map_json = msg->_msg_json;
 	int return_value = json_get_int(map_json, "return_value");
 
 	//free(result);
@@ -468,7 +468,7 @@ int mw_load_access_module(const char* libpath, const char* cfgpath)
 		return -1;
 
 	MESSAGE* msg = message_parse(result);
-	JSON* map_json = json_new(msg->msg);
+	JSON* map_json = msg->_msg_json;
 	int return_value = json_get_int(map_json, "return_value");
 
 	//free(result);
@@ -493,7 +493,7 @@ char* mw_get_remote_metdata(const char* module, int conn)
 		return NULL;
 
 	MESSAGE* resp_msg = message_parse(resp);
-	JSON* resp_json = json_new(resp_msg->msg);
+	JSON* resp_json = resp_msg->_msg_json;
 
 	return json_get_str(resp_json, "return_value");
 }
@@ -655,9 +655,9 @@ void* api_on_message(void* data)
 	}
 	else if(msg_->status == MSG_STREAM_CMD && msg_->ep->type == EP_STR_SNK)
 	{
-		printf("\n\nstream start ..... %s \n\n", msg_->msg);
+		printf("\n\nstream start ..... %s \n\n", msg_->msg_id);//was str
 		//JSON* msg_json = json_new(msg_->msg);
-		char * fifo_name = msg_->msg;
+		char * fifo_name = msg_->msg_id; //was str
 		//int stream_fd = json_get_str(msg_json, "fifo_name");
 		stream_fd_global = fifo_init_client(fifo_name);
 		return NULL;

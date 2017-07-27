@@ -156,8 +156,8 @@ void ep_local_free(LOCAL_EP *lep)
 
 void ep_default_handler_send_to_app(MESSAGE* msg)
 {
-	slog(SLOG_INFO, SLOG_INFO, "EP LOCAL: default handler send_to_app: %d: %s", array_size(((LOCAL_EP*)(msg->ep->data))->filters), msg->msg);
-	JSON* msg_json = json_new(msg->msg);
+	//slog(SLOG_INFO, SLOG_INFO, "EP LOCAL: default handler send_to_app: %d: %s", array_size(((LOCAL_EP*)(msg->ep->data))->filters), msg->msg_str);
+	JSON* msg_json = msg->_msg_json;
 	//JSON* filter_json = json_new(NULL);
 	//json_set_array(filter_json, NULL, ((LOCAL_EP*)(msg->ep->data))->filters);
 	if(json_filter_validate_array(msg_json, ((LOCAL_EP*)(msg->ep->data))->filters))
@@ -168,9 +168,9 @@ void ep_default_handler_send_to_app(MESSAGE* msg)
 
 void ep_default_handler_queuing(MESSAGE* msg)
 {
-	slog(SLOG_INFO, SLOG_INFO, "EP LOCAL: default handler queuing: %s", msg->msg);
+	//slog(SLOG_INFO, SLOG_INFO, "EP LOCAL: default handler queuing: %s", msg->msg_str);
 
-	JSON* msg_json = json_new(msg->msg);
+	JSON* msg_json = msg->_msg_json;
 	if( msg->status == MSG_REQ && (msg->ep->type == EP_RESP || msg->ep->type == EP_RESP_P))
 		if(json_filter_validate_array(msg_json, ((LOCAL_EP*)(msg->ep->data))->filters))
 			array_add(((LOCAL_EP*)msg->ep->data)->messages, msg);
