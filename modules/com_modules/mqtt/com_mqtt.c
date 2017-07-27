@@ -303,7 +303,7 @@ int com_send_data(int conn, const char *data)
 
 	if(channel->publish && msg_status == 9) /* MSG_MSG */
 	{
-		err = mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, 1, true);
+		err = mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, 2, true);
 	}
 	else
 	{
