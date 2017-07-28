@@ -55,12 +55,12 @@ void* api_on_message(void* data)
 			&& count_msg>=total_msg)
 	{
 		stopped_flag = 1;
+		time_total = (clock()-time_start);
 	}
 
 	else if(started_flag == 1 && stopped_flag ==0)
 	{
 		count_msg += 1;
-		time_total += (clock()-time_start);
 	}
 
 	return NULL;

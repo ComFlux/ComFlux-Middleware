@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 
 		com_send_data(conn, data);
 		count_msg += 1;
-		time_total += clock();
+		//time_total += clock();
 	}
 
 	printf("done %d\n", count_msg);
