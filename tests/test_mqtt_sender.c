@@ -87,15 +87,15 @@ int main(int argc, char *argv[])
 				addr, ep_query_str, cpt_query_str);
 	printf("Map result: %d \n", map_result);
 
-	endpoint_send_message(ep_src, message);
+	endpoint_send_message_json(ep_src, msg_json);
 
 	unsigned int i;
 
 	for(i=0; i<nb_msg; i++)
 	{
-		endpoint_send_message(ep_src, message);
+		endpoint_send_message_json(ep_src, msg_json);
 		count_msg += 1;
-		time_total += clock();
+		//time_total += clock();
 	}
 
 	sleep(1);
