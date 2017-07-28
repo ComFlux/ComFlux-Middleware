@@ -79,11 +79,7 @@ _mqtt_channel* channel_new(const char* host, int port, const char* topic,
 
 	mosquitto_connect(channel->mosq, host, port, 60); // != MOSQ_ERR_SUCCESS FIXME
 	if(channel->subscribe)
-<<<<<<< HEAD
-		mosquitto_subscribe(channel->mosq, NULL, topic, 0);
-=======
 		mosquitto_subscribe(channel->mosq, NULL, topic, QoS);
->>>>>>> 8f4472c1889a7b75c70d2e40fd851e42a3d0b5fb
 
 	channel->fd = ++conn_counter;
 	channel->fd_str = (char*)malloc(20*sizeof(char));
@@ -311,11 +307,7 @@ int com_send_data(int conn, const char *data)
 
 	if(channel->publish && msg_status == 9) /* MSG_MSG */
 	{
-<<<<<<< HEAD
-		err = mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, 0, true);
-=======
 		err = mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, QoS, true);
->>>>>>> 8f4472c1889a7b75c70d2e40fd851e42a3d0b5fb
 	}
 	else
 	{
