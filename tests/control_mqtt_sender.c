@@ -118,8 +118,8 @@ int main(int argc, char *argv[])
 	mosquitto_lib_init();
 
 	_mqtt_channel* channel = channel_new(
-			"127.0.0.1", //mqtt_host
-			1883,        //mqtt_port
+			"54.154.142.51", //mqtt_host
+			1884,        //mqtt_port
 			"test123",      //topic
 			1,           //publish
 			0,           //subscribe
