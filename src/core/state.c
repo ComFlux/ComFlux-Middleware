@@ -230,11 +230,9 @@ int state_send_json(STATE* state, const char* id, JSON* json, int status)
 	if(state == NULL)
 		return STATE_BAD;
 
-	//char* msg_str = json_to_str(json);
-
 	MESSAGE* msg = message_new_id_json(id, json, status);
 	int result = state_send_message(state, msg);
-	//free(msg_str);
+
 	message_free(msg);
 
 	return result;

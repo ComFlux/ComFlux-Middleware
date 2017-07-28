@@ -494,7 +494,19 @@ int ep_send_json(LOCAL_EP *lep, JSON* json, const char* msg_id, int status)
 	return 0;
 }
 
+int ep_send_message(LOCAL_EP *lep, MESSAGE* msg)
+{
+	//LOCAL_EP *lep = (LOCAL_EP*)(ep->data);
+	STATE* state;
+	int i;
+	for(i=0; i<array_size(lep->mappings_states); i++)
+	{
+		state = array_get(lep->mappings_states, i);
+		state_send_message(state, msg);
+	}
 
+	return 0;
+}
 
 
 int eps_init()

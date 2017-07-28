@@ -36,7 +36,7 @@ MESSAGE* message_new(const char* msg_, unsigned int status_)
 MESSAGE* message_new_json(JSON* msg_, unsigned int status_)
 {
 	MESSAGE* message = (MESSAGE*)malloc(sizeof(MESSAGE));
-	message->_msg_json = _json_dup(msg_);
+	message->_msg_json = msg_;
 	//message->msg_str = NULL;//json_to_str(msg_);
 	message->status = status_;
 

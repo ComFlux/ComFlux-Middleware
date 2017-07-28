@@ -366,7 +366,7 @@ void call_external_command_handler(STATE* state_ptr, MESSAGE* msg)
 		state_send_message(app_state, in_msg);
 	}
 
-	//message_free(in_msg);
+	message_free(in_msg);
 	//message_free(msg);
 }
 

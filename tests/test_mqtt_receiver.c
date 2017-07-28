@@ -16,7 +16,6 @@
 #include <time.h>
 #include <file.h>
 
-
 unsigned int total_msg = 500;
 
 unsigned int started_flag = 0;
@@ -29,7 +28,7 @@ unsigned int count_msg = 0;
 
 void print_callback(MESSAGE *msg)
 {
-	//printf("%s -- %s\n", msg->msg_id, msg->msg);
+	//printf("%s -- %s\n", msg->msg_id, message_to_str(msg));
 	if(started_flag == 0 && stopped_flag ==0)
 	{
 		started_flag = 1;
@@ -41,12 +40,12 @@ void print_callback(MESSAGE *msg)
 			&& count_msg>=total_msg)
 	{
 		stopped_flag = 1;
+		time_total = (clock() - time_start);
 	}
 
 	else if(started_flag == 1 && stopped_flag ==0)
 	{
 		count_msg += 1;
-		time_total += (clock() - time_start);
 	}
 }
 

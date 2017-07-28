@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#define QoS 0
 
 unsigned int nb_msg = 500;
 
@@ -81,7 +82,7 @@ _mqtt_channel* channel_new(const char* host, int port, const char* topic,
 
 	mosquitto_connect(channel->mosq, host, port, 60); // != MOSQ_ERR_SUCCESS FIXME
 	if(channel->subscribe)
-		mosquitto_subscribe(channel->mosq, NULL, topic, 2);
+		mosquitto_subscribe(channel->mosq, NULL, topic, QoS);
 
 	channel->fd = ++conn_counter;
 	channel->fd_str = (char*)malloc(20*sizeof(char));
@@ -117,8 +118,8 @@ int main(int argc, char *argv[])
 	mosquitto_lib_init();
 
 	_mqtt_channel* channel = channel_new(
-			"54.154.142.51", //mqtt_host
-			1884,        //mqtt_port
+			"127.0.0.1", //mqtt_host
+			1883,        //mqtt_port
 			"test123",      //topic
 			1,           //publish
 			0,           //subscribe
@@ -130,16 +131,16 @@ int main(int argc, char *argv[])
 	unsigned int i=0;
 	sprintf(data, "date %d\n", i);
 
-	mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, 2, true);
+	mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, QoS, true);
 
 	for(i=0; i<nb_msg; i++)
 	{
 		//sprintf(data, "{ \"status\": 9, \"msg\": \"{ \\\"status\\\": 9, \\\"msg\\\": \\\"{ \\\\\\\"value\\\\\\\": 9, \\\\\\\"datetime\\\\\\\": \\\\\\\"today\\\\\\\" }\\\", \\\"ep_id\\\": \\\"CiZTvUvpRY\\\", \\\"msg_id\\\": \\\"%d\\\" }\", \"msg_id\": \"%d\" }", i, i);
 		sprintf(data, "date %d\n", i);
 
-		mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, 2, true);
+		mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, QoS, true);
 		count_msg += 1;
-		time_total += clock();
+		//time_total += clock();
 	}
 
 	printf("done %d\n", count_msg);

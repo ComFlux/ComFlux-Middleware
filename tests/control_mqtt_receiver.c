@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#define QoS 0
 
 unsigned int total_msg = 500;
 
@@ -64,12 +65,12 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
 			&& count_msg>=total_msg)
 	{
 		stopped_flag = 1;
+		time_total = (clock() - time_start);
 	}
 
 	else if(started_flag == 1 && stopped_flag ==0)
 	{
 		count_msg += 1;
-		time_total += (clock() - time_start);
 	}
 }
 
@@ -105,7 +106,7 @@ _mqtt_channel* channel_new(const char* host, int port, const char* topic,
 
 	mosquitto_connect(channel->mosq, host, port, 60); // != MOSQ_ERR_SUCCESS FIXME
 	if(channel->subscribe)
-		mosquitto_subscribe(channel->mosq, NULL, topic, 2);
+		mosquitto_subscribe(channel->mosq, NULL, topic, QoS);
 
 	channel->fd = ++conn_counter;
 	channel->fd_str = (char*)malloc(20*sizeof(char));

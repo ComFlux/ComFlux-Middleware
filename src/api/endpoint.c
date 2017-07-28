@@ -237,16 +237,16 @@ ENDPOINT* endpoint_new_rr_p_file(const char* name, const char *description,
 int endpoint_register(ENDPOINT *ep)
 {
 	char*    ep_str = NULL;
-	MESSAGE* reg_msg = NULL;
+	//MESSAGE* reg_msg = NULL;
 
 	MESSAGE* ret_msg = NULL;
 	JSON*    ret_json = NULL;
 	int      return_value = -1;
 
 	ep_str = ep_to_str(ep);
-	reg_msg = message_new(ep_str, MSG_CMD);
+	//reg_msg = message_new(ep_str, MSG_CMD);
 
-	reg_msg->ep = ep;
+	//reg_msg->ep = ep;
     char* result = (char*) mw_call_module_function_blocking(
             NULL,
             "core", "register_endpoint", "int",
@@ -263,7 +263,7 @@ int endpoint_register(ENDPOINT *ep)
 	{
 		//json_free(ret_json);
 		message_free(ret_msg);
-		message_free(reg_msg);
+		//message_free(reg_msg);
 		//TODO: free(ep_str);
 
 		return return_value;
@@ -291,6 +291,22 @@ void endpoint_remove(ENDPOINT* endpoint)
 void endpoint_send_message(ENDPOINT* endpoint, const char* msg)
 {
 	MESSAGE *src_msg = message_new(msg, MSG_MSG);
+	src_msg->ep = endpoint;
+
+	//endpoint_send(ep, src_msg);
+	char* msg_str = message_to_str(src_msg);
+    mw_call_module_function(
+            NULL,
+            "core", "ep_send_message", "void",
+            endpoint->id, src_msg->msg_id, msg_str, NULL);
+
+	free(msg_str);
+	message_free(src_msg);
+}
+
+void endpoint_send_message_json(ENDPOINT* endpoint, JSON* msg_json)
+{
+	MESSAGE *src_msg = message_new_json(msg_json, MSG_MSG);
 	src_msg->ep = endpoint;
 
 	//endpoint_send(ep, src_msg);

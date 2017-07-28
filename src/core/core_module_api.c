@@ -671,7 +671,7 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 	msg = message_new_json(fc_res_json, MSG_CMD);
 
 	free(fc_id);
-	json_free(fc_res_json);
+	//json_free(fc_res_json);
 
 	return (msg);
 }
