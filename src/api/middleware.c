@@ -597,7 +597,7 @@ void api_on_first_data(COM_MODULE* module, int conn, const char* msg)
 {
 	(*(sockpair_module->fc_set_on_data))((void (*)(void *, int, const char *))api_on_data);
 	waiting_blocking_call = 0;
-	sync_trigger(fds_blocking_call[0], msg);
+	sync_trigger(fds_blocking_call[0], "{}");
 }
 
 void* api_on_message(void* data)
@@ -608,11 +608,12 @@ void* api_on_message(void* data)
 
 	//printf("**** msg %s, %s :: %d, \n", msg_->msg_id, blocking_msg_id, waiting_blocking_call);
 
-	if (msg_->msg_id && strcmp(blocking_msg_id, msg_->msg_id) == 0 && waiting_blocking_call == 1)
-	{
-		waiting_blocking_call = 0;
-		sync_trigger(fds_blocking_call[0], msg);
-	}
+	if (waiting_blocking_call == 1)
+		if (msg_->msg_id && strcmp(blocking_msg_id, msg_->msg_id) == 0)
+		{
+			waiting_blocking_call = 0;
+			sync_trigger(fds_blocking_call[0], msg);
+		}
 
 	if (msg_->ep==NULL) {
 		//slog(SLOG_WARN, SLOG_WARN, "MW: Can't find endpoint for msg: *%s*", msg);

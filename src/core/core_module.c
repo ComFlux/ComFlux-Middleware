@@ -241,17 +241,16 @@ int core_ep_send_message(LOCAL_EP* lep, const char* msg_id, const char* msg)
     if (!ep_can_send(lep->ep))
         return EP_NO_SEND;
 
-    JSON* msg_json = json_new(msg);
-
-    //TODO: make correct fcs for stream/src
-    if (json_validate_message(lep, msg_json))
-        return EP_NO_VALID;
+    //JSON* msg_json = json_new(msg);
 
     MESSAGE* msg_msg = message_parse(msg);
+    //TODO: make correct fcs for stream/src
+    if (json_validate_message(lep, msg_msg->_msg_json))
+        return EP_NO_VALID;
 
-    ep_send_json(lep, msg_json, msg_id, msg_msg->status);
+    ep_send_message(lep, msg_msg);
 
-    json_free(msg_json);
+    message_free(msg_msg);
 
     return 0;
 }

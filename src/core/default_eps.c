@@ -190,9 +190,9 @@ void md_handler(MESSAGE* msg)
 			MSG_RESP_LAST);
 
 	free(resp_str);
-	message_free(resp_msg);
 
-	json_free(md_json);
+	message_free(resp_msg);
+	message_free(md_msg);
 
 	ep_unmap_all(default_ep_md);
 }

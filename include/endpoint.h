@@ -337,6 +337,8 @@ void endpoint_remove(ENDPOINT* endpoint);
  *
  */
 void endpoint_send_message(ENDPOINT* endpoint, const char* msg);
+void endpoint_send_message_json(ENDPOINT* endpoint, JSON* msg_json);
+
 
 void endpoint_start_stream(ENDPOINT* endpoint);
 void endpoint_stop_stream(ENDPOINT* endpoint);
