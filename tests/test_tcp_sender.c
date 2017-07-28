@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
 
 	for(i=0; i<nb_msg; i++)
 	{
-		endpoint_send_message(ep_src, message);
+		endpoint_send_message_json(ep_src, msg_json);
 		count_msg += 1;
 		//time_total += clock();
 	}

@@ -346,27 +346,30 @@ void call_external_command_handler(STATE* state_ptr, MESSAGE* msg)
 		return;
 	}
 
-	MESSAGE *in_msg = message_parse_json(msg->_msg_json);
+	/*MESSAGE *in_msg = message_parse_json(msg->_msg_json);
 	if(in_msg == NULL)
 	{
+
 		//message_free(msg);
 		return;
-	}
-	in_msg->ep = state_ptr->lep->ep;
-	in_msg->conn = state_ptr->conn;
-	in_msg->module = strdup_null(state_ptr->module->name);
+	}*/
+	msg->ep = state_ptr->lep->ep;
+	msg->conn = state_ptr->conn;
+	msg->module = strdup_null(state_ptr->module->name);
 
 	/* apply the handler of the ep for incoming messages */
 	if(state_ptr->lep->ep->handler != NULL)
 	{
-		(*state_ptr->lep->ep->handler)(in_msg);
+		//printf("bad %s\n", message_to_str(msg));
+		(*state_ptr->lep->ep->handler)(msg);
 	}
 	else
 	{
-		state_send_message(app_state, in_msg);
+		//printf(" to app %s\n", message_to_str(msg));
+		state_send_message(app_state, msg);
 	}
 
-	message_free(in_msg);
+	//message_free(in_msg);
 	//message_free(msg);
 }
 
