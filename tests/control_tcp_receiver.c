@@ -47,7 +47,7 @@ void* api_on_message(void* data)
 	if(started_flag == 0 && stopped_flag ==0)
 	{
 		started_flag = 1;
-		time_start = clock();
+		time_start = time(NULL); //clock();
 		//return;
 	}
 
@@ -55,7 +55,7 @@ void* api_on_message(void* data)
 			&& count_msg>=total_msg)
 	{
 		stopped_flag = 1;
-		time_total = (clock()-time_start);
+		time_total = (time(NULL)-time_start);
 	}
 
 	else if(started_flag == 1 && stopped_flag ==0)
