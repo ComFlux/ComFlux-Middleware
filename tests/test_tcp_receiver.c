@@ -15,6 +15,7 @@
 #include <time.h>
 #include <file.h>
 
+#include <sys/time.h>
 
 unsigned int total_msg = 500;
 
