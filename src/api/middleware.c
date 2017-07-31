@@ -232,6 +232,7 @@ void mw_add_manifest(const char* manifest_str)
 			md_str, NULL);
 
 	free(md_str);
+	json_free(md_msg->_msg_json);
 	message_free(md_msg);
 }
 

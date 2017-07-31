@@ -261,7 +261,7 @@ int endpoint_register(ENDPOINT *ep)
 
 	final:
 	{
-		//json_free(ret_json);
+		json_free(ret_json);
 		message_free(ret_msg);
 		//message_free(reg_msg);
 		//TODO: free(ep_str);
@@ -731,8 +731,8 @@ int endpoint_map_to(ENDPOINT* endpoint, const char* address, const char* ep_quer
 	return_value = json_get_int(map_json, "return_value");
 
 
+	json_free(map_json);
 	message_free(msg);
-	//json_free(map_json);
 
 	return return_value;
 }
@@ -773,8 +773,8 @@ int endpoint_map_module(ENDPOINT* endpoint, const char* module, const char* addr
 	map_json = msg->_msg_json;
 	return_value = json_get_int(map_json, "return_value");
 
+	json_free(map_json);
 	message_free(msg);
-	//json_free(map_json);
 
 	return return_value;
 }
@@ -819,8 +819,8 @@ int endpoint_unmap_from(ENDPOINT* endpoint, const char* addr)
 	int return_value = json_get_int(map_json, "return_value");
 
 	//free(result);
+	json_free(map_json);
 	message_free(msg);
-	//json_free(map_json);
 
 	return return_value;
 }
@@ -843,8 +843,8 @@ int endpoint_unmap_connection(ENDPOINT* endpoint, const char* module, int conn)
 	int return_value = json_get_int(map_json, "return_value");
 
 	//free(result);
+	json_free(map_json);
 	message_free(msg);
-	//json_free(map_json);
 
 	return return_value;
 }
@@ -880,8 +880,8 @@ int endpoint_divert(ENDPOINT *ep, char *ep_id_from, char* addr, char *ep_id_to)
 	int return_value = json_get_int(divert_json, "return_value");
 
 	//free(result);
+	json_free(divert_json);
 	message_free(msg);
-	//json_free(divert_json);
 
 	return return_value;
 }

@@ -107,7 +107,10 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size) //size sh
 							word_end = i+1;
 							buffer_set(buffer, new_data, word_start, word_end);
 							/* apply the callback for this connection */
-							(*buffer->state->on_message)(buffer->state, message_parse(buffer->data));
+							MESSAGE* msg = message_parse(buffer->data);
+							JSON* js=msg->_msg_json;
+							(*buffer->state->on_message)(buffer->state, msg);
+							json_free(js);
 
 							buffer->size = 0;
 							word_start = i+1;
