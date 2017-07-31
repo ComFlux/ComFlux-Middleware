@@ -21,8 +21,8 @@ unsigned int total_msg = 500;
 unsigned int started_flag = 0;
 unsigned int stopped_flag = 0;
 
-unsigned int time_start = 0;
-unsigned int time_total = 0;
+double time_start = 0;
+double time_total = 0;
 unsigned int count_msg = 0;
 
 
