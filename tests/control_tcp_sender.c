@@ -36,7 +36,6 @@ unsigned int nb_msg = 500;
 unsigned int time_total = 0;
 unsigned int count_msg = 0;
 
-
 char* file_to_str(const char* filename) {
 
 	FILE* _file = fopen(filename, "r");
@@ -174,6 +173,11 @@ int main(int argc, char *argv[])
 
 	char* data = json_to_str(msg_json);
 
+	/* sleep */
+	 struct timespec sleep_time;
+	 sleep_time.tv_sec = 0;
+	 sleep_time.tv_nsec=1000L;
+
 	com_send_data(conn, data);
 
 	for(i=0; i<nb_msg; i++)
@@ -181,11 +185,13 @@ int main(int argc, char *argv[])
 		//sprintf(data, "{ \"status\": 9, \"msg\": \"{ \\\"status\\\": 9, \\\"msg\\\": \\\"{ \\\\\\\"value\\\\\\\": 9, \\\\\\\"datetime\\\\\\\": \\\\\\\"today\\\\\\\" }\\\", \\\"ep_id\\\": \\\"CiZTvUvpRY\\\", \\\"msg_id\\\": \\\"%d\\\" }\", \"msg_id\": \"%d\" }", i, i);
 		//sprintf(data, "{date %d\n}", i);
 
+		nanosleep(&sleep_time, NULL);
 		com_send_data(conn, data);
 		count_msg += 1;
 		//time_total += clock();
 	}
 
+    close(conn);
 	printf("done %d\n", count_msg);
 	sleep(2);
         sleep(2);
