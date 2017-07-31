@@ -133,6 +133,11 @@ int main(int argc, char *argv[])
 	//char* message = json_to_str(msg_json);
 
 
+	/* sleep */
+	 struct timespec sleep_time;
+	 sleep_time.tv_sec = 0;
+	 sleep_time.tv_nsec=10000000L;
+
 	//char* addr = text_load_from_file("src_mqtt.cfg.json");
 	int map_result = endpoint_map_to(ep_src,
 			receiver_full, ep_query_str, cpt_query_str);
@@ -144,6 +149,7 @@ int main(int argc, char *argv[])
 
 	for(i=0; i<nb_msg; i++)
 	{
+		nanosleep(&sleep_time, NULL);
 		endpoint_send_message_json(ep_src, msg_json);
 		count_msg += 1;
 		//time_total += clock();
