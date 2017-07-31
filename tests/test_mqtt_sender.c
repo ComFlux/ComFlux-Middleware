@@ -104,8 +104,8 @@ int main(int argc, char *argv[])
 	json_set_int(msg_json, "value", rand() % 10);
 	json_set_str(msg_json, "date", "today");
 
-	//char* lorem = file_to_str("lorem.txt");
-	//json_set_str(msg_json, "lorem", lorem);
+	char* lorem = file_to_str("lorem.txt");
+	json_set_str(msg_json, "lorem", lorem);
 
 
 	/* sleep */
