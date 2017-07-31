@@ -16,6 +16,32 @@ unsigned int nb_msg = 500;
 unsigned int time_total = 0;
 unsigned int count_msg = 0;
 
+
+char* file_to_str(const char* filename) {
+
+	FILE* _file = fopen(filename, "r");
+
+	if (_file == NULL)
+		return NULL;
+
+	/* get size of file */
+	fseek(_file, 0L, SEEK_END);
+	int size = (int) ftell(_file);
+	rewind(_file);
+
+	/* read file */
+	char* var;
+	var = (char*) malloc((size_t) size + 1);
+	memset(var, 0, (size_t) size + 1);
+
+	fread(var, 1, (size_t) size, _file);
+	var[size] = '\0';
+	fclose(_file);
+
+	/* return text */
+	return var;
+}
+
 int main(int argc, char *argv[])
 {
 	char *mw_cfg_path = NULL;
@@ -100,15 +126,19 @@ int main(int argc, char *argv[])
 	json_set_int(msg_json, "value", rand() % 10);
 	json_set_str(msg_json, "date", "today");
 
-	char* message = json_to_str(msg_json);
+	char* lorem = file_to_str("lorem.txt");
+	json_set_str(msg_json, "lorem", lorem);
+
+	//printf("%s\n", lorem);
+	//char* message = json_to_str(msg_json);
 
 
-	char* addr = text_load_from_file("src_mqtt.cfg.json");
+	//char* addr = text_load_from_file("src_mqtt.cfg.json");
 	int map_result = endpoint_map_to(ep_src,
 			receiver_full, ep_query_str, cpt_query_str);
 	printf("Map result: %d \n", map_result);
 
-	endpoint_send_message(ep_src, message);
+	endpoint_send_message_json(ep_src, msg_json);
 
 	unsigned int i;
 
