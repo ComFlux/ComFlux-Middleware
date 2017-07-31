@@ -165,14 +165,13 @@ int main(int argc, char *argv[])
 	char* data = json_to_str(msg_json);
 
 	unsigned int i=0;
-	sprintf(data, "date %d\n", i);
 
 	mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, QoS, true);
 
 	for(i=0; i<nb_msg; i++)
 	{
 		//sprintf(data, "{ \"status\": 9, \"msg\": \"{ \\\"status\\\": 9, \\\"msg\\\": \\\"{ \\\\\\\"value\\\\\\\": 9, \\\\\\\"datetime\\\\\\\": \\\\\\\"today\\\\\\\" }\\\", \\\"ep_id\\\": \\\"CiZTvUvpRY\\\", \\\"msg_id\\\": \\\"%d\\\" }\", \"msg_id\": \"%d\" }", i, i);
-		sprintf(data, "date %d\n", i);
+		//sprintf(data, "date %d\n", i);
 
 		mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, QoS, true);
 		count_msg += 1;
