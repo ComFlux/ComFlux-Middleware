@@ -22,7 +22,7 @@ unsigned int total_msg = 500;
 unsigned int started_flag = 0;
 unsigned int stopped_flag = 0;
 
-unsigned int time_start = 0;
+struct timeval time_start;
 unsigned int time_total = 0;
 unsigned int count_msg = 0;
 
@@ -57,7 +57,8 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
 	if(started_flag == 0 && stopped_flag ==0)
 	{
 		started_flag = 1;
-		time_start = clock();
+		//time_start = time(NULL);//clock();
+		gettimeofday(&time_start, NULL);
 		//return;
 	}
 
@@ -65,7 +66,12 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
 			&& count_msg>=total_msg)
 	{
 		stopped_flag = 1;
-		time_total = (clock() - time_start);
+		//time_total = (time(NULL) - time_start);
+		struct timeval t1;
+		gettimeofday(&t1, NULL);
+		time_total = (t1.tv_sec - time_start.tv_sec) * 1000.0;      // sec to ms
+		time_total += (t1.tv_usec - time_start.tv_usec) / 1000.0;   // us to ms
+
 	}
 
 	else if(started_flag == 1 && stopped_flag ==0)
@@ -154,14 +160,14 @@ int main(int argc, char *argv[])
     {
     	sleep(5);
 
-    	printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total)/ CLOCKS_PER_SEC);
-    	printf("avg:  %f\n", (time_total/(double)count_msg)/ CLOCKS_PER_SEC);
+    	printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
+    	printf("avg:  %f\n", (time_total/(double)count_msg));
     }
 
 	sleep(1);
 	printf("Total: ");
-	printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total)/ CLOCKS_PER_SEC);
-	printf("avg:  %lf\n", (time_total/(double)count_msg)/ CLOCKS_PER_SEC);
+	printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
+	printf("avg:  %lf\n", (time_total/(double)count_msg));
 
 	return 0;
 }
