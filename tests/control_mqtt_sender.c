@@ -164,6 +164,11 @@ int main(int argc, char *argv[])
 
 	char* data = json_to_str(msg_json);
 
+	/* sleep */
+	 struct timespec sleep_time;
+	 sleep_time.tv_sec = 0;
+	 sleep_time.tv_nsec=10000000L;
+
 	unsigned int i=0;
 
 	mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, QoS, true);
@@ -173,6 +178,7 @@ int main(int argc, char *argv[])
 		//sprintf(data, "{ \"status\": 9, \"msg\": \"{ \\\"status\\\": 9, \\\"msg\\\": \\\"{ \\\\\\\"value\\\\\\\": 9, \\\\\\\"datetime\\\\\\\": \\\\\\\"today\\\\\\\" }\\\", \\\"ep_id\\\": \\\"CiZTvUvpRY\\\", \\\"msg_id\\\": \\\"%d\\\" }\", \"msg_id\": \"%d\" }", i, i);
 		//sprintf(data, "date %d\n", i);
 
+		nanosleep(&sleep_time, NULL);
 		mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, QoS, true);
 		count_msg += 1;
 		//time_total += clock();

@@ -33,6 +33,7 @@ void print_callback(MESSAGE *msg)
 	{
 		started_flag = 1;
 		time_start = clock();
+		printf("start\n");
 		//return;
 	}
 
@@ -41,6 +42,7 @@ void print_callback(MESSAGE *msg)
 	{
 		stopped_flag = 1;
 		time_total = (clock() - time_start);
+		printf("stop\n");
 	}
 
 	else if(started_flag == 1 && stopped_flag ==0)
