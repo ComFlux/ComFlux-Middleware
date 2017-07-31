@@ -636,6 +636,7 @@ void* api_on_message(void* data)
 	json_free(msg_->_msg_json);
 
 	message_free(msg_);
+	free(data);
 	return NULL;
 }
 
