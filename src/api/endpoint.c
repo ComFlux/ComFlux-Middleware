@@ -301,6 +301,7 @@ void endpoint_send_message(ENDPOINT* endpoint, const char* msg)
             endpoint->id, src_msg->msg_id, msg_str, NULL);
 
 	free(msg_str);
+	json_free(src_msg->_msg_json);
 	message_free(src_msg);
 }
 
