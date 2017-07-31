@@ -95,6 +95,8 @@ void* tcp_accept_function(void* serversock);
 void tcp_run_receive_thread(int conn);
 void* tcp_receive_function(void* conn);
 
+int serversock;              //, peersock;
+
 void init(const char *server_addr, int server_port)
 {
 	if (server_port == -1)
@@ -102,7 +104,7 @@ void init(const char *server_addr, int server_port)
 	        server_port = 0;
 	    }
 
-	    int serversock;              //, peersock;
+//	    int serversock;              //, peersock;
 	    struct sockaddr_in serverin; //, peerin;
 
 	    serversock = socket(AF_INET, SOCK_STREAM, 0);
@@ -292,16 +294,18 @@ int main(int argc, char *argv[])
 
 	while(stopped_flag == 0)
 	{
-		sleep(2);
+		sleep(5);
 
-		printf("\n\n nb msg received: %d \ntotal time received %d \n", count_msg, time_total - time_start);
+		printf("\n\n nb msg received: %d \ntotal time received %d \n", count_msg, (time_total - time_start)/ CLOCKS_PER_SEC);
 		printf("avg:  %f\n", (time_total/(float)count_msg)/ CLOCKS_PER_SEC);
 	}
 
 	sleep(1);
 	printf("Total: ");
-	printf("\n\n nb msg received: %d \ntotal time received %d \n", count_msg, time_total - time_start);
+	printf("\n\n nb msg received: %d \ntotal time received %d \n", count_msg, (time_total - time_start)/ CLOCKS_PER_SEC);
 	printf("avg:  %f\n", (time_total/(float)count_msg)/ CLOCKS_PER_SEC);
+
+        close(serversock);
 
 	return 0;
 }
