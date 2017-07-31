@@ -323,7 +323,7 @@ void* mw_call_module_function_blocking(
 	json_free(msg_json);
 	strcpy(blocking_msg_id, _msg_id);
 	free(_msg_id);
-	//free(send_str);
+	free(send_str);
 	message_free(send_msg);
 
 	waiting_blocking_call = 1;
@@ -633,8 +633,9 @@ void* api_on_message(void* data)
 	{
 		(*msg_->ep->handler)(msg_);
 	}
+	json_free(msg_->_msg_json);
 
-	//message_free(msg_);
+	message_free(msg_);
 	return NULL;
 }
 
