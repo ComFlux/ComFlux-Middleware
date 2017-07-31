@@ -179,7 +179,7 @@ char* message_to_str(MESSAGE* msg)
 	JSON *msg_json = message_to_json(msg);
 
 	char* js = json_to_str(msg_json);
-	//TODO: json_free(msg_json);
+	json_free(msg_json);
 	return js;
 }
 
