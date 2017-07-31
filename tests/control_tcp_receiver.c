@@ -296,14 +296,14 @@ int main(int argc, char *argv[])
 	{
 		sleep(5);
 
-    	printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total)/ CLOCKS_PER_SEC);
-    	printf("avg:  %f\n", (time_total/(double)count_msg)/ CLOCKS_PER_SEC);
+    	printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
+    	printf("avg:  %f\n", (time_total/(double)count_msg));
 	}
 
 	sleep(1);
 	printf("Total: ");
-	printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total)/ CLOCKS_PER_SEC);
-	printf("avg:  %f\n", (time_total/(double)count_msg)/ CLOCKS_PER_SEC);
+	printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
+	printf("avg:  %f\n", (time_total/(double)count_msg));
 
     close(serversock);
 
