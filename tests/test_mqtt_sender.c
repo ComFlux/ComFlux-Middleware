@@ -79,7 +79,10 @@ int main(int argc, char *argv[])
 	json_set_int(msg_json, "value", rand() % 10);
 	json_set_str(msg_json, "date", "today");
 
-	char* message = json_to_str(msg_json);
+	char* lorem = file_to_str("lorem.txt");
+	json_set_str(msg_json, "lorem", lorem);
+
+	//char* message = json_to_str(msg_json);
 
 
 	char* addr = text_load_from_file("src_mqtt.cfg.json");
