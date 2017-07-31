@@ -21,7 +21,7 @@ unsigned int total_msg = 500;
 unsigned int started_flag = 0;
 unsigned int stopped_flag = 0;
 
-double time_start = 0;
+struct timeval time_start = 0;
 double time_total = 0;
 unsigned int count_msg = 0;
 
@@ -32,7 +32,8 @@ void print_callback(MESSAGE *msg)
 	if(started_flag == 0 && stopped_flag ==0)
 	{
 		started_flag = 1;
-		time_start = time(NULL);//clock();
+		//time_start = time(NULL);//clock();
+		gettimeofday(&time_start, NULL);
 		//return;
 	}
 
@@ -40,7 +41,12 @@ void print_callback(MESSAGE *msg)
 			&& count_msg>=total_msg)
 	{
 		stopped_flag = 1;
-		time_total = (time(NULL) - time_start);
+		//time_total = (time(NULL) - time_start);
+		struct timeval t1;
+		gettimeofday(&t1, NULL);
+		time_total = (t1.tv_sec - time_start.tv_sec) * 1000.0;      // sec to ms
+		time_total += (t1.tv_usec - time_start.tv_usec) / 1000.0;   // us to ms
+
 	}
 
 	else if(started_flag == 1 && stopped_flag ==0)
