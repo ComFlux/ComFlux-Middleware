@@ -25,6 +25,7 @@
 #else
 #include <net/if.h>
 #endif
+#include <sys/time.h> 
 
 char receiver_addr[200] = "34.229.95.129";
 unsigned int receiver_port = 1505;
