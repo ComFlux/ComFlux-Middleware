@@ -250,6 +250,7 @@ int core_ep_send_message(LOCAL_EP* lep, const char* msg_id, const char* msg)
 
     ep_send_message(lep, msg_msg);
 
+    json_free(msg_msg->_msg_json);
     message_free(msg_msg);
 
     return 0;
