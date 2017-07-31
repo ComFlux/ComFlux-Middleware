@@ -27,7 +27,7 @@
 #endif
 #include <sys/time.h> 
 
-char receiver_addr[200] = "34.229.95.129";
+char receiver_addr[200] = "34.253.191.67";
 unsigned int receiver_port = 1505;
 
 unsigned int total_msg = 500;
