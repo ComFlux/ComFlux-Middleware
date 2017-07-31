@@ -15,6 +15,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <json.h>
+
 #define QoS 0
 
 unsigned int nb_msg = 500;
@@ -22,6 +24,31 @@ unsigned int nb_msg = 500;
 unsigned int time_total = 0;
 unsigned int count_msg = 0;
 
+
+char* file_to_str(const char* filename) {
+
+	FILE* _file = fopen(filename, "r");
+
+	if (_file == NULL)
+		return NULL;
+
+	/* get size of file */
+	fseek(_file, 0L, SEEK_END);
+	int size = (int) ftell(_file);
+	rewind(_file);
+
+	/* read file */
+	char* var;
+	var = (char*) malloc((size_t) size + 1);
+	memset(var, 0, (size_t) size + 1);
+
+	fread(var, 1, (size_t) size, _file);
+	var[size] = '\0';
+	fclose(_file);
+
+	/* return text */
+	return var;
+}
 
 typedef struct _mqtt_channel__
 {
@@ -126,7 +153,16 @@ int main(int argc, char *argv[])
 			"sender"       //clientid
 			);
 
-	char data[250];
+
+	/* build a message */
+	JSON* msg_json = json_new(NULL);
+	json_set_int(msg_json, "value", rand() % 10);
+	json_set_str(msg_json, "date", "today");
+
+	char* lorem = file_to_str("lorem.txt");
+	json_set_str(msg_json, "lorem", lorem);
+
+	char* data = json_to_str(msg_json);
 
 	unsigned int i=0;
 	sprintf(data, "date %d\n", i);
