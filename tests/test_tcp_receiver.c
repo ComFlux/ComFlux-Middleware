@@ -21,7 +21,7 @@ unsigned int total_msg = 500;
 unsigned int started_flag = 0;
 unsigned int stopped_flag = 0;
 
-struct timeval time_start = 0;
+struct timeval time_start;
 double time_total = 0;
 unsigned int count_msg = 0;
 
