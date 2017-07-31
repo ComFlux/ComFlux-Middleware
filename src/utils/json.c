@@ -132,7 +132,7 @@ void json_set_array(JSON* parent, const char* prop, Array* val)
 		for(i=0; i<array_size(val); i++)
 		{
 			elem = array_get(val, i);
-			json_object_array_add(son_elem, json_object_new_string(strdup_null(elem)));
+			json_object_array_add(son_elem, json_object_new_string(elem));
 		}
 	}
 	if(val->elem_type == ELEM_TYPE_PTR) //JSON object
