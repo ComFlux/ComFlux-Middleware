@@ -622,11 +622,12 @@ void* api_on_message(void* data)
 	}
 	else if(msg_->status == MSG_STREAM_CMD && msg_->ep->type == EP_STR_SNK)
 	{
-		printf("\n\nstream start ..... %s \n\n", msg_->msg_id);//was str
+		printf("\n\nstream start ..... %s \n\n", message_to_str(msg_));//was str
 		//JSON* msg_json = json_new(msg_->msg);
-		char * fifo_name = msg_->msg_id; //was str
+		//char * fifo_name = msg_->msg_id; //was str
 		//int stream_fd = json_get_str(msg_json, "fifo_name");
-		stream_fd_global = fifo_init_client(fifo_name);
+		//stream_fd_global = fifo_init_client(fifo_name);
+		(*msg_->ep->handler)(msg_);
 		return NULL;
 	}
 	else if (msg_->ep->handler)

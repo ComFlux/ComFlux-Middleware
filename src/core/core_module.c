@@ -439,9 +439,19 @@ void core_ep_stream_send(LOCAL_EP* lep, const char* msg)
     //build a MSG_STREAM message
     JSON* msg_json = json_new(NULL);
     json_set_str(msg_json, "stream", msg);
-    ep_send_json(lep, msg_json, message_generate_id(), MSG_STREAM);
 
-    lep->flag = 1;
+    MESSAGE* msg_msg = message_new_json(msg_json, MSG_STREAM);
+
+    ep_send_message(lep, msg_msg);
+
+    json_free(msg_msg->_msg_json);
+    message_free(msg_msg);
+
+
+    //ep_send_json(lep, msg_json, message_generate_id(), MSG_STREAM);
+
+
+    //lep->flag = 1;
 }
 
 void core_ep_set_access(LOCAL_EP* lep, const char* subject)

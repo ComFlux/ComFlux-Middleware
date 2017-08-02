@@ -17,7 +17,7 @@
 
 #include <sys/time.h>
 
-unsigned int total_msg = 500;
+unsigned int total_msg = 100000000;
 
 unsigned int started_flag = 0;
 unsigned int stopped_flag = 0;
@@ -26,34 +26,37 @@ struct timeval time_start;
 double time_total = 0;
 unsigned int count_msg = 0;
 
+int totalSize=0;
 
-void print_callback(int stream_fd)
+void print_callback(MESSAGE *msg)
 {
+	started_flag = 1;
+	gettimeofday(&time_start, NULL);
+
 	//printf("%s -- %s\n", msg->msg_id, message_to_str(msg));
-	if(started_flag == 0 && stopped_flag ==0)
+	int stream_fd = fifo_init_client(msg->msg_id);
+	printf("init:%d  stream: %s\n", stream_fd, msg->msg_id);
+	int rcvSize;
+	char buf[1001];
+	while(1)
 	{
-		started_flag = 1;
-		//time_start = time(NULL);//clock();
-		gettimeofday(&time_start, NULL);
-		//return;
+		rcvSize = read(stream_fd, &buf, 1000);
+		if(rcvSize>0){
+			totalSize+=rcvSize;
+			//printf("recv size: %d\n", rcvSize);
+		}
+		if(totalSize>total_msg)
+			break;
 	}
 
-	if(started_flag == 1 && stopped_flag == 0
-			&& count_msg>=total_msg)
-	{
-		stopped_flag = 1;
-		//time_total = (time(NULL) - time_start);
-		struct timeval t1;
-		gettimeofday(&t1, NULL);
-		time_total = (t1.tv_sec - time_start.tv_sec) * 1000.0;      // sec to ms
-		time_total += (t1.tv_usec - time_start.tv_usec) / 1000.0;   // us to ms
 
-	}
+	stopped_flag = 1;
 
-	else if(started_flag == 1 && stopped_flag ==0)
-	{
-		count_msg += 1;
-	}
+	struct timeval t1;
+	gettimeofday(&t1, NULL);
+	time_total = (t1.tv_sec - time_start.tv_sec) * 1000.0;      // sec to ms
+	time_total += (t1.tv_usec - time_start.tv_usec) / 1000.0;   // us to ms
+
 }
 
 int main(int argc, char *argv[])
@@ -102,10 +105,9 @@ int main(int argc, char *argv[])
 
 	/* Declare and register endpoints */
 
-	ENDPOINT *ep_snk = endpoint_new_snk_file(
-			"ep_sink", /* name */
+	ENDPOINT *ep_snk = endpoint_new_stream_snk(
+			"ep_stream_sink", /* name */
 			"example snk endpoint", /* description */
-			"example_schemata/datetime_value.json", /* message schemata */
 			&print_callback); /* handler for incoming messages */
 
 
@@ -128,14 +130,14 @@ int main(int argc, char *argv[])
     {
     	sleep(5);
 
-    	printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
-    	printf("avg:  %lf\n", (time_total/(double)count_msg));
+    	printf("\n\n total size received: %d \ntotal time received %lf \n", totalSize, ((double)time_total));
+    	//printf("avg:  %lf\n", (time_total/(double)count_msg));
     }
 
 	sleep(1);
 	printf("Total: ");
-	printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
-	printf("avg:  %lf\n", (time_total/(double)count_msg));
+	printf("\n\n total size received: %d \ntotal time received %lf \n", totalSize, ((double)time_total));
+	//printf("avg:  %lf\n", (time_total/(double)count_msg));
 
 	return 0;
 }

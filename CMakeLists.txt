@@ -449,6 +449,15 @@ add_executable(test_mqtt_receiver ${CMAKE_CURRENT_SOURCE_DIR}/tests/test_mqtt_re
 target_link_libraries(test_mqtt_receiver middleware_api)
 #target_include_directories(test_mqtt_receiver PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+add_executable(stream_tcp_sender ${CMAKE_CURRENT_SOURCE_DIR}/tests/stream_tcp_sender.c)
+target_link_libraries(stream_tcp_sender middleware_api)
+#target_include_directories(stream_tcp_sender PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+add_executable(stream_tcp_receiver ${CMAKE_CURRENT_SOURCE_DIR}/tests/stream_tcp_receiver.c)
+target_link_libraries(stream_tcp_receiver middleware_api)
+#target_include_directories(stream_tcp_receiver PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+
 add_custom_command(TARGET test_mqtt_receiver POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_CURRENT_SOURCE_DIR}/examples/example_schemata

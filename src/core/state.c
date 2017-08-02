@@ -111,6 +111,7 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size) //size sh
 							JSON* js=msg->_msg_json;
 							(*buffer->state->on_message)(buffer->state, msg);
 							json_free(js);
+							message_free(msg);
 
 							buffer->size = 0;
 							word_start = i+1;

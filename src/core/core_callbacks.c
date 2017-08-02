@@ -175,7 +175,7 @@ void core_on_proto_message(STATE* state_ptr, MESSAGE* _msg)
 		;
 	}
 
-	message_free(_msg);
+	//message_free(_msg);
 }
 
 /*
@@ -243,7 +243,7 @@ void core_on_message(STATE* state_ptr, MESSAGE* _msg)
 		/* bad message status */
 		;
 	}
-	message_free(_msg);
+	//message_free(_msg);
 }
 
 /* core_on_component_message handles messages from the component.
@@ -394,7 +394,8 @@ void recv_stream_cmd(MESSAGE* msg)
 	{
 		sprintf(lep->fifo_name, "/tmp/%s", randstring(5));
 		lep->fifo = fifo_init_server(lep->fifo_name);
-		msg->msg_id = lep->fifo_name; //was str
+		msg->msg_id = strdup_null(lep->fifo_name); //was str
+		//printf("message---- %s\n", message_to_str(msg));
 		state_send_message(app_state, msg);
 		return;
 	}
@@ -404,7 +405,7 @@ void recv_stream_cmd(MESSAGE* msg)
 		//unlink(lep->fifo_name);
 	}
 }
-
+int total_stream = 0;
 void recv_stream_msg(MESSAGE* msg)
 {
 	if (msg->status != MSG_STREAM)
@@ -417,8 +418,12 @@ void recv_stream_msg(MESSAGE* msg)
 		return;
 
 	LOCAL_EP* lep = (LOCAL_EP*)msg->ep->data;
-	fifo_send_message(lep->fifo, msg->msg_id);//was str
-
+	char* data = json_get_str(msg->_msg_json, "stream");
+	int data_size = strlen(data);
+	//printf("--------: %d -- %d\n\n", strlen(data), total_stream);
+	//fifo_send_message(lep->fifo, data);//was str
+	write(lep->fifo, data, data_size);
+	free(data);
 }
 
 

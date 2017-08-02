@@ -120,8 +120,11 @@ JSON * json_build_map(LOCAL_EP *lep, JSON * ep_query, JSON * cpt_query)
 		char ep_type_query[50], msg_hash_query[50], resp_hash_query[50];
 		sprintf(ep_type_query, "ep_type = \'%s\'", get_ep_type_matching_str(lep->ep->type));
 		array_add(ep_query_array, ep_type_query);
-		sprintf(msg_hash_query, "msg_hash = \'%s\'", lep->ep->msg);
-		array_add(ep_query_array, msg_hash_query);
+		if(lep->ep->resp)
+		{
+			sprintf(msg_hash_query, "msg_hash = \'%s\'", lep->ep->msg);
+			array_add(ep_query_array, msg_hash_query);
+		}
 		if(lep->ep->resp)
 		{
 			sprintf(resp_hash_query, "resp_hash = \'%s\'", lep->ep->resp);
