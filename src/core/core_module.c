@@ -435,7 +435,7 @@ void core_ep_stream_send(LOCAL_EP* lep, const char* msg)
     if(lep->ep->type != EP_STR_SRC || lep->flag == 0)
     	return;
 
-    printf(" ---- \n\n", json_to_str(msg_msg->_msg_json));
+    printf(" ---- \n\n");
     //build a MSG_STREAM message
     JSON* msg_json = json_new(NULL);
     json_set_str(msg_json, "stream", msg);
