@@ -294,6 +294,12 @@ JSON *ep_local_to_json(LOCAL_EP *lep)
 	json_set_array(lep_json, "com_modules", com_modules_json_array);
 
 	json_merge(lep_json, cpt->metadata);
+
+	for (i=0; i<array_size(com_modules_json_array); i++)
+	{
+		com_module_json = array_get(lep->com_modules, i);
+		json_free(com_module_json);
+	}
 	array_free(com_modules_json_array);
 
 	return lep_json;
