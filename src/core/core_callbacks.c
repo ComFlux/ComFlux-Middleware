@@ -293,6 +293,7 @@ void core_on_component_message(STATE* state_ptr, MESSAGE* msg)
 	free(function_id);
 	free(return_type);
 	array_free(args);
+	json_free(return_msg->_msg_json);
 	message_free(return_msg);
 	//message_free(msg);
 	//json_free(cmd_json);

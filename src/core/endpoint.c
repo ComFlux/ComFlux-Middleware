@@ -294,6 +294,7 @@ JSON *ep_local_to_json(LOCAL_EP *lep)
 	json_set_array(lep_json, "com_modules", com_modules_json_array);
 
 	json_merge(lep_json, cpt->metadata);
+	array_free(com_modules_json_array);
 
 	return lep_json;
 }
