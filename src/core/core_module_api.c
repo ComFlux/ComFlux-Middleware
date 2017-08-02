@@ -380,7 +380,6 @@ void core_ep_stream_send_array(Array* argv)
 		return;
 
 	core_ep_stream_send(lep, msg);
-
 }
 
 int core_add_manifest_array(Array* argv)
@@ -605,7 +604,6 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 	json_set_str(fc_res_json, "return_type", return_type);
 	MESSAGE *msg =  NULL;
 
-    printf(" ---- %s \n\n", fc_id);
 	if( strcmp(return_type, "void") == 0 )
 	{
 		void (*fc)(Array*) = map_get(void_function_table_array, fc_id);
@@ -618,11 +616,9 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 		}
 		(*fc)(args);
 		//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: function call %s done ",fc_id);
-		printf(" ---- %s 1\n\n", fc_id);
-		//free(fc_id);
-		printf(" ---- %s 2\n\n", fc_id);
+
+		free(fc_id);
 		json_free(fc_res_json);
-		printf(" ---- %s 3\n\n", fc_id);
 		return NULL;
 	}
 	else if(strcmp(return_type, "int") == 0 )
