@@ -301,13 +301,16 @@ void tcp_run_accept_thread(int serversock)
 
 void* tcp_accept_function(void* serversock)
 {
+	int _serversock = *((int*)serversock);
+    free(serversock);
+
     int peersock;
     struct sockaddr_in peerin;
 
     // accept connection from an incoming client
     int c = sizeof(struct sockaddr_in);
     while (1) {
-        peersock = accept(*((int*)serversock), (struct sockaddr*)&peerin, (socklen_t*)&c);
+        peersock = accept(_serversock, (struct sockaddr*)&peerin, (socklen_t*)&c);
         if (peersock < 0) {
             //slog(1, SLOG_ERROR, "CONN: accept failed for (%d).", *((int*)serversock));
             return NULL; // TODO
@@ -344,6 +347,7 @@ void tcp_run_receive_thread(int conn)
 void* tcp_receive_function(void* conn)
 {
     int _conn = *((int*)conn);
+    free(conn);
     if (_conn <= 0) {
         //slog(SLOG_ERROR, SLOG_ERROR, "CONN: not established with (%d), can't recv", _conn);
         return NULL;

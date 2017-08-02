@@ -29,6 +29,7 @@ _json_path* _json_path_new(const char* path)
 	jp->sign = strdup_null(strtok (NULL, " "));
 
 	jp->value = strdup_null(strtok (NULL, " "));
+	free(path_dup);
 
 	jp->type = 0;
 	int n = strlen(jp->value);

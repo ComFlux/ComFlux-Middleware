@@ -81,6 +81,7 @@ char* com_init(void* module, const char* config_json)
 			sockpair_run_receive_thread(fds[my_conn]);
 	}
 
+	json_free(args_json);
 	address = (char*) malloc(10*sizeof(char));
 	sprintf(address, "%d:%d",my_conn, fds[my_conn]);
 	return address;
@@ -347,6 +348,7 @@ char* sockpair_receive_message_alt(int _conn)
 void* sockpair_receive_function(void *conn)
 {
 	int _conn = *((int*)conn);
+	free(conn);
 	if(_conn <= 0)
 	{
 		slog(SLOG_ERROR, SLOG_ERROR,
