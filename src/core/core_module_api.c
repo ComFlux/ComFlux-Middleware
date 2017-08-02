@@ -618,9 +618,11 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 		}
 		(*fc)(args);
 		//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: function call %s done ",fc_id);
-
-		free(fc_id);
+		printf(" ---- %s 1\n\n", fc_id);
+		//free(fc_id);
+		printf(" ---- %s 2\n\n", fc_id);
 		json_free(fc_res_json);
+		printf(" ---- %s 3\n\n", fc_id);
 		return NULL;
 	}
 	else if(strcmp(return_type, "int") == 0 )
