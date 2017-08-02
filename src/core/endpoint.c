@@ -467,6 +467,7 @@ LOCAL_EP* endpoint_query(JSON* query_json)
 {
 
 	LOCAL_EP *lep;
+	LOCAL_EP *lep_response = NULL;
 	JSON* lep_json;
 
 	int i; Array *_keys = map_get_keys(locales);
@@ -478,13 +479,14 @@ LOCAL_EP* endpoint_query(JSON* query_json)
 
 		if( json_filter_validate(lep_json, query_json) )
 		{
-			//if()
-			//slog(SLOG_INFO, SLOG_INFO, "EP QUERY result: %s", lep->ep->name);
-			return lep;
+			lep_response = lep;
+			json_free(lep_json);
+			break;
 		}
+		json_free(lep_json);
 	}
 
-	return NULL;
+	return lep_response;
 }
 
 

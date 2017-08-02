@@ -235,7 +235,7 @@ void json_merge(JSON* parent, JSON* val)
 	if(parent->elem_json == NULL)
 		parent->elem_json = json_tokener_parse("{}");
 
-	struct json_object* val_elem = _json_elem_dup(val->elem_json);
+	struct json_object* val_elem = (val->elem_json);
 
 	struct json_object_iter iter;
 	json_object_object_foreachC(val_elem, iter)
