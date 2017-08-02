@@ -289,6 +289,9 @@ void core_on_component_message(STATE* state_ptr, MESSAGE* msg)
 		state_send_message(app_state, return_msg);
 	}
 
+	free(module_id);
+	free(function_id);
+	free(return_type);
 	array_free(args);
 	message_free(return_msg);
 	//message_free(msg);

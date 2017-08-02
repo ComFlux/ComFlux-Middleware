@@ -380,6 +380,7 @@ void core_ep_stream_send_array(Array* argv)
 		return;
 
 	core_ep_stream_send(lep, msg);
+
 }
 
 int core_add_manifest_array(Array* argv)

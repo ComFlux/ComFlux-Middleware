@@ -444,7 +444,7 @@ void core_ep_stream_send(LOCAL_EP* lep, const char* msg)
 
     ep_send_message(lep, msg_msg);
 
-    json_free(msg_msg->_msg_json);
+    json_free(msg_json);
     message_free(msg_msg);
 
 

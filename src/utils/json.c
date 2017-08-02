@@ -104,7 +104,7 @@ void json_set_str(JSON* parent, const char* prop, const char* val)
 	if(prop == NULL || val == NULL)
 		return;
 
-	struct json_object *son_elem = json_object_new_string(strdup_null(val));
+	struct json_object *son_elem = json_object_new_string((val));
 	json_object_object_add(parent->elem_json, strdup_null(prop), son_elem);
 }
 
