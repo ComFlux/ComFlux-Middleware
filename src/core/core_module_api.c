@@ -605,6 +605,7 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 	json_set_str(fc_res_json, "return_type", return_type);
 	MESSAGE *msg =  NULL;
 
+    printf(" ---- %s \n\n", fc_id);
 	if( strcmp(return_type, "void") == 0 )
 	{
 		void (*fc)(Array*) = map_get(void_function_table_array, fc_id);

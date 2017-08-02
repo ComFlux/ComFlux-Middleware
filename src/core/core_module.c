@@ -397,8 +397,6 @@ MESSAGE* core_ep_fetch_response(LOCAL_EP* lep, const char* req_id)
 
 void core_ep_stream_start(LOCAL_EP* lep)
 {
-
-    printf(" ---- 1\n\n");
 	if(lep == NULL)
 		return;
 
@@ -410,7 +408,6 @@ void core_ep_stream_start(LOCAL_EP* lep)
     json_set_int(msg_json, "command", 1);
     ep_send_json(lep, msg_json, message_generate_id(), MSG_STREAM_CMD);
 
-    printf(" ---- 2\n\n");
     lep->flag = 1;
 }
 
