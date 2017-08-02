@@ -594,8 +594,8 @@ int core_load_access_module_array(Array* argv)
 
 MESSAGE* _core_call_array(const char* module_id, const char* function_id, const char* return_type, Array* args)
 {
-	char id[50];
-	char *fc_id = _core_get_id(id, module_id, function_id, return_type);
+	char fc_id[50];
+	_core_get_id(fc_id, module_id, function_id, return_type);
 
 	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: function call %s %s %s (%s)", module_id, function_id, return_type, fc_id);
 	//char *fc_res_str = NULL;
@@ -611,14 +611,12 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 		if (fc == NULL)
 		{
 			//slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s ", fc_id);
-			free(fc_id);
 			json_free(fc_res_json);
 			return NULL;
 		}
 		(*fc)(args);
 		//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: function call %s done ",fc_id);
 
-		free(fc_id);
 		json_free(fc_res_json);
 		return NULL;
 	}
@@ -628,7 +626,6 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 		if (fc == NULL)
 		{
 			//slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s", fc_id);
-			free(fc_id);
 			json_free(fc_res_json);
 			return NULL;
 		}
@@ -647,7 +644,6 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 		if (fc == NULL)
 		{
 			//slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s", fc_id);
-			free(fc_id);
 			json_free(fc_res_json);
 			return NULL;
 		}
@@ -660,7 +656,6 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 		if (fc == NULL)
 		{
 			//slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s", fc_id);
-			free(fc_id);
 			json_free(fc_res_json);
 			return NULL;
 		}
@@ -668,11 +663,7 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 		return result;
 	}
 
-
 	msg = message_new_json(fc_res_json, MSG_CMD);
-
-	free(fc_id);
-	//json_free(fc_res_json);
 
 	return (msg);
 }
