@@ -134,7 +134,9 @@ JSON * json_build_map(LOCAL_EP *lep, JSON * ep_query, JSON * cpt_query)
 		/* set the parameters in the json */
 		json_set_array(map_json, "ep_query", ep_query_array);
 		json_set_array(map_json, "cpt_query", cpt_query_array);
-		json_set_json(map_json, "ep_metadata", ep_to_json(lep->ep));
+		JSON* ep_metadata = ep_to_json(lep->ep);
+		json_set_json(map_json, "ep_metadata", ep_metadata);
+		json_free(ep_metadata);
 	}
 
 	return map_json;
@@ -148,7 +150,9 @@ JSON * json_build_map_ack(LOCAL_EP *lep, int code, JSON * other_data)
 	json_set_int(map_ack_json, "ack_code", code);
 	if(lep != NULL && code == 0)
 	{
-		json_set_json(map_ack_json, "ep_metadata", ep_to_json(lep->ep));
+		JSON* ep_metadata = ep_to_json(lep->ep);
+		json_set_json(map_ack_json, "ep_metadata", ep_metadata);
+		json_free(ep_metadata);
 	}
 
 	return map_ack_json;

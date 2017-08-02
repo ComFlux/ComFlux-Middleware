@@ -44,7 +44,9 @@ extern void core_on_disconnect(COM_MODULE* module, int conn);
 
 int core_register_endpoint(const char* json)
 {
-    LOCAL_EP *lep = ep_local_new(json_new(json), NULL);
+	JSON* ep_json = json_new(json);
+    LOCAL_EP *lep = ep_local_new(ep_json, NULL);
+    json_free(ep_json);
     if (!lep)
     	return -2;
 

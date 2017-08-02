@@ -41,6 +41,7 @@ void 	json_set_int   (JSON* parent, const char* prop, int val);
 void 	json_set_float (JSON* parent, const char* prop, float val);
 void 	json_set_str   (JSON* parent, const char* prop, const char* val);
 void 	json_set_json  (JSON* parent, const char* prop, JSON* val);
+void 	json_set_json_dup  (JSON* parent, const char* prop, JSON* val);
 void 	json_set_array (JSON* parent, const char* prop, Array* val);
 
 /* getters */
