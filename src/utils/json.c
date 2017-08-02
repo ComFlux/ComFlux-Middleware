@@ -87,7 +87,7 @@ void json_set_int(JSON* parent, const char* prop, int val)
 		return;
 
 	struct json_object *son_elem = json_object_new_int(val);
-	json_object_object_add(parent->elem_json, strdup_null(prop), son_elem);
+	json_object_object_add(parent->elem_json, prop, son_elem);
 }
 
 void json_set_float(JSON* parent, const char* prop, float val)
@@ -96,7 +96,7 @@ void json_set_float(JSON* parent, const char* prop, float val)
 		return;
 
 	struct json_object *son_elem = json_object_new_double(val);
-	json_object_object_add(parent->elem_json, strdup_null(prop), son_elem);
+	json_object_object_add(parent->elem_json, prop, son_elem);
 }
 
 void json_set_str(JSON* parent, const char* prop, const char* val)
@@ -104,8 +104,8 @@ void json_set_str(JSON* parent, const char* prop, const char* val)
 	if(prop == NULL || val == NULL)
 		return;
 
-	struct json_object *son_elem = json_object_new_string((val));
-	json_object_object_add(parent->elem_json, strdup_null(prop), son_elem);
+	struct json_object *son_elem = json_object_new_string(val);
+	json_object_object_add(parent->elem_json, prop, son_elem);
 }
 
 void json_set_json(JSON* parent, const char* prop, JSON* val)
@@ -114,7 +114,7 @@ void json_set_json(JSON* parent, const char* prop, JSON* val)
 		return;
 
 	struct json_object* val_elem_dup = _json_elem_dup(val->elem_json);
-	json_object_object_add(parent->elem_json, strdup_null(prop), val_elem_dup);
+	json_object_object_add(parent->elem_json, prop, val_elem_dup);
 }
 
 void json_set_array(JSON* parent, const char* prop, Array* val)
