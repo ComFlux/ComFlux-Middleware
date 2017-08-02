@@ -27,10 +27,7 @@ struct json_object* _json_elem_dup(struct json_object* json_elem)
 	const char* json_elem_str = json_object_to_json_string_ext(json_elem, JSON_C_TO_STRING_SPACED);
 	struct json_tokener* jtok = json_tokener_new();
 	if(json_elem_str)
-	{
 		new_json_elem = json_tokener_parse_ex(jtok, json_elem_str, strlen(json_elem_str));
-		free((char*)json_elem_str);
-	}
 	json_tokener_free(jtok);
 
 	return new_json_elem;
