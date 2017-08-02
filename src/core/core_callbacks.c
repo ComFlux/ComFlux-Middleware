@@ -296,7 +296,7 @@ void core_on_component_message(STATE* state_ptr, MESSAGE* msg)
 
 	if(return_msg)
 	{
-		json_free(return_msg->_msg_json)
+		json_free(return_msg->_msg_json);
 		message_free(return_msg);
 	}
 	//message_free(msg);
