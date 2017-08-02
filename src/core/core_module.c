@@ -442,6 +442,8 @@ void core_ep_stream_send(LOCAL_EP* lep, const char* msg)
 
     MESSAGE* msg_msg = message_new_json(msg_json, MSG_STREAM);
 
+    printf("--%s\n\n", json_to_str(msg_msg->_msg_json));
+
     ep_send_message(lep, msg_msg);
 
     json_free(msg_json);
