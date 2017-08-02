@@ -348,6 +348,7 @@ void* tcp_receive_function(void* conn)
 {
     int _conn = *((int*)conn);
     free(conn);
+
     if (_conn <= 0) {
         //slog(SLOG_ERROR, SLOG_ERROR, "CONN: not established with (%d), can't recv", _conn);
         return NULL;

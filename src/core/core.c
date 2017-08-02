@@ -82,6 +82,7 @@ int core_init(const char* _app_name, const char* _app_key)
 	JSON * app_md = json_new(NULL);
 	json_set_str(app_md, "app_name", app_name);
 	manifest_update(app_md);
+	json_free(app_md);
 
 	return EXIT_SUCCESS;
 }
