@@ -21,7 +21,7 @@
 
 /* returns an id to use in the function map.
  * to return the id, allocates memory on heap and returns a pointer */
-char* _core_get_id(const char * module_id, const char * function_id, const char * return_type);
+char* _core_get_id(char id[50], const char * module_id, const char * function_id, const char * return_type);
 
 /*
  * stores info about the app's endpoint
