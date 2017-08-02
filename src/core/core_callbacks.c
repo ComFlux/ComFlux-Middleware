@@ -289,12 +289,16 @@ void core_on_component_message(STATE* state_ptr, MESSAGE* msg)
 		state_send_message(app_state, return_msg);
 	}
 
+	printf("a\n");
 	free(module_id);
 	free(function_id);
 	free(return_type);
 	array_free(args);
+	printf("b\n");
 	json_free(return_msg->_msg_json);
 	message_free(return_msg);
+
+	printf("c\n");
 	//message_free(msg);
 	//json_free(cmd_json);
 }
