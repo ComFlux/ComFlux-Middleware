@@ -297,7 +297,7 @@ JSON *ep_local_to_json(LOCAL_EP *lep)
 
 	for (i=0; i<array_size(com_modules_json_array); i++)
 	{
-		com_module_json = array_get(lep->com_modules, i);
+		com_module_json = array_get(com_modules_json_array, i);
 		json_free(com_module_json);
 	}
 	array_free(com_modules_json_array);
