@@ -683,10 +683,11 @@ char* core_get_remote_manifest(COM_MODULE* module, int conn)
  * this function allocates memory and returns a pointer
  * don't forget to free
  */
-char* _core_get_id(const char* module_id, const char* function_id, const char* return_type)
+char* _core_get_id(char id[50],
+		const char* module_id, const char* function_id, const char* return_type)
 {
-    char* id;
-    id = (char*)malloc(50 * sizeof(char));
+    //char* id;
+    //id = (char*)malloc(50 * sizeof(char));
 
     strcpy(id, module_id);
     strcat(id, function_id);

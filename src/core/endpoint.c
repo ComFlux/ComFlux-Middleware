@@ -75,11 +75,20 @@ LOCAL_EP* ep_local_new(JSON *ep_json, void(* from_ext_handler)(MESSAGE*))
 	free(msg_schema_str);
 	free(resp_schema_str);
 
+	/* TODO: endpoint_init from json */
+	char* ep_type = json_get_str(json_data, "ep_type");
+	char* ep_name = json_get_str(json_data, "ep_name");
+	char* ep_description = json_get_str(json_data, "ep_description");
 	lep->ep = endpoint_init(
-			json_get_str(json_data, "ep_name"), json_get_str(json_data, "ep_description"),
-			get_ep_type_int(json_get_str(json_data, "ep_type")),
+			ep_name, ep_description,
+			get_ep_type_int(ep_type),
 			msg_hash, resp_hash,
 			ep_handler, lep->id);
+	free(msg_hash);
+	free(resp_hash);
+	free(ep_type);
+	free(ep_name);
+	free(ep_description);
 
 	if (lep->ep == NULL)
 	{

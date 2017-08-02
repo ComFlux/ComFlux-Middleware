@@ -594,7 +594,8 @@ int core_load_access_module_array(Array* argv)
 
 MESSAGE* _core_call_array(const char* module_id, const char* function_id, const char* return_type, Array* args)
 {
-	char *fc_id = _core_get_id(module_id, function_id, return_type);
+	char id[50];
+	char *fc_id = _core_get_id(id, module_id, function_id, return_type);
 
 	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: function call %s %s %s (%s)", module_id, function_id, return_type, fc_id);
 	//char *fc_res_str = NULL;
@@ -687,55 +688,58 @@ int _core_init()
 	string_function_table_array = map_new(KEY_TYPE_STR);
 	message_function_table_array = map_new(KEY_TYPE_STR);
 
+	char id[50];
+
+
 	/************* ARRAY FUNCTIONS *************/
 
-	map_insert(int_function_table_array, _core_get_id("core", "register_endpoint", "int"), core_register_endpoint_array);
-	map_insert(void_function_table_array, _core_get_id("core", "remove_endpoint", "void"), core_remove_endpoint_array);
+	map_insert(int_function_table_array, _core_get_id(id, "core", "register_endpoint", "int"), core_register_endpoint_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "remove_endpoint", "void"), core_remove_endpoint_array);
 
-	map_insert(int_function_table_array, _core_get_id("core", "map", "int"), core_map_all_modules_array);
-	map_insert(int_function_table_array, _core_get_id("core", "map_module", "int"), core_map_module_array);
-	map_insert(void_function_table_array, _core_get_id("core", "map_lookup", "void"), core_map_lookup_array);
-	map_insert(int_function_table_array, _core_get_id("core", "unmap", "int"), core_unmap_array);
-	map_insert(int_function_table_array, _core_get_id("core", "unmap_connection", "int"), core_unmap_connection_array);
-	map_insert(int_function_table_array, _core_get_id("core", "unmap_all", "int"), core_unmap_all_array);
-	map_insert(int_function_table_array, _core_get_id("core", "divert", "int"), core_divert_array);
+	map_insert(int_function_table_array, _core_get_id(id, "core", "map", "int"), core_map_all_modules_array);
+	map_insert(int_function_table_array, _core_get_id(id, "core", "map_module", "int"), core_map_module_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "map_lookup", "void"), core_map_lookup_array);
+	map_insert(int_function_table_array, _core_get_id(id, "core", "unmap", "int"), core_unmap_array);
+	map_insert(int_function_table_array, _core_get_id(id, "core", "unmap_connection", "int"), core_unmap_connection_array);
+	map_insert(int_function_table_array, _core_get_id(id, "core", "unmap_all", "int"), core_unmap_all_array);
+	map_insert(int_function_table_array, _core_get_id(id, "core", "divert", "int"), core_divert_array);
 
-	map_insert(int_function_table_array, _core_get_id("core", "ep_more_messages", "int"), core_ep_more_messages_array);
-	map_insert(int_function_table_array, _core_get_id("core", "ep_more_requests", "int"), core_ep_more_requests_array);
-	map_insert(int_function_table_array, _core_get_id("core", "ep_more_responses", "int"), core_ep_more_responses_array);
+	map_insert(int_function_table_array, _core_get_id(id, "core", "ep_more_messages", "int"), core_ep_more_messages_array);
+	map_insert(int_function_table_array, _core_get_id(id, "core", "ep_more_requests", "int"), core_ep_more_requests_array);
+	map_insert(int_function_table_array, _core_get_id(id, "core", "ep_more_responses", "int"), core_ep_more_responses_array);
 
-	map_insert(void_function_table_array, _core_get_id("core", "ep_send_message", "void"), core_ep_send_message_array);
-	map_insert(void_function_table_array, _core_get_id("core", "ep_send_request", "void"), core_ep_send_request_array);
-	map_insert(void_function_table_array, _core_get_id("core", "ep_send_response", "void"), core_ep_send_response_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "ep_send_message", "void"), core_ep_send_message_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "ep_send_request", "void"), core_ep_send_request_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "ep_send_response", "void"), core_ep_send_response_array);
 
-	map_insert(void_function_table_array, _core_get_id("core", "ep_stream_start", "void"), core_ep_stream_start_array);
-	map_insert(void_function_table_array, _core_get_id("core", "ep_stream_stop", "void"), core_ep_stream_stop_array);
-	map_insert(void_function_table_array, _core_get_id("core", "ep_stream_send", "void"), core_ep_stream_send_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "ep_stream_start", "void"), core_ep_stream_start_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "ep_stream_stop", "void"), core_ep_stream_stop_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "ep_stream_send", "void"), core_ep_stream_send_array);
 
-	map_insert(message_function_table_array, _core_get_id("core", "ep_fetch_message", "message"), core_ep_fetch_message_array);
-	map_insert(message_function_table_array, _core_get_id("core", "ep_fetch_request", "message"), core_ep_fetch_request_array);
-	map_insert(message_function_table_array, _core_get_id("core", "ep_fetch_response", "message"), core_ep_fetch_response_array);
+	map_insert(message_function_table_array, _core_get_id(id, "core", "ep_fetch_message", "message"), core_ep_fetch_message_array);
+	map_insert(message_function_table_array, _core_get_id(id, "core", "ep_fetch_request", "message"), core_ep_fetch_request_array);
+	map_insert(message_function_table_array, _core_get_id(id, "core", "ep_fetch_response", "message"), core_ep_fetch_response_array);
 
-	map_insert(void_function_table_array, _core_get_id("core", "add_manifest", "void"), core_add_manifest_array);
-	map_insert(string_function_table_array, _core_get_id("core", "get_manifest", "string"), core_get_manifest_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "add_manifest", "void"), core_add_manifest_array);
+	map_insert(string_function_table_array, _core_get_id(id, "core", "get_manifest", "string"), core_get_manifest_array);
 
-	map_insert(void_function_table_array, _core_get_id("core", "add_rdc", "void"), core_add_rdc_array);
-	//map_insert(void_function_table_array, _core_get_id("core", "remove_rdc", "void"), core_remove_rdc_array);
-	map_insert(void_function_table_array, _core_get_id("core", "rdc_register", "void"), core_rdc_register_array);
-	map_insert(void_function_table_array, _core_get_id("core", "rdc_unregister", "void"), core_rdc_unregister_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "add_rdc", "void"), core_add_rdc_array);
+	//map_insert(void_function_table_array, _core_get_id(id, "core", "remove_rdc", "void"), core_remove_rdc_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "rdc_register", "void"), core_rdc_register_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "rdc_unregister", "void"), core_rdc_unregister_array);
 
-	map_insert(void_function_table_array, _core_get_id("core", "ep_add_filter", "void"), core_add_filter_array);
-	map_insert(void_function_table_array, _core_get_id("core", "ep_reset_filter", "void"), core_reset_filter_array);
-	map_insert(void_function_table_array, _core_get_id("core", "ep_set_access", "void"), core_ep_set_access_array);
-	map_insert(void_function_table_array, _core_get_id("core", "ep_reset_access", "void"), core_ep_reset_access_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "ep_add_filter", "void"), core_add_filter_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "ep_reset_filter", "void"), core_reset_filter_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "ep_set_access", "void"), core_ep_set_access_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "ep_reset_access", "void"), core_ep_reset_access_array);
 
-	map_insert(string_function_table_array, _core_get_id("core", "ep_get_all_connections", "string"), core_ep_get_all_connections_array);
-	map_insert(string_function_table_array, _core_get_id("core", "get_remote_metdata", "string"), core_get_remote_metdata_array);
+	map_insert(string_function_table_array, _core_get_id(id, "core", "ep_get_all_connections", "string"), core_ep_get_all_connections_array);
+	map_insert(string_function_table_array, _core_get_id(id, "core", "get_remote_metdata", "string"), core_get_remote_metdata_array);
 
-	map_insert(void_function_table_array, _core_get_id("core", "terminate", "void"), core_terminate_array);
+	map_insert(void_function_table_array, _core_get_id(id, "core", "terminate", "void"), core_terminate_array);
 
-	map_insert(int_function_table_array, _core_get_id("core", "load_com_module", "int"), core_load_com_module_array);
-	map_insert(int_function_table_array, _core_get_id("core", "load_access_module", "int"), core_load_access_module_array);
+	map_insert(int_function_table_array, _core_get_id(id, "core", "load_com_module", "int"), core_load_com_module_array);
+	map_insert(int_function_table_array, _core_get_id(id, "core", "load_access_module", "int"), core_load_access_module_array);
 
 	return 0;
 }
