@@ -24,11 +24,11 @@ _json_path* _json_path_new(const char* path)
 	_json_path* jp = (_json_path*)malloc(sizeof(_json_path));
 	char* path_dup = strdup_null(path);
 
-	jp->prop = strtok (path_dup, " ");
+	jp->prop = strdup_null(strtok (path_dup, " "));
 
-	jp->sign = strtok (NULL, " ");
+	jp->sign = strdup_null(strtok (NULL, " "));
 
-	jp->value = strtok (NULL, " ");
+	jp->value = strdup_null(strtok (NULL, " "));
 
 	jp->type = 0;
 	int n = strlen(jp->value);
@@ -43,6 +43,17 @@ _json_path* _json_path_new(const char* path)
 		}
 
 	return jp;
+}
+
+void _json_path_free(_json_path* jp)
+{
+	if(jp == NULL)
+		return;
+
+	free(jp->prop);
+	free(jp->sign);
+	free(jp->value);
+	free(jp);
 }
 
 int _has_path(JSON* json, _json_path* path)
@@ -83,7 +94,10 @@ int json_filter_validate_one(JSON *json, char *path)
 
 	_json_path*  jp = _json_path_new(path);
 
-	return _has_path(json, jp);
+	int validate_value = _has_path(json, jp);
+	_json_path_free(jp);
+
+	return validate_value;
 }
 
 /* one json; many queries in conjunction  from an array*/
@@ -117,7 +131,10 @@ int json_filter_validate(JSON *json, JSON *filter)
 	/* extract array of query paths */
 	Array *paths = json_get_array(filter, NULL);
 
-	return json_filter_validate_array(json, paths);
+	int validate_value = json_filter_validate_array(json, paths);
+	array_free(paths);
+
+	return validate_value;
 }
 
 

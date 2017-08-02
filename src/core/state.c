@@ -211,6 +211,8 @@ void state_free(STATE* state)
 	array_free(state->tokens);
 	free(state->addr);
 	//data_free(state->data);
+
+	buffer_free(state->buffer);
 	free(state);
 }
 
