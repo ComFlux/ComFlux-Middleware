@@ -308,7 +308,7 @@ Array* 	json_get_array(JSON* json, const char* prop)
 	{
 		if(json_object_is_type(json->elem_json, json_type_array))
 		{
-			son = _json_elem_dup(json->elem_json);
+			son = (json->elem_json);
 		}
 		else
 		{
