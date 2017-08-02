@@ -532,13 +532,13 @@ int core_spawn_fd(int fds, char* app_name)
 
 		char fd_str[11];
 		snprintf(fd_str, 11, "%d", core_fd);
-		char* args[] = {"valgrind", "core",
+		char* args[] = {"core",
 				"-f", fd_str,
 				"-a", app_name,
 				"-k", rand_key,
 				"-c", config_get_absolute_path(),
 				NULL};
-		const char* path = "valgrind";
+		const char* path = "core";
 		execv(path, args);
 
 		printf("MW: Bad core middleware executable path.\n");
