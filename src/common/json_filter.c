@@ -40,6 +40,7 @@ _json_path* _json_path_new(const char* path)
 			strncpy(jp->value, temp+1, n-2);
 			jp->value[n-2] = '\0';
 			jp->type = 1;
+			free(temp);
 		}
 
 	return jp;

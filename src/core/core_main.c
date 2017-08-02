@@ -29,16 +29,30 @@ void print_usage_exit()
 
 int load_core_config(const char* config_file)
 {
+	int error = 0; //no error
+	JSON* core_json = NULL;
+
+	int log_lvl = 0;
+	char* log_file = NULL;
+
 	JSON* config_json = json_load_from_file(config_file);
+
 	if (config_json == NULL)
-		return -1;
+	{
+		error = -1;
+		goto final;
+	}
 
-	JSON* core_json = json_get_json(config_json, "core_config");
+	core_json = json_get_json(config_json, "core_config");
 	if(core_json == NULL)// TODO: validate against a schema
-		return -2;
+	{
+		error = -1;
+		goto final;
+	}
 
-	int log_lvl = json_get_int(core_json, "log_level");
-	char* log_file = json_get_str(core_json, "log_file");
+	log_lvl = json_get_int(core_json, "log_level");
+	log_file = json_get_str(core_json, "log_file");
+
 	if(log_file == NULL)
 	{
 		log_file = malloc(PATH_MAX+1);
@@ -47,7 +61,13 @@ int load_core_config(const char* config_file)
 
 	slog_init_args(log_lvl, log_lvl, 1, 1, log_file);
 
-	return 0;
+	final:{
+		json_free(core_json);
+		json_free(config_json);
+		free(core_json);
+		free(log_file);
+		return error;
+	}
 }
 
 #ifdef __ANDROID__ /* On Android we build as a library (and I can't

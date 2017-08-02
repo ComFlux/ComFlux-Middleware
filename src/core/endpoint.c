@@ -470,7 +470,8 @@ LOCAL_EP* endpoint_query(JSON* query_json)
 	LOCAL_EP *lep_response = NULL;
 	JSON* lep_json;
 
-	int i; Array *_keys = map_get_keys(locales);
+	int i;
+	Array *_keys = map_get_keys(locales);
 	for(i=0;i<array_size(_keys); i++)
 	{
 		char* key = array_get(_keys, i);
@@ -486,6 +487,7 @@ LOCAL_EP* endpoint_query(JSON* query_json)
 		json_free(lep_json);
 	}
 
+	array_free(_keys);
 	return lep_response;
 }
 

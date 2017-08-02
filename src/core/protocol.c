@@ -179,6 +179,7 @@ void core_proto_check_auth(STATE *state_ptr, MESSAGE *auth_msg)
 
 		JSON* access_ack_json = json_build_auth_ack(0, "", NULL);
 		state_send_json(state_ptr, NULL, access_ack_json, MSG_AUTH_ACK);
+		json_free(access_ack_json);
 
 		if(state_ptr->state == STATE_AUTH)
 			state_ptr->state = STATE_AUTH_ACK;
@@ -402,6 +403,7 @@ void core_proto_map(STATE *state_ptr, MESSAGE *map_msg)
 		json_set_array(ep_query_json, NULL, ep_query);
 
 		lep = endpoint_query(ep_query_json);
+		json_free(ep_query_json);
 		if(lep != NULL)
 		{
 			ep_map(lep, state_ptr);
