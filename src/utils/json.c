@@ -29,7 +29,7 @@ struct json_object* _json_elem_dup(struct json_object* json_elem)
 	if(json_elem_str)
 	{
 		new_json_elem = json_tokener_parse_ex(jtok, json_elem_str, strlen(json_elem_str));
-		free(json_elem_str);
+		free((char*)json_elem_str);
 	}
 	json_tokener_free(jtok);
 
