@@ -173,6 +173,9 @@ int main(int argc, char *argv[])
 
 	char* data = json_to_str(msg_json);
 
+	JSON* msg_schema = json_load_from_file("datetime_value.json");
+	//printf("msg schema: %s\n", json_to_str_pretty(msg_schema));
+	//printf("msg json: %s\n", json_to_str_pretty(msg_json));
 	/* sleep */
 	 struct timespec sleep_time;
 	 sleep_time.tv_sec = 0;
@@ -186,8 +189,12 @@ int main(int argc, char *argv[])
 		//sprintf(data, "{date %d\n}", i);
 
 		nanosleep(&sleep_time, NULL);
-		com_send_data(conn, data);
-		count_msg += 1;
+
+	    if (!json_validate(msg_schema, msg_json))
+	    {
+	    	com_send_data(conn, json_to_str(msg_json));
+	    	count_msg += 1;
+	    }
 		//time_total += clock();
 	}
 
