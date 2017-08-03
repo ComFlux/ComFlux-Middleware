@@ -27,6 +27,8 @@
 #endif
 #include <sys/time.h> 
 
+#include <json.h>
+
 char receiver_addr[200] = "34.253.191.67";
 unsigned int receiver_port = 1505;
 
@@ -39,12 +41,13 @@ struct timeval time_start;
 double time_total = 0;
 unsigned int count_msg = 0;
 
+JSON* msg_schema;
+
 void* api_on_message(void* data)
 {
-	//printf("callback\n");
+	JSON* msg_json = json_new(data);
 	char* buf  = (char*) data;
 
-	//printf("%s\n", buf);
 	if(started_flag == 0 && stopped_flag ==0)
 	{
 		started_flag = 1;
@@ -53,23 +56,30 @@ void* api_on_message(void* data)
 		//return;
 	}
 
-	if(started_flag == 1 && stopped_flag == 0
-			&& count_msg>=total_msg)
+	if (!json_validate(msg_schema, msg_json))
 	{
-		stopped_flag = 1;
-		//time_total = (time(NULL)-time_start);
-		struct timeval t1;
-		gettimeofday(&t1, NULL);
-		time_total = (t1.tv_sec - time_start.tv_sec) * 1000.0;      // sec to ms
-		time_total += (t1.tv_usec - time_start.tv_usec) / 1000.0;   // us to ms
 
+
+		if(started_flag == 1 && stopped_flag == 0
+				&& count_msg>=total_msg)
+		{
+			stopped_flag = 1;
+			//time_total = (time(NULL)-time_start);
+			struct timeval t1;
+			gettimeofday(&t1, NULL);
+			time_total = (t1.tv_sec - time_start.tv_sec) * 1000.0;      // sec to ms
+			time_total += (t1.tv_usec - time_start.tv_usec) / 1000.0;   // us to ms
+
+		}
+
+		else if(started_flag == 1 && stopped_flag ==0)
+		{
+			count_msg += 1;
+		}
 	}
 
-	else if(started_flag == 1 && stopped_flag ==0)
-	{
-		count_msg += 1;
-	}
-
+	json_free(msg_json);
+	free(buf);
 	return NULL;
 }
 
@@ -252,6 +262,9 @@ void* tcp_receive_function(void* conn)
 int main(int argc, char *argv[])
 {
 	printf("argc: %d\n", argc);
+	msg_schema = json_load_from_file("datetime_value.json");
+	printf("msg schema: %s\n", json_to_str_pretty(msg_schema));
+	//printf("msg json: %s\n", json_to_str_pretty(msg_json));
 	switch (argc)
 	{
 	case 1: break;
