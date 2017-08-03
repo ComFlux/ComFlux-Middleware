@@ -412,6 +412,7 @@ void core_proto_map(STATE *state_ptr, MESSAGE *map_msg)
 		}
 		else
 		{
+			printf("no exist\n");
 			map_validate = EP_NO_EXIST;
 			state_ptr->state = STATE_BAD;
 		}

@@ -241,7 +241,7 @@ void json_merge(JSON* parent, JSON* val)
 	struct json_object_iter iter;
 	json_object_object_foreachC(val_elem, iter)
 	{
-		json_object_object_add(parent->elem_json, iter.key, _json_dup(iter.val));
+		json_object_object_add(parent->elem_json, iter.key, _json_elem_dup(iter.val));
 	}
 }
 

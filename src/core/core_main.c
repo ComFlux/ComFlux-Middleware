@@ -46,7 +46,7 @@ int load_core_config(const char* config_file)
 	core_json = json_get_json(config_json, "core_config");
 	if(core_json == NULL)// TODO: validate against a schema
 	{
-		error = -1;
+		error = -2;
 		goto final;
 	}
 
@@ -64,7 +64,6 @@ int load_core_config(const char* config_file)
 	final:{
 		json_free(core_json);
 		json_free(config_json);
-		free(core_json);
 		free(log_file);
 		return error;
 	}
