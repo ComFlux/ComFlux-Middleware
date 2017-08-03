@@ -142,8 +142,11 @@ int com_send_data(int conn, const char* msg)
     allBytesSent = 0;
     while (allBytesSent < varSize)
     {
+
         sentSize = send(conn, msg + allBytesSent, varSize - allBytesSent, 0);
-        /*if(varSize - allBytesSent < 512)
+
+    	printf("--------: send %d --d\n\n", sentSize);
+    	/*if(varSize - allBytesSent < 512)
                 sentSize = send(conn , msg+allBytesSent , varSize - allBytesSent , 0);
         else
                 sentSize = send(conn , msg+allBytesSent , 512 , 0);*/

@@ -27,9 +27,9 @@ double time_total = 0;
 unsigned int count_msg = 0;
 
 
-void print_callback(int stream_fd)
+void print_callback(MESSAGE* msg)
 {
-	//printf("%s -- %s\n", msg->msg_id, message_to_str(msg));
+	printf("%s -- %s\n", msg->msg_id, message_to_str(msg));
 	if(started_flag == 0 && stopped_flag ==0)
 	{
 		started_flag = 1;

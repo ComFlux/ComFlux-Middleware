@@ -445,6 +445,7 @@ void core_ep_stream_send(LOCAL_EP* lep, const char* msg)
     MESSAGE* msg_msg = message_new_json(msg_json, MSG_STREAM);
 
     ep_send_message(lep, msg_msg);
+    printf("sent\n\n");
 
     json_free(msg_json);
     message_free(msg_msg);
@@ -594,7 +595,7 @@ void core_terminate()
     }
 
 	close(lep->fifo);
-	unlink(lep->fifo_name);
+	//unlink(lep->fifo_name);
 
     /* close app sockpair */
     (*(app_state->module->fc_connection_close))(app_state->conn);

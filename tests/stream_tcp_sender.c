@@ -14,7 +14,7 @@ unsigned int receiver_port = 1505;
 unsigned int nb_msg = 500;
 
 unsigned int time_total = 0;
-unsigned int count_msg = 0;
+unsigned long long int count_msg = 0;
 
 
 char* file_to_str(const char* filename) {
@@ -151,6 +151,7 @@ int main(int argc, char *argv[])
 		//nanosleep(&sleep_time, NULL);
 		endpoint_send_stream(ep_src, lorem);
 		count_msg += strlen(lorem);
+		printf("%d : %d\n", i, count_msg);
 		//time_total += clock();
 	}
 	printf("done nb msg: %d; len lorem %d; total len: %d \n", nb_msg, strlen(lorem), count_msg);

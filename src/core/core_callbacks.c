@@ -381,6 +381,12 @@ void call_external_command_handler(STATE* state_ptr, MESSAGE* msg)
 	//message_free(msg);
 }
 
+
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <errno.h>
+
+
 void recv_stream_cmd(MESSAGE* msg)
 {
 	if (msg->status != MSG_STREAM_CMD)
@@ -400,11 +406,25 @@ void recv_stream_cmd(MESSAGE* msg)
 	int command = json_get_int(msg_json, "command");
 	if(command == 1 && lep->fifo <= 0)
 	{
-		sprintf(lep->fifo_name, "/tmp/%s", randstring(5));
-		lep->fifo = fifo_init_server(lep->fifo_name);
+		int fd;
+
+		struct sockaddr_un addr;
+		memset(&addr, 0, sizeof(addr));
+		addr.sun_family = AF_UNIX;
+		strncpy(addr.sun_path, "/tmp/socket1", sizeof(addr.sun_path)-1);
+		int bi = bind(fd, (struct sockaddr*)&addr, sizeof(addr));
+
+		printf("bind %d, %d\n\n", bi, errno);
+		listen(fd, 5);
+
+		sprintf(lep->fifo_name, "/tmp/socket1", randstring(5));
+		//lep->fifo = fd;// fifo_init_server(lep->fifo_name);
+
 		msg->msg_id = strdup_null(lep->fifo_name); //was str
 		//printf("message---- %s\n", message_to_str(msg));
 		state_send_message(app_state, msg);
+		lep->fifo = accept(fd, NULL, NULL);
+
 		return;
 	}
 	if(command == 0 && lep->fifo != 0)
