@@ -185,7 +185,6 @@ void core_on_proto_message(STATE* state_ptr, MESSAGE* _msg)
  */
 void core_on_message(STATE* state_ptr, MESSAGE* _msg)
 {
-	printf("here xxx %s\n", message_to_str(_msg));
 	if(state_ptr == NULL)
 	{
 		return;
