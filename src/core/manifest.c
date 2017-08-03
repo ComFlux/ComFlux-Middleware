@@ -131,17 +131,11 @@ JSON* manifest_get(int lvl)
 	if (cpt == NULL)
 		goto final;
 
-	printf("here 1\n");
 	json_merge(manifest, cpt->metadata);
 
-	printf("here 2\n");
 	if(lvl >= MANIFEST_SIMPLE)
 	{
-
-		printf("here 3\n");
 		json_set_json(manifest, "component", cpt->metadata);
-
-		printf("here 4\n");
 	}
 	if(lvl >= MANIFEST_SHORT)
 	{
