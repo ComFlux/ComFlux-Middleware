@@ -48,6 +48,8 @@ void buffer_reset(BUFFER* buffer)
 	if(buffer->data)
 		free(buffer->data);
 
+	buffer->data = (char*)(malloc(1));
+	buffer->data[0]='\0';
 }
 
 void buffer_set(BUFFER* buffer, const char* new_buf, int new_start, int new_end)
@@ -112,7 +114,7 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size) //size sh
 							(*buffer->state->on_message)(buffer->state, msg);
 							json_free(js);
 							message_free(msg);
-
+							buffer_reset(buffer);
 							buffer->size = 0;
 							word_start = i+1;
 						}
