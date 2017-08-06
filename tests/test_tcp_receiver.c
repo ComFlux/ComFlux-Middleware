@@ -29,7 +29,8 @@ unsigned int count_msg = 0;
 
 void print_callback(MESSAGE* msg)
 {
-	printf("%s -- %s\n", msg->msg_id, message_to_str(msg));
+
+	//printf("%d \n", sizeof(message_to_str(msg)));
 	if(started_flag == 0 && stopped_flag ==0)
 	{
 		started_flag = 1;
@@ -47,6 +48,10 @@ void print_callback(MESSAGE* msg)
 		gettimeofday(&t1, NULL);
 		time_total = (t1.tv_sec - time_start.tv_sec) * 1000.0;      // sec to ms
 		time_total += (t1.tv_usec - time_start.tv_usec) / 1000.0;   // us to ms
+
+		printf("Total: ");
+		printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
+		printf("avg:  %lf\n", (time_total/(double)count_msg));
 
 	}
 
@@ -126,10 +131,10 @@ int main(int argc, char *argv[])
 
     while(stopped_flag == 0)
     {
-    	sleep(5);
+    	sleep(10);
 
-    	printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
-    	printf("avg:  %lf\n", (time_total/(double)count_msg));
+    	//printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
+    	//printf("avg:  %lf\n", (time_total/(double)count_msg));
     }
 
 	sleep(1);

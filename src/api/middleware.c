@@ -619,9 +619,9 @@ void* api_on_message(void* data)
 			sync_trigger(fds_blocking_call[0], msg);
 		}
 
-	if (msg_->ep==NULL) {
-		//slog(SLOG_WARN, SLOG_WARN, "MW: Can't find endpoint for msg: *%s*", msg);
-		return NULL;
+	if (msg_->ep==NULL)
+	{
+		goto final;
 	}
 	else if(msg_->status == MSG_STREAM_CMD && msg_->ep->type == EP_STR_SNK)
 	{
@@ -631,17 +631,20 @@ void* api_on_message(void* data)
 		//int stream_fd = json_get_str(msg_json, "fifo_name");
 		//stream_fd_global = fifo_init_client(fifo_name);
 		(*msg_->ep->handler)(msg_);
-		return NULL;
+		goto final;
 	}
 	else if (msg_->ep->handler)
 	{
 		(*msg_->ep->handler)(msg_);
+		goto final;
 	}
-	json_free(msg_->_msg_json);
 
-	message_free(msg_);
-	free(data);
-	return NULL;
+	final:{
+		json_free(msg_->_msg_json);
+		message_free(msg_);
+		free(data);
+		return NULL;
+	}
 }
 
 void api_on_connect(void* module, int conn)

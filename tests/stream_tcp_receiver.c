@@ -17,11 +17,7 @@
 
 #include <sys/time.h>
 
-
-#include <sys/socket.h>
-#include <sys/un.h>
-
-unsigned int total_msg = 100000000;
+unsigned int total_msg = 10000000;
 
 unsigned int started_flag = 0;
 unsigned int stopped_flag = 0;
@@ -37,33 +33,16 @@ void print_callback(MESSAGE *msg)
 	started_flag = 1;
 	gettimeofday(&time_start, NULL);
 
-	//printf("%s -- %s\n", msg->msg_id, message_to_str(msg));
-	int stream_fd;// = atoi(msg->msg_id);
-	//int stream_fd = fifo_init_client;
+	int stream_fd = fifo_init_client(msg->msg_id);
 	printf("init:%d  stream: %s\n", stream_fd, msg->msg_id);
-
-	struct sockaddr_un addr;
-	stream_fd = socket(AF_UNIX, SOCK_STREAM, 0);
-	memset(&addr, 0, sizeof(addr));
-	addr.sun_family = AF_UNIX;
-	strncpy(addr.sun_path, "socket", 6);
-
-	int con = connect(stream_fd, (struct sockaddr*)&addr, sizeof(addr));
-	printf("fd: %d, con: %d  \n", stream_fd, con);
 	int rcvSize;
 	char buf[1001];
 	while(1)
 	{
-		sleep(1);
 		rcvSize = read(stream_fd, &buf, 1000);
 		if(rcvSize>0){
 			totalSize+=rcvSize;
-			printf("recv size: %d\n", rcvSize);
-		}
-		else if(rcvSize < 0)
-		{
-
-			printf("recv size: %d, \n", rcvSize);
+			//printf("recv size: %d\n", rcvSize);
 		}
 		if(totalSize>total_msg)
 			break;
