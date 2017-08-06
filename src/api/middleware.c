@@ -740,7 +740,7 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 
 							//printf(" -- %s\n", buffer->data);
 							pthread_t api_on_msg_thread;
-							char* new_data = strdup_null(buffer->data);
+							char* new_data = buffer->data;
 							pthread_create(&api_on_msg_thread, NULL, api_on_message, new_data);
 
 							//api_on_message(buffer->data);
