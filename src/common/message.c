@@ -100,6 +100,7 @@ void message_free(MESSAGE* msg)
 
 	//free(msg->msg_str);
 	free(msg->msg_id);
+	free(msg->module);
 	free(msg);
 }
 
@@ -121,7 +122,10 @@ MESSAGE* message_parse_json(JSON* json_msg)
 	MESSAGE* ret_msg = malloc(sizeof(MESSAGE));
 	char* ep_id = json_get_str(json_msg, "ep_id");
 	if (ep_id != NULL)
+	{
 		ret_msg->ep = (ENDPOINT*)map_get(endpoints, ep_id);
+		free(ep_id);
+	}
 	else
 		ret_msg->ep = NULL;
 	ret_msg->msg_id = json_get_str(json_msg, "msg_id");

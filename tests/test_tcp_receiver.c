@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
     {
     	sleep(10);
 
-    	//printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
+    	printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
     	//printf("avg:  %lf\n", (time_total/(double)count_msg));
     }
 

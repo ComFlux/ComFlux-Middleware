@@ -691,6 +691,8 @@ void buffer_reset(BUFFER* buffer)
 	if(buffer->data)
 		free(buffer->data);
 
+	buffer->data = (char*)(malloc(1));
+	buffer->data[0]='\0';
 }
 
 void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
@@ -741,6 +743,7 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 							pthread_create(&api_on_msg_thread, NULL, api_on_message, strdup_null(buffer->data));
 
 							//api_on_message(buffer->data);
+							buffer_reset(buffer);
 
 							buffer->size = 0;
 							word_start = i+1;
