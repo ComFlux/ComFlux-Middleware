@@ -37,6 +37,14 @@ void array_free(Array *array)
 {
 	if(array == NULL)
 		return;
+	int i;
+	char* key;
+	for(i=0;i<array_size(array); i++)
+	{
+		//key = array_get(array, i);
+		array_remove_index(array, i);
+		//free(key);
+	}
 	utarray_free(array->ua);
 	free(array);
 }

@@ -260,7 +260,7 @@ int mw_call_module_function(
 
 	const char *tmp=va_arg(arguments, const char*);
 	while(tmp!=NULL){
-		array_add(argv, (tmp));  // Strings are freed by array_free, so create duplicates here.
+		array_add(argv, tmp);  // Strings are NOT freed by array_free, so create duplicates here.
 		tmp=va_arg(arguments, const char*);
 	}
 
@@ -298,7 +298,7 @@ void* mw_call_module_function_blocking(
 
 	const char *tmp=va_arg(arguments, const char*);
 	while(tmp!=NULL){
-		array_add(argv, strdup_null(tmp));  // Strings are freed by array_free, so create duplicates here.
+		array_add(argv, tmp);  // Strings are freed by array_free, so create duplicates here.
 		tmp=va_arg(arguments, const char*);
 	}
 
