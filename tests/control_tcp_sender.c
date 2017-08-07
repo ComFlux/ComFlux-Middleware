@@ -191,9 +191,9 @@ int main(int argc, char *argv[])
 
 		nanosleep(&sleep_time, NULL);
 
-	    if (json_validate(msg_schema, msg_json))
+	    if (!json_validate(msg_schema, msg_json))
 	    {
-			//printf("send\n");
+		//printf("send\n");
 	    	com_send_data(conn, json_to_str(msg_json));
 	    	count_msg += 1;
 	    }

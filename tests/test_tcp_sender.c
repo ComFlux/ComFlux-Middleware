@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 	char* lorem = file_to_str("lorem.txt");
 	json_set_str(msg_json, "lorem", lorem);
 
-	//printf("%d: %s\n", strlen(lorem), lorem);
+	printf("%d: %s\n", strlen(lorem), lorem);
 
 
 	/* sleep */
