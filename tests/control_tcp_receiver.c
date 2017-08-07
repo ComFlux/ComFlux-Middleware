@@ -84,7 +84,7 @@ void* api_on_message(void* data)
 	}
 
 	json_free(msg_json);
-	//free(buf);
+	free(data);
 	return NULL;
 }
 
@@ -356,6 +356,9 @@ void buffer_reset(BUFFER* buffer)
 	if(buffer->data)
 		free(buffer->data);
 
+
+	buffer->data = (char*)(malloc(1));
+	buffer->data[0]='\0';
 }
 
 void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
@@ -405,6 +408,7 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 							pthread_t api_on_msg_thread;
 							pthread_create(&api_on_msg_thread, NULL, api_on_message, strdup(buffer->data));
 
+							buffer_reset(buffer);
 
 							//api_on_message(buffer->data);
 
