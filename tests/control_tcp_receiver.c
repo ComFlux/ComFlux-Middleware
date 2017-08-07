@@ -47,7 +47,7 @@ void* api_on_message(void* data)
 {
 	JSON* msg_json = json_new(data);
 	char* buf  = (char*) data;
-
+        //printf("msg: %s\n",  data);
 
 	if(started_flag == 0 && stopped_flag ==0)
 	{
