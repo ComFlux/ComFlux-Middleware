@@ -57,7 +57,7 @@ void* api_on_message(void* data)
 		//return;
 	}
 
-	if (json_validate(msg_schema, msg_json))
+	if (!json_validate(msg_schema, msg_json))
 	{
 
 
@@ -402,10 +402,11 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 							/* apply the callback for this connection */
 
 							//printf(" -- %s\n", buffer->data);
-							//pthread_t api_on_msg_thread;
-							//pthread_create(&api_on_msg_thread, NULL, api_on_message, strdup(buffer->data));
+							pthread_t api_on_msg_thread;
+							pthread_create(&api_on_msg_thread, NULL, api_on_message, strdup(buffer->data));
 
-							api_on_message(buffer->data);
+
+							//api_on_message(buffer->data);
 
 							buffer->size = 0;
 							word_start = i+1;

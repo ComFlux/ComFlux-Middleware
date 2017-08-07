@@ -429,9 +429,12 @@ void recv_stream_msg(MESSAGE* msg)
 	LOCAL_EP* lep = (LOCAL_EP*)msg->ep->data;
 	char* data = json_get_str(msg->_msg_json, "stream");
 	int data_size = strlen(data);
-	//printf("--------: %d -- %d\n\n", strlen(data), total_stream);
+	printf("--------: %d -- %d\n\n", strlen(data), total_stream);
 	//fifo_send_message(lep->fifo, data);//was str
-	write(lep->fifo, data, data_size);
+	int tot = 0;
+	do{
+			tot += write(lep->fifo, data+tot, 500);
+	}while(tot<data_size);
 	free(data);
 }
 

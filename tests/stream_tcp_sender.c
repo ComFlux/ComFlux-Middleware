@@ -11,6 +11,7 @@
 char receiver_addr[200] = "34.253.191.67";
 unsigned int receiver_port = 1505;
 
+unsigned int total_msg = 1000000;
 unsigned int nb_msg = 500;
 
 unsigned int time_total = 0;
@@ -126,7 +127,7 @@ int main(int argc, char *argv[])
 	json_set_str(msg_json, "date", "today");
 
 	char* lorem = file_to_str("lorem.txt");
-	json_set_str(msg_json, "lorem", lorem);
+	//json_set_str(msg_json, "lorem", lorem);
 
 	//printf("%s\n", lorem);
 
@@ -146,12 +147,12 @@ int main(int argc, char *argv[])
 
 	unsigned int i;
 
-	for(i=0; i<nb_msg; i++)
+	while(count_msg < total_msg)//for(i=0; i<nb_msg; i++)
 	{
 		//nanosleep(&sleep_time, NULL);
 		endpoint_send_stream(ep_src, lorem);
 		count_msg += strlen(lorem);
-		printf("%d : %d\n", i, count_msg);
+		printf(": %d\n", count_msg);
 		//time_total += clock();
 	}
 	printf("done nb msg: %d; len lorem %d; total len: %d \n", nb_msg, strlen(lorem), count_msg);

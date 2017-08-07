@@ -17,7 +17,7 @@
 
 #include <sys/time.h>
 
-unsigned int total_msg = 10000000;
+unsigned int total_msg = 1000000;
 
 unsigned int started_flag = 0;
 unsigned int stopped_flag = 0;
