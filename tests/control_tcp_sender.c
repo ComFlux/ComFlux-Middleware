@@ -65,14 +65,14 @@ char* file_to_str(const char* filename) {
 
 int com_connect(const char* server_addr, int server_port)
 {
-    printf("Connecting to server %s:%d", server_addr, server_port);
+    printf("Connecting to server %s:%d\n", server_addr, server_port);
 
     int peersock;
     struct sockaddr_in peerin;
 
     peersock = socket(AF_INET, SOCK_STREAM, 0);
     if (peersock == -1) {
-    	printf("CONN: Could not create client socket.");
+    	printf("CONN: Could not create client socket.\n");
         return -2;
     }
 
@@ -82,7 +82,7 @@ int com_connect(const char* server_addr, int server_port)
 
     if (connect(peersock, (struct sockaddr*)&peerin, sizeof(peerin)) < 0)
     {
-    	printf("Could not connect to server %s:%d", server_addr, server_port);
+    	printf("Could not connect to server %s:%d\n", server_addr, server_port);
         return -3;
     }
     //tcp_run_receive_thread(peersock);
@@ -93,7 +93,7 @@ int com_connect(const char* server_addr, int server_port)
 int com_send_data(int conn, const char* msg)
 {
     if (conn <= 0) {
-        printf("not established with (%d), can't send msg *%s*", conn, msg);
+        printf("not established with (%d), can't send msg *%s*\n", conn, msg);
         return -1;
     }
     //printf("send to (%d) *%s*\n", conn, msg);
@@ -113,7 +113,7 @@ int com_send_data(int conn, const char* msg)
                 sentSize = send(conn , msg+allBytesSent , 512 , 0);*/
         if (sentSize < 0)
         {
-        	printf("error sending msg on sock (%d)", conn);
+        	printf("error sending msg on sock (%d)\n", conn);
         	break;
         }
         allBytesSent += sentSize;
@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
 
 	/* build a message */
 	JSON* msg_json = json_new(NULL);
-	json_set_int(msg_json, "value",  "41.24\'12.2\"N 2.10'26.5\"E");
+	json_set_str(msg_json, "value",  "41.24\'12.2\"N 2.10'26.5\"E");
 	json_set_str(msg_json, "date",   "2012-04-23T18:25:43.511Z");
 
 	char* lorem = file_to_str("lorem.txt");
@@ -175,8 +175,8 @@ int main(int argc, char *argv[])
 	char* data = json_to_str(msg_json);
 
 	JSON* msg_schema = json_load_from_file("datetime_value.json");
-	//printf("msg schema: %s\n", json_to_str_pretty(msg_schema));
-	//printf("msg json: %s\n", json_to_str_pretty(msg_json));
+	printf("msg schema: %s\n", json_to_str_pretty(msg_schema));
+	printf("msg json: %s\n", json_to_str_pretty(msg_json));
 	/* sleep */
 	 struct timespec sleep_time;
 	 sleep_time.tv_sec = 0;
@@ -191,8 +191,9 @@ int main(int argc, char *argv[])
 
 		nanosleep(&sleep_time, NULL);
 
-	    if (!json_validate(msg_schema, msg_json))
+	    if (json_validate(msg_schema, msg_json))
 	    {
+			//printf("send\n");
 	    	com_send_data(conn, json_to_str(msg_json));
 	    	count_msg += 1;
 	    }
