@@ -57,7 +57,7 @@ void* api_on_message(void* data)
 		//return;
 	}
 
-	if (!json_validate(msg_schema, msg_json))
+	if (json_validate(msg_schema, msg_json))
 	{
 
 
@@ -84,7 +84,7 @@ void* api_on_message(void* data)
 	}
 
 	json_free(msg_json);
-	free(buf);
+	//free(buf);
 	return NULL;
 }
 
@@ -142,7 +142,7 @@ void init(const char *server_addr, int server_port)
 
 	    if (bind(serversock, (struct sockaddr*)&serverin, sizeof(serverin)) < 0)
 	    {
-	        printf("Bind to %s:%d failed.", server_addr, server_port);
+	        printf("Bind to %s:%d failed.\n", server_addr, server_port);
 	        return;
 	    }
 
@@ -159,7 +159,7 @@ char* tcp_receive_message(int _conn)
     int recvSize;     /* one pack received size */
     unsigned char recvEscape;
     char* buf;
-    //printf("About to receive message using tcp on socket (%d)", _conn);
+    //printf("About to receive message using tcp on socket (%d)\n", _conn);
 
         /* reading msg */
         //allBytesRecv = 0;
@@ -167,7 +167,7 @@ char* tcp_receive_message(int _conn)
         memset(buf, '\0', (512 + 1));
         recvSize = recv(_conn, buf, 512, 0);
         if (recvSize <= 0) {
-            printf("Recv msg failed from (%d). closing connection ", _conn);
+            printf("Recv msg failed from (%d). closing connection \n", _conn);
             // connection_close(_conn);
 
             close(_conn);
@@ -184,16 +184,16 @@ void tcp_run_accept_thread(int serversock)
     int err;
     int* serversock_ptr = (int*)malloc(sizeof(int));
     *serversock_ptr = serversock;
-    printf("Waiting for incoming connections for server (%d).", serversock);
+    printf("Waiting for incoming connections for server (%d).\n", serversock);
     pthread_t listenthread;
     err = pthread_create(&listenthread, NULL, &tcp_accept_function, (void*)serversock_ptr);
     if (err != 0) {
-        printf("can't create listen thread"); //: %s", strerror(err));
+        printf("can't create listen thread\n"); //: %s", strerror(err));
         return;
     }
     err = pthread_detach(listenthread);
     if (err != 0) {
-        printf("Could not detach listen thread ");
+        printf("Could not detach listen thread \n");
         return;
     }
     //slog(SLOG_INFO, SLOG_INFO, "Listen thread created successfully.");
@@ -209,10 +209,10 @@ void* tcp_accept_function(void* serversock)
     while (1) {
         peersock = accept(*((int*)serversock), (struct sockaddr*)&peerin, (socklen_t*)&c);
         if (peersock < 0) {
-            printf("accept failed for (%d).", *((int*)serversock));
+            printf("accept failed for (%d).\n", *((int*)serversock));
             return NULL; // TODO
         }
-        printf("connection accpeted by socket (%d) ", peersock);
+        printf("connection accpeted by socket (%d) \n", peersock);
         tcp_run_receive_thread(peersock);
     }
     return NULL;
@@ -227,22 +227,22 @@ void tcp_run_receive_thread(int conn)
 
     err = pthread_create(&rcvthread, NULL, &tcp_receive_function, (void*)conn_ptr);
     if (err != 0) {
-        printf("can't create receive thread  for (%d).", conn);
+        printf("can't create receive thread  for (%d).\n", conn);
         return;
     }
     err = pthread_detach(rcvthread);
     if (err != 0) {
-        printf("Could not detach rcv thread for (%d) ", conn);
+        printf("Could not detach rcv thread for (%d) \n", conn);
         return;
     }
-    printf("Receive thread created successfully for (%d).", *conn_ptr);
+    printf("Receive thread created successfully for (%d).\n", *conn_ptr);
 }
 
 void* tcp_receive_function(void* conn)
 {
     int _conn = *((int*)conn);
     if (_conn <= 0) {
-        printf("not established with (%d), can't recv", _conn);
+        printf("not established with (%d), can't recv\n", _conn);
         return NULL;
     }
     char* buf;
@@ -321,7 +321,7 @@ int main(int argc, char *argv[])
 	{
 		sleep(5);
 
-    	//printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
+    	printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
     	//printf("avg:  %lf\n", (time_total/(double)count_msg));
 	}
 
@@ -402,10 +402,10 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 							/* apply the callback for this connection */
 
 							//printf(" -- %s\n", buffer->data);
-							pthread_t api_on_msg_thread;
-							pthread_create(&api_on_msg_thread, NULL, api_on_message, strdup(buffer->data));
+							//pthread_t api_on_msg_thread;
+							//pthread_create(&api_on_msg_thread, NULL, api_on_message, strdup(buffer->data));
 
-							//api_on_message(buffer->data);
+							api_on_message(buffer->data);
 
 							buffer->size = 0;
 							word_start = i+1;

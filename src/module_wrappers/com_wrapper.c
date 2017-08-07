@@ -336,7 +336,7 @@ void* com_module_call_function(COM_MODULE* module, const char* function, ...)
 	}
 	va_list args;
 	va_start(args, function);
-	void* result = fc_(args);
+	void* result = fc_(module, args);
 	va_end(args);
 
 	return result;
