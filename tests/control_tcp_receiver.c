@@ -72,8 +72,8 @@ void* api_on_message(void* data)
 			time_total += (t1.tv_usec - time_start.tv_usec) / 1000.0;   // us to ms
 
 			printf("Total: ");
-			printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
-			printf("avg:  %lf\n", (time_total/(double)count_msg));
+			printf("\n\n nb msg received: total time received: avg \n");
+			printf(" %d\t%lf\t%lf\n\n", count_msg, time_total, time_total/count_msg);
 
 		}
 
@@ -84,7 +84,7 @@ void* api_on_message(void* data)
 	}
 
 	json_free(msg_json);
-	free(data);
+	//free(data);
 	return NULL;
 }
 
@@ -319,16 +319,16 @@ int main(int argc, char *argv[])
 
 	while(stopped_flag == 0)
 	{
-		sleep(5);
-
-    	printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
+		sleep(2);
+    	//printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
     	//printf("avg:  %lf\n", (time_total/(double)count_msg));
 	}
 
-	sleep(1);
+	//sleep(1);
+
 	printf("Total: ");
-	printf("\n\n nb msg received: %d \ntotal time received %lf \n", count_msg, ((double)time_total));
-	printf("avg:  %lf\n", (time_total/(double)count_msg));
+	printf("\n\n nb msg received: total time received: avg \n");
+	printf(" %d\t%lf\t%lf\n\n", count_msg, time_total, time_total/count_msg);
 
     close(serversock);
 
@@ -405,12 +405,12 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 							/* apply the callback for this connection */
 
 							//printf(" -- %s\n", buffer->data);
-							pthread_t api_on_msg_thread;
-							pthread_create(&api_on_msg_thread, NULL, api_on_message, strdup(buffer->data));
+							//pthread_t api_on_msg_thread;
+							//pthread_create(&api_on_msg_thread, NULL, api_on_message, strdup(buffer->data));
 
+							api_on_message(buffer->data);
 							buffer_reset(buffer);
 
-							//api_on_message(buffer->data);
 
 							buffer->size = 0;
 							word_start = i+1;

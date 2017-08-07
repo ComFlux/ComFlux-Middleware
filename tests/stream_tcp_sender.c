@@ -142,6 +142,7 @@ int main(int argc, char *argv[])
 			receiver_full, ep_query_str, cpt_query_str);
 	printf("Map result: %d \n", map_result);
 
+	sleep(3);
 	endpoint_start_stream(ep_src);
 	//endpoint_send_stream(ep_src, lorem);
 
@@ -152,14 +153,14 @@ int main(int argc, char *argv[])
 		//nanosleep(&sleep_time, NULL);
 		endpoint_send_stream(ep_src, lorem);
 		count_msg += strlen(lorem);
-		printf(": %d\n", count_msg);
-		//time_total += clock();
+		//printf(": %d\n", count_msg);
 	}
-	printf("done nb msg: %d; len lorem %d; total len: %d \n", nb_msg, strlen(lorem), count_msg);
-	sleep(2);
-	sleep(2);
-	sleep(2);
 
+	sleep(1);
+
+	printf("done nb msg: %d; len lorem %d; total len: %d \n", nb_msg, strlen(lorem), count_msg);
+
+	mw_terminate_core();
 
 	return 0;
 }
