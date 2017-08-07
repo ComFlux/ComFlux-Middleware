@@ -182,6 +182,7 @@ int main(int argc, char *argv[])
 	 sleep_time.tv_sec = 0;
 	 sleep_time.tv_nsec=1000000L;
 
+	 sleep(3);
 	com_send_data(conn, data);
 
 	for(i=0; i<nb_msg; i++)
@@ -201,10 +202,6 @@ int main(int argc, char *argv[])
 	}
 
     close(conn);
-	printf("done %d\n", count_msg);
-	sleep(2);
-        sleep(2);
-        sleep(2);
 
 	return 0;
 }

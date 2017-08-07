@@ -140,6 +140,7 @@ int main(int argc, char *argv[])
 			receiver_full, ep_query_str, cpt_query_str);
 	printf("Map result: %d \n", map_result);
 
+	sleep(3);
 	endpoint_send_message_json(ep_src, msg_json);
 
 	unsigned int i;
@@ -152,7 +153,9 @@ int main(int argc, char *argv[])
 		//time_total += clock();
 	}
 
-	sleep(4);
+	sleep(1);
+
+	mw_terminate_core();
 
 	return 0;
 }
