@@ -118,6 +118,7 @@ void int_handler(int sig)
 
 char* mw_init(const char* cpt_name, int log_lvl, bool use_socketpair)
 {
+	//pthread_attr_setstacksize(1024);
 	app_name = strdup_null(cpt_name);
 	/* seed random for endpoint ids */
 	srand (time(NULL));
@@ -608,6 +609,7 @@ void* api_on_message(void* data)
 {
 	const char * msg = (const char*) data;
 
+	//printf("on comp %s\n", (msg));
 	MESSAGE *msg_ = message_parse(msg);
 
 	//printf("**** msg %s, %s :: %d, \n", msg_->msg_id, blocking_msg_id, waiting_blocking_call);
@@ -642,7 +644,8 @@ void* api_on_message(void* data)
 	final:{
 		json_free(msg_->_msg_json);
 		message_free(msg_);
-		free(data);
+		//free(data);
+		//pthread_exit(NULL);
 		return NULL;
 	}
 }
@@ -697,6 +700,7 @@ void buffer_reset(BUFFER* buffer)
 
 void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 {
+	
 	int i=0;
 	int word_start = i;
 	int word_end = i;
@@ -739,10 +743,12 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 							/* apply the callback for this connection */
 
 							//printf(" -- %s\n", buffer->data);
-							pthread_t api_on_msg_thread;
-							pthread_create(&api_on_msg_thread, NULL, api_on_message, strdup_null(buffer->data));
+	//printf("1\n\n");
+							//pthread_t api_on_msg_thread;
+							//pthread_create(&api_on_msg_thread, NULL, api_on_message, strdup_null(buffer->data));
 
-							//api_on_message(buffer->data);
+	//printf("3\n\n");
+							api_on_message(buffer->data);
 							buffer_reset(buffer);
 
 							buffer->size = 0;

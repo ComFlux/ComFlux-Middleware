@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
 
 	/* build a message */
 	JSON* msg_json = json_new(NULL);
-	json_set_int(msg_json, "value",  "41.24\'12.2\"N 2.10'26.5\"E");
+	json_set_str(msg_json, "value",  "41.24\'12.2\"N 2.10'26.5\"E");
 	json_set_str(msg_json, "date",   "2012-04-23T18:25:43.511Z");
 
 	char* lorem = file_to_str("lorem.txt");
@@ -152,7 +152,7 @@ int main(int argc, char *argv[])
 		//time_total += clock();
 	}
 
-	sleep(1);
+	sleep(4);
 
 	return 0;
 }
