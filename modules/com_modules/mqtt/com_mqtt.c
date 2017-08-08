@@ -239,6 +239,11 @@ int com_connect(const char *connect_config)
 	map_update(mosq_table, (void*)channel->mosq, (void*)channel );
 
 
+	free(mqtt_host);
+	free(topic);
+	free(clientid);
+	json_free(connect_json);
+
     if (on_connect_handler != NULL)
         (*on_connect_handler)(thismodule, channel->fd);
 
