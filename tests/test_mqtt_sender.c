@@ -101,10 +101,12 @@ int main(int argc, char *argv[])
 
 	/* build a message */
 	JSON* msg_json = json_new(NULL);
-	json_set_int(msg_json, "value", rand() % 10);
+	json_set_str(msg_json, "value", "41.24\'12.2\"N 2.10'26.5\"E");
 	json_set_str(msg_json, "date", "today");
 
 	char* lorem = file_to_str("lorem.txt");
+
+
 	json_set_str(msg_json, "lorem", lorem);
 
 
@@ -119,12 +121,14 @@ int main(int argc, char *argv[])
 				addr, ep_query_str, cpt_query_str);
 	printf("Map result: %d \n", map_result);
 
+	sleep(3);
 	endpoint_send_message_json(ep_src, msg_json);
 
 	unsigned int i;
 
 	for(i=0; i<nb_msg; i++)
 	{
+
 		nanosleep(&sleep_time, NULL);
 		endpoint_send_message_json(ep_src, msg_json);
 		count_msg += 1;
@@ -132,6 +136,8 @@ int main(int argc, char *argv[])
 	}
 
 	sleep(1);
+
+	mw_terminate_core();
 
 	return 0;
 }

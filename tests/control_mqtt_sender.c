@@ -156,13 +156,17 @@ int main(int argc, char *argv[])
 
 	/* build a message */
 	JSON* msg_json = json_new(NULL);
-	json_set_int(msg_json, "value", rand() % 10);
+	json_set_str(msg_json, "value", rand() % 10);
 	json_set_str(msg_json, "date", "today");
 
 	char* lorem = file_to_str("lorem.txt");
 	json_set_str(msg_json, "lorem", lorem);
 
 	char* data = json_to_str(msg_json);
+
+	JSON* msg_schema = json_load_from_file("datetime_value.json");
+	printf("msg schema: %s\n", json_to_str_pretty(msg_schema));
+	printf("msg json: %s\n", json_to_str_pretty(msg_json));
 
 	/* sleep */
 	 struct timespec sleep_time;
@@ -171,6 +175,7 @@ int main(int argc, char *argv[])
 
 	unsigned int i=0;
 
+	sleep(3);
 	mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, QoS, true);
 
 	for(i=0; i<nb_msg; i++)
@@ -184,6 +189,7 @@ int main(int argc, char *argv[])
 		//time_total += clock();
 	}
 
+	mosquitto_disconnect(channel->mosq);
 	printf("done %d\n", count_msg);
 	sleep(1);
 
