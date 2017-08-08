@@ -162,7 +162,9 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
 
 	sprintf(data, "%.*s", message->payloadlen, (char*) message->payload);
 	json_to_core = json_new(NULL);
-	json_set_json(json_to_core, "msg_json", json_new(data));
+	JSON* tmp_json = json_new(data);
+	json_set_json(json_to_core, "msg_json", tmp_json);
+	json_free(tmp_json);
 	//json_set_str(json_to_core, "msg", data);
 	json_set_int(json_to_core, "status", 9);
 
@@ -275,6 +277,7 @@ int com_send_data(int conn, const char *data)
 
 	JSON* msg_json = NULL;
 	int msg_status = -1;
+	char* buf = NULL;
 
 	sprintf(conn_str, "%d", conn);
 	channel = map_get(conn_table, conn_str);
@@ -285,6 +288,7 @@ int com_send_data(int conn, const char *data)
 
 	msg_json = json_new(data);
 	msg_status = json_get_int(msg_json, "status");
+	json_free(msg_json);
 	/* check if it's first message
 	 * MSG_MAP is 5
 	 * MSG_MAP_ACK is 6 */
@@ -301,9 +305,15 @@ int com_send_data(int conn, const char *data)
 		//json_set_str(ack_json, "msg", json_to_str(msg_json));
 		json_set_json(ack_json, "msg_json", msg_json);
 
+		buf = json_to_str(ack_json);
 		//printf("send back: %s\n\n", json_to_str(ack_json));
 		(*on_data_handler)(thismodule, channel->fd,
-				json_to_str(ack_json));
+				buf);
+
+		json_free(ack_json);
+		json_free(msg_json);
+		json_fre(ep_md_json);
+		free(buf);
 		return 0;
 	}
 

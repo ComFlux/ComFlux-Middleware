@@ -180,7 +180,7 @@ int main(int argc, char *argv[])
 	/* sleep */
 	 struct timespec sleep_time;
 	 sleep_time.tv_sec = 0;
-	 sleep_time.tv_nsec=1000000L;
+	 sleep_time.tv_nsec=10000000L;
 
 	 sleep(3);
 	com_send_data(conn, data);
