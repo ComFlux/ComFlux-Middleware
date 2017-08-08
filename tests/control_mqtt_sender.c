@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
 
 	/* build a message */
 	JSON* msg_json = json_new(NULL);
-	json_set_str(msg_json, "value", rand() % 10);
+	json_set_str(msg_json, "value", "41.24\'12.2\"N 2.10'26.5\"E");
 	json_set_str(msg_json, "date", "today");
 
 	char* lorem = file_to_str("lorem.txt");
@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
 	/* sleep */
 	 struct timespec sleep_time;
 	 sleep_time.tv_sec = 0;
-	 sleep_time.tv_nsec=1000000L;
+	 sleep_time.tv_nsec=10000000L;
 
 	unsigned int i=0;
 
