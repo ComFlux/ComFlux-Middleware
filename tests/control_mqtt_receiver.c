@@ -28,6 +28,7 @@ struct timeval time_start;
 double time_total = 0;
 unsigned int count_msg = 0;
 
+JSON* msg_schema;
 
 typedef struct _mqtt_channel__
 {
@@ -141,6 +142,9 @@ int main(int argc, char *argv[])
 	mosquitto_lib_init();
 
 	printf("argc: %d\n", argc);
+	msg_schema = json_load_from_file("datetime_value.json");
+	printf("msg schema: %s\n", json_to_str_pretty(msg_schema));
+
 	switch (argc)
 	{
 	case 1: break;
