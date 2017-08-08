@@ -105,10 +105,11 @@ int main(int argc, char *argv[])
 	json_set_str(msg_json, "date", "today");
 
 	char* lorem = file_to_str("lorem.txt");
-
-
 	json_set_str(msg_json, "lorem", lorem);
 
+	JSON* msg_schema = json_load_from_file("datetime_value.json");
+	printf("msg schema: %s\n", json_to_str_pretty(msg_schema));
+	printf("msg json: %s\n", json_to_str_pretty(msg_json));
 
 	/* sleep */
 	 struct timespec sleep_time;

@@ -55,6 +55,11 @@ void disconnect_callback(struct mosquitto *mosq, void *obj, int result)
 
 void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_message *message)
 {
+	char* data  = malloc(message->payloadlen +1);
+	strncpy(data, (char*) message->payload, message->payloadlen);
+
+	JSON* msg_json = json_new(data);
+
 	//printf("%.*s\n", message->payloadlen, (char*) message->payload);
 	if(started_flag == 0 && stopped_flag ==0)
 	{
@@ -63,26 +68,28 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
 		gettimeofday(&time_start, NULL);
 		//return;
 	}
-
-	if(started_flag == 1 && stopped_flag == 0
-			&& count_msg>=total_msg)
+	if (!json_validate(msg_schema, msg_json))
 	{
-		stopped_flag = 1;
-		//time_total = (time(NULL)-time_start);
-		struct timeval t1;
-		gettimeofday(&t1, NULL);
-		time_total = (t1.tv_sec - time_start.tv_sec) * 1000.0;      // sec to ms
-		time_total += (t1.tv_usec - time_start.tv_usec) / 1000.0;   // us to ms
+		if(started_flag == 1 && stopped_flag == 0
+				&& count_msg>=total_msg)
+		{
+			stopped_flag = 1;
+			//time_total = (time(NULL)-time_start);
+			struct timeval t1;
+			gettimeofday(&t1, NULL);
+			time_total = (t1.tv_sec - time_start.tv_sec) * 1000.0;      // sec to ms
+			time_total += (t1.tv_usec - time_start.tv_usec) / 1000.0;   // us to ms
 
-		printf("Total: ");
-		printf("\n\n nb msg received: total time received: avg \n");
-		printf(" %d\t%lf\t%lf\n\n", count_msg, time_total, time_total/count_msg);
+			printf("Total: ");
+			printf("\n\n nb msg received: total time received: avg \n");
+			printf(" %d\t%lf\t%lf\n\n", count_msg, time_total, time_total/count_msg);
 
-	}
+		}
 
-	else if(started_flag == 1 && stopped_flag ==0)
-	{
-		count_msg += 1;
+		else if(started_flag == 1 && stopped_flag ==0)
+		{
+			count_msg += 1;
+		}
 	}
 }
 

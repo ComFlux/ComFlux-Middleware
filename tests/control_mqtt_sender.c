@@ -184,9 +184,14 @@ int main(int argc, char *argv[])
 		//sprintf(data, "date %d\n", i);
 
 		nanosleep(&sleep_time, NULL);
-		mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, QoS, true);
-		count_msg += 1;
-		//time_total += clock();
+		if (!json_validate(msg_schema, msg_json))
+		{
+			data = json_to_str(msg_json);
+			mosquitto_publish(channel->mosq, NULL, channel->topic, strlen(data), data, QoS, true);
+			count_msg += 1;
+			free(data);
+		}
+			//time_total += clock();
 	}
 
 	mosquitto_disconnect(channel->mosq);
