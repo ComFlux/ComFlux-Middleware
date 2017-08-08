@@ -312,7 +312,7 @@ int com_send_data(int conn, const char *data)
 
 		json_free(ack_json);
 		json_free(msg_json);
-		json_fre(ep_md_json);
+		json_free(ep_md_json);
 		free(buf);
 		return 0;
 	}
