@@ -16,6 +16,7 @@
 #include <string.h>
 
 #include <sys/time.h>
+#include <json.h>
 
 #define QoS 0
 
