@@ -178,6 +178,8 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
 	if(on_data_handler)
 		(*on_data_handler)(thismodule, channel->fd, msg_to_core);
 
+	json_free(outer_json_to_core);
+	json_free(json_to_core);
 	free(data);
 	free(msg_to_core);
 }
