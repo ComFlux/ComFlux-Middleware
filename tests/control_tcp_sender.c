@@ -63,6 +63,7 @@ char* file_to_str(const char* filename) {
 }
 
 
+
 int com_connect(const char* server_addr, int server_port)
 {
     printf("Connecting to server %s:%d\n", server_addr, server_port);

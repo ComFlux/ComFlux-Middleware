@@ -221,13 +221,13 @@ void state_free(STATE* state)
 
 int state_send_message(STATE* state, MESSAGE* msg)
 {
-	if(state == NULL)
-		return STATE_BAD;
+//	if(state == NULL)
+//		return STATE_BAD;
 
 	char* msg_str = message_to_str(msg);
 
 	int result = (*(state->module->fc_send_data))(state->conn, msg_str);
-
+printf("%s\n\n", msg_str);
 	free(msg_str);
 
 	return result;

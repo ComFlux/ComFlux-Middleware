@@ -124,10 +124,10 @@ int main(int argc, char *argv[])
 	json_set_str(msg_json, "value",  "41.24\'12.2\"N 2.10'26.5\"E");
 	json_set_str(msg_json, "date",   "2012-04-23T18:25:43.511Z");
 
-	char* lorem = file_to_str("lorem.txt");
-	json_set_str(msg_json, "lorem", lorem);
+//	char* lorem = file_to_str("lorem.txt");
+//	json_set_str(msg_json, "lorem", lorem);
 
-	printf("%d: %s\n", strlen(lorem), lorem);
+//	printf("%d: %s\n", strlen(lorem), lorem);
 
 
 	/* sleep */

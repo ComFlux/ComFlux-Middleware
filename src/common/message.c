@@ -26,10 +26,9 @@ MESSAGE* message_new(const char* msg_, unsigned int status_)
 
 	message->ep = NULL;
 
-
 	message->conn = 0;
 	message->module = NULL;
-
+printf("%s\n\n", message_to_str(message));
 	return message;
 }
 
@@ -47,7 +46,7 @@ MESSAGE* message_new_json(JSON* msg_, unsigned int status_)
 
 	message->conn = 0;
 	message->module = NULL;
-
+printf("%s\n\n", message_to_str(message));
 	return message;
 }
 
@@ -83,7 +82,7 @@ MESSAGE* message_new_id_json(const char* msg_id, JSON* msg_, unsigned int status
 
 	message->conn = 0;
 	message->module = NULL;
-
+printf("%s\n\n", message_to_str(message));
 	return message;
 }
 
