@@ -43,6 +43,11 @@ int load_all_com_functions(COM_MODULE *module)
 //	{
 //		return -1;
 //	}
+	module->fc_send_data_str = dlsym(module->handle, "com_send_data_str");
+//	if ((error = dlerror()) != NULL)
+//	{
+//		return -1;
+//	}
 	module->fc_set_on_data = dlsym(module->handle, "com_set_on_data");
 //	if ((error = dlerror()) != NULL)
 //	{
@@ -283,6 +288,15 @@ int com_send_data_wrapper(const char* modulename, int conn, const char* data)
 		return COM_MODULE_NOT_FOUND;
 
 	return (*(module->fc_send_data))(conn, data);
+}
+
+int com_send_data_str_wrapper(const char* modulename, int conn, void* data, unsigned int size)
+{
+	COM_MODULE* module = com_get_module(modulename);
+	if (module == NULL)
+		return COM_MODULE_NOT_FOUND;
+
+	return (*(module->fc_send_data_str))(conn, data, size);
 }
 
 int com_set_on_data_wrapper(const char* modulename,

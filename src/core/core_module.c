@@ -44,6 +44,7 @@ extern void core_on_disconnect(COM_MODULE* module, int conn);
 
 int core_register_endpoint(const char* json)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 	JSON* ep_json = json_new(json);
     LOCAL_EP *lep = ep_local_new(ep_json, NULL);
     json_free(ep_json);
@@ -55,6 +56,7 @@ int core_register_endpoint(const char* json)
 
 void core_remove_endpoint(const char* ep_id)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     LOCAL_EP* lep = map_get(locales, (void*)ep_id);
     if (!lep)
         return;
@@ -64,6 +66,7 @@ void core_remove_endpoint(const char* ep_id)
 
 int core_map(LOCAL_EP* lep, COM_MODULE* com_module, const char* addr, JSON* ep_query, JSON* cpt_query)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     if (!lep)
         return EP_NO_EXIST;
 
@@ -113,6 +116,7 @@ int core_map(LOCAL_EP* lep, COM_MODULE* com_module, const char* addr, JSON* ep_q
 
 int core_map_all_modules(LOCAL_EP* lep, const char* addr, JSON* ep_query, JSON* cpt_query)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     int result = -1;
 
     int i;
@@ -134,6 +138,7 @@ int core_map_all_modules(LOCAL_EP* lep, const char* addr, JSON* ep_query, JSON* 
 
 void core_map_lookup(LOCAL_EP* lep, JSON* ep_query, JSON* cpt_query, int max_maps)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     if (!lep)
         return;
 
@@ -194,6 +199,7 @@ void core_map_lookup(LOCAL_EP* lep, JSON* ep_query, JSON* cpt_query, int max_map
 /* wrapper for ep_unmap_addr */
 int core_unmap(LOCAL_EP* lep, const char* addr)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 
     ep_unmap_addr(lep, addr);
 
@@ -202,6 +208,7 @@ int core_unmap(LOCAL_EP* lep, const char* addr)
 
 int core_unmap_connection(LOCAL_EP* lep, COM_MODULE* module, int conn)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 
     STATE* state_ptr = states_get(module, conn);
     if(! state_ptr)
@@ -215,6 +222,7 @@ int core_unmap_connection(LOCAL_EP* lep, COM_MODULE* module, int conn)
 /* a wrapper for ep_unmap_all */
 int core_unmap_all(LOCAL_EP* lep)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 
     ep_unmap_all(lep);
 
@@ -224,6 +232,7 @@ int core_unmap_all(LOCAL_EP* lep)
 /* TODO */
 int core_divert(LOCAL_EP* lep, const char* ep_id_from, const char* addr)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     if (!lep)
         return EP_NO_EXIST;
 
@@ -239,6 +248,7 @@ int core_divert(LOCAL_EP* lep, const char* ep_id_from, const char* addr)
 
 int core_ep_send_message(LOCAL_EP* lep, const char* msg_id, const char* msg)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 
     if (!ep_can_send(lep->ep))
         return EP_NO_SEND;
@@ -261,6 +271,7 @@ int core_ep_send_message(LOCAL_EP* lep, const char* msg_id, const char* msg)
 
 int core_ep_send_request(LOCAL_EP* lep, const char* req_id, const char* req)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     if (!(lep->ep->type == EP_REQ || lep->ep->type == EP_REQ_P || lep->ep->type == EP_RR)) {
         return EP_NO_RECEIVE;
     }
@@ -275,6 +286,7 @@ int core_ep_send_request(LOCAL_EP* lep, const char* req_id, const char* req)
 
 int core_ep_send_response(LOCAL_EP* lep, const char* req_id, const char* resp)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 
     if (!(lep->ep->type == EP_RESP || lep->ep->type == EP_RESP_P || lep->ep->type == EP_RR)) {
         return EP_NO_SEND;
@@ -295,6 +307,7 @@ int core_ep_send_response(LOCAL_EP* lep, const char* req_id, const char* resp)
 
 int core_ep_more_messages(LOCAL_EP* lep)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 
     if (lep->ep->type != EP_SNK && lep->ep->type != EP_SS)
         return -1;
@@ -304,6 +317,7 @@ int core_ep_more_messages(LOCAL_EP* lep)
 
 int core_ep_more_requests(LOCAL_EP* lep)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     if (lep->ep->type != EP_REQ && lep->ep->type != EP_REQ_P && lep->ep->type != EP_RR)
         return -1;
 
@@ -312,6 +326,7 @@ int core_ep_more_requests(LOCAL_EP* lep)
 
 int core_ep_more_responses(LOCAL_EP* lep, const char* req_id)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     if (lep->ep->type != EP_RESP && lep->ep->type != EP_RESP_P && lep->ep->type != EP_RR)
         return -1;
 
@@ -330,6 +345,7 @@ int core_ep_more_responses(LOCAL_EP* lep, const char* req_id)
 
 MESSAGE* core_ep_fetch_message(LOCAL_EP* lep)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 
     if (lep->ep->type != EP_SNK && lep->ep->type != EP_SS)
         return NULL;
@@ -352,6 +368,7 @@ MESSAGE* core_ep_fetch_message(LOCAL_EP* lep)
 
 MESSAGE* core_ep_fetch_request(LOCAL_EP* lep)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     if (lep->ep->type != EP_REQ && lep->ep->type != EP_REQ_P && lep->ep->type != EP_RR)
         return NULL;
 
@@ -375,6 +392,7 @@ MESSAGE* core_ep_fetch_request(LOCAL_EP* lep)
 
 MESSAGE* core_ep_fetch_response(LOCAL_EP* lep, const char* req_id)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     if (lep->ep->type != EP_RESP && lep->ep->type != EP_RESP_P && lep->ep->type != EP_RR)
         return NULL;
 
@@ -399,6 +417,7 @@ MESSAGE* core_ep_fetch_response(LOCAL_EP* lep, const char* req_id)
 
 void core_ep_stream_start(LOCAL_EP* lep)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 	if(lep == NULL)
 		return;
 
@@ -415,6 +434,7 @@ void core_ep_stream_start(LOCAL_EP* lep)
 
 void core_ep_stream_stop(LOCAL_EP* lep)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 	if(lep == NULL)
 		return;
 
@@ -431,6 +451,7 @@ void core_ep_stream_stop(LOCAL_EP* lep)
 
 void core_ep_stream_send(LOCAL_EP* lep, const char* msg)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 	if(lep == NULL)
 		return;
 
@@ -459,6 +480,7 @@ void core_ep_stream_send(LOCAL_EP* lep, const char* msg)
 
 void core_ep_set_access(LOCAL_EP* lep, const char* subject)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 
     if (lep == NULL || subject == NULL) {
         //slog(SLOG_WARN, SLOG_WARN, "CORE FUNC: null arguments ignored");
@@ -471,6 +493,7 @@ void core_ep_set_access(LOCAL_EP* lep, const char* subject)
 
 void core_ep_reset_access(LOCAL_EP* lep, const char* subject)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 
     if (lep == NULL || subject == NULL) {
         //slog(SLOG_WARN, SLOG_WARN, "CORE FUNC: null arguments ignored");
@@ -483,6 +506,7 @@ void core_ep_reset_access(LOCAL_EP* lep, const char* subject)
 
 int core_add_manifest(const char* msg)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 
     MESSAGE* md_msg = message_parse(msg);
     JSON* md_json = md_msg->_msg_json;
@@ -499,6 +523,7 @@ int core_add_manifest(const char* msg)
 // TODO: add function get_metadata(char* addr)
 char* core_get_manifest()
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 
     JSON* elem_md = manifest_get(MANIFEST_SHORT);
     char* md_str = json_to_str(elem_md);
@@ -508,6 +533,7 @@ char* core_get_manifest()
 
 int core_add_rdc(COM_MODULE* module, const char* addr)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 	if(module == NULL)
 	{
 		return -1;
@@ -522,6 +548,7 @@ int core_add_rdc(COM_MODULE* module, const char* addr)
 
 void core_rdc_register(COM_MODULE* com_module, const char* addr)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     if (addr == NULL && com_module == NULL)
     {
         rdc_register_all(RDC_REGISTER);
@@ -539,6 +566,7 @@ void core_rdc_register(COM_MODULE* com_module, const char* addr)
 
 void core_rdc_unregister(const char* addr)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     if (addr == NULL)
         rdc_register_all(RDC_UNREGISTER);
     else {
@@ -552,11 +580,13 @@ void core_rdc_unregister(const char* addr)
 
 void core_add_filter(LOCAL_EP* lep, const char* filter)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     array_add(lep->filters, strdup_null(filter));
 }
 
 void core_reset_filter(LOCAL_EP* lep, Array* new_filters)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     array_free(lep->filters);
 
     if (new_filters != NULL)
@@ -567,6 +597,7 @@ void core_reset_filter(LOCAL_EP* lep, Array* new_filters)
 
 void core_terminate()
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     rdc_register_all(RDC_UNREGISTER);
 
     int i;
@@ -608,6 +639,7 @@ void core_terminate()
 
 int core_load_com_module(const char* lib_path, const char* config_json)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 
     COM_MODULE* com_module = com_module_new(lib_path, config_json); // com_get_module(path);//change after socketpair with app
 
@@ -627,6 +659,7 @@ int core_load_com_module(const char* lib_path, const char* config_json)
 
 int core_load_access_module(const char* path, const char* config_json)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
     return access_load_module(path, config_json);
 }
 
@@ -634,6 +667,7 @@ int core_load_access_module(const char* path, const char* config_json)
 
 char* core_ep_get_all_connections(LOCAL_EP* lep)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 
 	if(lep==NULL)
 		return NULL;
@@ -661,6 +695,7 @@ char* core_ep_get_all_connections(LOCAL_EP* lep)
 
 char* core_get_remote_manifest(COM_MODULE* module, int conn)
 {
+	slog(SLOG_DEBUG, "CORE: %s", __func__);
 	if(module == NULL || conn ==0)
 		return NULL;
 
