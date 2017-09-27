@@ -227,7 +227,7 @@ int state_send_message(STATE* state, MESSAGE* msg)
 	char* msg_str = message_to_str(msg);
 
 	int result = (*(state->module->fc_send_data))(state->conn, msg_str);
-printf("%s\n\n", msg_str);
+
 	free(msg_str);
 
 	return result;

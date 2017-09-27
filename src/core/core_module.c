@@ -253,14 +253,12 @@ int core_ep_send_message(LOCAL_EP* lep, const char* msg_id, const char* msg)
     if (!ep_can_send(lep->ep))
         return EP_NO_SEND;
 
-    //JSON* msg_json = json_new(msg);
-
     MESSAGE* msg_msg = message_parse(msg);
     //TODO: make correct fcs for stream/src
     if (json_validate_message(lep, msg_msg->_msg_json))
         return EP_NO_VALID;
 
-    ep_send_message(lep, msg_msg);
+    ep_send(lep, msg, strlen(msg));
 
     json_free(msg_msg->_msg_json);
     message_free(msg_msg);
@@ -272,7 +270,10 @@ int core_ep_send_message(LOCAL_EP* lep, const char* msg_id, const char* msg)
 int core_ep_send_request(LOCAL_EP* lep, const char* req_id, const char* req)
 {
 	slog(SLOG_DEBUG, "CORE: %s", __func__);
-    if (!(lep->ep->type == EP_REQ || lep->ep->type == EP_REQ_P || lep->ep->type == EP_RR)) {
+    if (!(lep->ep->type == EP_REQ ||
+    		lep->ep->type == EP_REQ_P ||
+			lep->ep->type == EP_RR))
+    {
         return EP_NO_RECEIVE;
     }
     JSON* req_json = json_new(req);
@@ -288,7 +289,10 @@ int core_ep_send_response(LOCAL_EP* lep, const char* req_id, const char* resp)
 {
 	slog(SLOG_DEBUG, "CORE: %s", __func__);
 
-    if (!(lep->ep->type == EP_RESP || lep->ep->type == EP_RESP_P || lep->ep->type == EP_RR)) {
+    if (!(lep->ep->type == EP_RESP ||
+    		lep->ep->type == EP_RESP_P ||
+			lep->ep->type == EP_RR))
+    {
         return EP_NO_SEND;
     }
 

@@ -28,7 +28,9 @@ MESSAGE* message_new(const char* msg_, unsigned int status_)
 
 	message->conn = 0;
 	message->module = NULL;
-printf("%s\n\n", message_to_str(message));
+
+	message->data = (void*)msg_;
+	message->size = strlen(msg_);
 	return message;
 }
 
@@ -46,7 +48,10 @@ MESSAGE* message_new_json(JSON* msg_, unsigned int status_)
 
 	message->conn = 0;
 	message->module = NULL;
-printf("%s\n\n", message_to_str(message));
+
+	message->data = NULL;
+	message->size = 0;
+
 	return message;
 }
 
@@ -64,6 +69,9 @@ MESSAGE* message_new_id(const char* msg_id, const char* msg_, unsigned int statu
 
 	message->conn = 0;
 	message->module = NULL;
+
+	message->data = (void*)msg_;
+	message->size = strlen(msg_);
 
 	return message;
 }
@@ -108,9 +116,12 @@ MESSAGE* message_parse(const char* msg)
 	if(msg == NULL)
 		return NULL;
 	JSON* json_msg = json_new(msg);
-	MESSAGE* ret_msg = message_parse_json(json_msg);
+	MESSAGE* message = message_parse_json(json_msg);
 
-	return ret_msg;
+	message->data = (void*)msg;
+	message->size = strlen(msg);
+
+	return message;
 }
 
 MESSAGE* message_parse_json(JSON* json_msg)

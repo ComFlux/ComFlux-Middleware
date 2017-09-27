@@ -375,11 +375,9 @@ void call_external_command_handler(STATE* state_ptr, MESSAGE* msg)
 	else
 	{
 		//printf(" to app %s\n", message_to_str(msg));
-		state_send_message(app_state, msg);
+		//state_send_message(app_state, msg);
+		(*(app_state->module->fc_send))(app_state->conn, msg->data, msg->size);
 	}
-
-	//message_free(in_msg);
-	//message_free(msg);
 }
 
 void recv_stream_cmd(MESSAGE* msg)

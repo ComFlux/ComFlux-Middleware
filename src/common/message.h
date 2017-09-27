@@ -50,6 +50,10 @@ typedef struct _MESSAGE{
 
 	int conn;
 	char* module;
+
+	/* original source */
+	void* data;
+	unsigned int size;
 } MESSAGE;
 
 

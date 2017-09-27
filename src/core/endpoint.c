@@ -529,6 +529,19 @@ int ep_send_message(LOCAL_EP *lep, MESSAGE* msg)
 	return 0;
 }
 
+int ep_send(LOCAL_EP *lep, void* data, unsigned int size)
+{
+	//LOCAL_EP *lep = (LOCAL_EP*)(ep->data);
+	STATE* state;
+	int i;
+	for(i=0; i<array_size(lep->mappings_states); i++)
+	{
+		state = array_get(lep->mappings_states, i);
+		(*(state->module->fc_send))(state->conn, data, size);
+	}
+
+	return 0;
+}
 
 int eps_init()
 {
