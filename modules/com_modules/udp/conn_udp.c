@@ -53,7 +53,7 @@ char* com_init(void* module, const char *config_json)
 	char* server_addr = udp_get_addr(server_address);
 	int server_port = udp_get_port(server_address);
 	if (server_port == -1) {
-		slog(SLOG_ERROR, SLOG_ERROR,
+		slog(SLOG_ERROR,
 				"CONN UDP: Illegal value for server port: %d.", server_port);
 		return NULL;
 	}
@@ -62,7 +62,7 @@ char* com_init(void* module, const char *config_json)
 	struct sockaddr_in serverin; //, peerin;
 	serversock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (serversock == -1) {
-		slog(1, SLOG_ERROR, "CONN UDP: Could not create server socket.");
+		slog(SLOG_ERROR, "CONN UDP: Could not create server socket.");
 		return NULL;
 	}
 
@@ -71,7 +71,7 @@ char* com_init(void* module, const char *config_json)
 	serverin.sin_port = htons(server_port);
 
 	if (bind(serversock, (struct sockaddr*) &serverin, sizeof(serverin)) < 0) {
-		slog(SLOG_ERROR, SLOG_ERROR, "CONN UDP: Bind to %s:%d failed: %s",
+		slog(SLOG_ERROR, "CONN UDP: Bind to %s:%d failed: %s",
 				server_addr, server_port, strerror(errno));
 		// free(server_addr);
 		return NULL;
@@ -80,7 +80,7 @@ char* com_init(void* module, const char *config_json)
 	buf = (char*) malloc(sizeof(char) * 10);
 	snprintf(buf, 10, "%d", serversock);
 	map_insert(fdtype, buf, "s");
-	slog(SLOG_INFO, SLOG_INFO, "CONN: Bind to %s:%d successed.", server_addr,
+	slog(SLOG_INFO, "CONN: Bind to %s:%d successed.", server_addr,
 			server_port);
 	udp_run_receive_thread(serversock);
 
@@ -112,18 +112,18 @@ void udp_run_receive_thread(int conn) {
 	err = pthread_create(&rcvthread, NULL, &udp_receive_function,
 			(void*) conn_ptr);
 	if (err != 0) {
-		slog(1, SLOG_ERROR, "CONN UDP: can't create receive thread  for (%d).",
+		slog(SLOG_ERROR, "CONN UDP: can't create receive thread  for (%d).",
 				conn);
 		return;
 	}
 	err = pthread_detach(rcvthread);
 	if (err != 0) {
-		slog(1, SLOG_ERROR, "CONN UDP: Could not detach rcv thread for (%d) ",
+		slog(SLOG_ERROR, "CONN UDP: Could not detach rcv thread for (%d) ",
 				conn);
 		return;
 	}
 
-	slog(4, SLOG_INFO,
+	slog(SLOG_INFO,
 			"CONN UDP: Receive thread created successfully for (%d).",
 			*conn_ptr);
 }
@@ -134,7 +134,7 @@ void udp_stop_receive_thread(int conn) {
 void* udp_receive_function(void* conn) {
 	int _conn = *((int*) conn);
 	if (_conn <= 0) {
-		slog(SLOG_ERROR, SLOG_ERROR,
+		slog(SLOG_ERROR,
 				"CONN UDP: not established with (%d), can't recv", conn);
 		return NULL;
 	}
@@ -168,7 +168,7 @@ char* udp_receive_message(int _conn) {
 	socklen_t addrlen = sizeof(peerin);
 	int count = 0;
 
-	slog(SLOG_INFO, SLOG_INFO,
+	slog(SLOG_INFO,
 			"CONN UDP: About to receive message using udp on socket (%d)",
 			_conn);
 	do {
@@ -181,7 +181,7 @@ char* udp_receive_message(int _conn) {
 				(struct sockaddr*) peerin, &addrlen);
 
 		if (recvSize == -1) {
-			slog(SLOG_WARN, SLOG_WARN,
+			slog(SLOG_WARN,
 					"CONN UDP: Recv msg failed from (%d). closing connection ",
 					_conn);
 			// com_connection_close(_conn);
@@ -220,7 +220,7 @@ char* udp_receive_message(int _conn) {
 			printf("from peer %d\n", _conn);
 		}
 
-		slog(SLOG_INFO, SLOG_INFO,
+		slog(SLOG_INFO,
 				"CONN UDP: received %d total bytes on sock (%d): *%s*",
 				allBytesRecv, _conn, buf);
 		/* apply message handler in a different thread */
@@ -249,21 +249,21 @@ int com_connect(const char* server_address) {
 	if (!udp_initiated)
 		udp_init();
 	if (!com_is_valid_address(server_address)) {
-		slog(SLOG_ERROR, SLOG_ERROR, "Invalid address format given: %s",
+		slog(SLOG_ERROR, "Invalid address format given: %s",
 				server_address);
 		return -1;
 	}
 
 	char* server_addr = udp_get_addr(server_address);
 	int server_port = udp_get_port(server_address);
-	slog(SLOG_INFO, SLOG_INFO, "CONN UDP: Connecting to server %s:%d",
+	slog(SLOG_INFO, "CONN UDP: Connecting to server %s:%d",
 			server_addr, server_port);
 
 	int peersock;
 	peersock = socket(
 	AF_INET, SOCK_DGRAM, 0); // not build the sockaddr_in here, cause it won't be passed to another (send) thread
 	if (peersock == -1) {
-		slog(SLOG_ERROR, SLOG_ERROR,
+		slog(SLOG_ERROR,
 				"CONN UDP: Could not create client socket.");
 		return -1;
 	}
@@ -280,7 +280,7 @@ int com_connect(const char* server_address) {
 	map_insert(idsktaddr, buf, peerin);
 	map_insert(fdtype, buf, "c");
 
-	slog(SLOG_INFO, SLOG_INFO, "CONN UDP: server connected on %d", peersock);
+	slog(SLOG_INFO, "CONN UDP: server connected on %d", peersock);
 
 	if (on_connect_handler != NULL)
 		(*on_connect_handler)(thismodule, peersock);
@@ -311,13 +311,13 @@ int com_send_data(int pconn, const char* msg) {
 				"about to send msg to %d ,send to conn %d  port %d; map size %d\n",
 				pconn, conn, ntohs(peer.sin_port), map_size(idsktaddr));
 	} else {
-		slog(SLOG_ERROR, SLOG_ERROR,
+		slog(SLOG_ERROR,
 				"CONN UDP: not established with (%d), can't send msg *%s*",
 				conn, msg);
 		return -1;
 	}
 
-	slog(SLOG_INFO, SLOG_INFO, "CONN UDP: send to (%d) *%s*", conn, msg);
+	slog(SLOG_INFO, "CONN UDP: send to (%d) *%s*", conn, msg);
 
 	const uint32_t varSize = strlen(msg);
 	int allBytesSent; /* sum of all sent sizes */
@@ -332,13 +332,13 @@ int com_send_data(int pconn, const char* msg) {
 		 else
 		 sentSize = send(conn , msg+allBytesSent , 512 , 0);*/
 		if (sentSize < 0) {
-			slog(SLOG_ERROR, SLOG_ERROR,
+			slog(SLOG_ERROR,
 					"CONN UDP: error sending msg on sock (%d)", conn);
 			break;
 		}
 		allBytesSent += sentSize;
 	}
-	slog(SLOG_INFO, SLOG_INFO, "CONN UDP: send to (%d) finished ", conn);
+	slog(SLOG_INFO, "CONN UDP: send to (%d) finished ", conn);
 	return (int) allBytesSent;
 }
 

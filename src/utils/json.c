@@ -392,7 +392,7 @@ int json_validate(JSON* schema, JSON* instance)
 {
 	if (!schema || !schema->elem_json)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR,
+		//slog(SLOG_ERROR,
 		//		"JSON: Invalid NULL schema");
 		return JSON_INVALID_SCHEMA;
 	}
@@ -403,7 +403,7 @@ int json_validate(JSON* schema, JSON* instance)
 
 	if (!instance || !instance->elem_json)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR,
+		//slog(SLOG_ERROR,
 		//		"JSON: Invalid NULL instance\n");
 		return JSON_INVALID_JSON;
 	}
@@ -421,7 +421,7 @@ int json_validate(JSON* schema, JSON* instance)
     	return JSON_NOT_VALID;
     }
 
-	/*slog(SLOG_WARN, SLOG_WARN,
+	/*slog(SLOG_WARN,
 			"JSON not valid:\n "
 			"\tinstance:\t*%s*\n"
 			"\tschema\t*%s*",
@@ -435,7 +435,7 @@ int json_schema_validate_str(const char *schema, const char * instance)
 	int return_value = JSON_OK;
 	if (!schema)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR,
+		//slog(SLOG_ERROR,
 		//		"JSON: Invalid NULL schema");
 		return_value = JSON_INVALID_SCHEMA;
 		goto final;
@@ -443,7 +443,7 @@ int json_schema_validate_str(const char *schema, const char * instance)
 
 	if (!instance)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR,
+		//slog(SLOG_ERROR,
 		//		"JSON: Invalid NULL instance");
 		return_value = JSON_INVALID_JSON;
 		goto final;
@@ -455,14 +455,14 @@ int json_schema_validate_str(const char *schema, const char * instance)
 
     if(!schema_json)
     {
-    	//slog(SLOG_ERROR, SLOG_ERROR, "JSON: Invalid schema: %s", schema);
+    	//slog(SLOG_ERROR, "JSON: Invalid schema: %s", schema);
     	return_value = JSON_INVALID_SCHEMA;
     	goto final;
     }
 
     if(!instance_json)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR, "JSON: Invalid instance: %s", instance);
+		//slog(SLOG_ERROR, "JSON: Invalid instance: %s", instance);
     	return_value = JSON_INVALID_SCHEMA;
     	goto final;
 	}
@@ -470,7 +470,7 @@ int json_schema_validate_str(const char *schema, const char * instance)
     /* validate empty object */
     if (!json_validate_instance(instance_json, schema_json))
     {
-    	/*slog(SLOG_INFO, SLOG_INFO,
+    	/*slog(SLOG_INFO,
     			"JSON valid:\n "
     			"\tinstance:\t*%s*\n"
     			"\tschema\t*%s*",
@@ -479,7 +479,7 @@ int json_schema_validate_str(const char *schema, const char * instance)
     }
     else
     {
-    	slog(SLOG_WARN, SLOG_WARN,
+    	slog(SLOG_WARN,
     			"JSON not valid:\n "
     			"\tinstance:\t*%s*\n"
     			"\tschema\t*%s*",
@@ -497,7 +497,7 @@ int json_schema_validate_file(const char *schema_filepath, const char * instance
 {
 	if(!schema_filepath)
 	{
-		//slog(1, SLOG_ERROR, "JSON: Invalid schema file path: \"%s\" ", schema_filepath);
+		//slog(SLOG_ERROR, "JSON: Invalid schema file path: \"%s\" ", schema_filepath);
 		return JSON_INVALID_FILE;
 	}
 

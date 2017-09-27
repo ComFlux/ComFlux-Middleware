@@ -63,7 +63,7 @@ int fifo_init_client(const char *fifo_name)
 
 	if (conn <= 0)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR,
+		slog(SLOG_ERROR,
 				"CONN FIFO: Error opening fifo %s: errno: %d.",
 				fifo_name, conn);
 		return conn;
@@ -75,10 +75,10 @@ int fifo_send_message(int conn, const char* msg)
 {
     unsigned char escape = '#';
     if (conn <= 0) {
-        slog(SLOG_ERROR, SLOG_ERROR, "CONN FIFO: (%d) not opened, can't send msg *%s*", conn, msg);
+        slog(SLOG_ERROR, "CONN FIFO: (%d) not opened, can't send msg *%s*", conn, msg);
         return -1;
     }
-    slog(SLOG_INFO, SLOG_INFO, "CONN FIFO: send to (%d) *%s*", conn, msg);
+    slog(SLOG_INFO, "CONN FIFO: send to (%d) *%s*", conn, msg);
 
     const uint32_t varSize = strlen(msg);
     int allBytesSent; /* sum of all sent sizes */
@@ -88,7 +88,7 @@ int fifo_send_message(int conn, const char* msg)
     allBytesSent = write(conn, &varSize, sizeof(varSize));
     escapeSent = write(conn, &escape, 1);
     if (allBytesSent != sizeof(uint32_t) || escapeSent != 1) {
-        slog(SLOG_ERROR, SLOG_ERROR, "CONN FIFO: error sending size on fifo (%d): error %d", conn, escapeSent);
+        slog(SLOG_ERROR, "CONN FIFO: error sending size on fifo (%d): error %d", conn, escapeSent);
         // fifo_close(conn);
         if (on_disconnect_handler)
             (*on_disconnect_handler)(_module, conn);
@@ -105,7 +105,7 @@ int fifo_send_message(int conn, const char* msg)
         else
                 sentSize = send(conn , msg+allBytesSent , 512 , 0);*/
         if (sentSize < 0) {
-            slog(SLOG_ERROR, SLOG_ERROR, "CONN FIFO: error sending msg on fifo (%d)", conn);
+            slog(SLOG_ERROR, "CONN FIFO: error sending msg on fifo (%d)", conn);
             break;
         }
         allBytesSent += sentSize;
@@ -127,7 +127,7 @@ char* fifo_receive_message(int _conn)
     	//read(_conn, buf, MAX_BUF);
 		recvSize = read(_conn, (char*)&varSize, sizeof(uint32_t));
 		if (recvSize <= 0) {
-			slog(SLOG_WARN, SLOG_WARN, "CONN FIFO: Recv size failed from (%d). closing connection ", _conn);
+			slog(SLOG_WARN, "CONN FIFO: Recv size failed from (%d). closing connection ", _conn);
 			// fifo_close(_conn);
 			if (on_disconnect_handler)
 				(*on_disconnect_handler)(_module,_conn);
@@ -136,14 +136,13 @@ char* fifo_receive_message(int _conn)
 			return NULL;
 		}
 		if (recvSize != sizeof(uint32_t)) {
-			slog(SLOG_WARN, SLOG_WARN, "CONN: error receiving size on fifo (%d), val: %d; continue", _conn, recvSize);
+			slog(SLOG_WARN, "CONN: error receiving size on fifo (%d), val: %d; continue", _conn, recvSize);
 			continue;
 		}
         /* reading escape */
         recvSize = read(_conn, &recvEscape, 1);
         if (recvEscape != escape) {
             slog(SLOG_WARN,
-                 SLOG_WARN,
                  "CONN FIFO: On (%d), did not receive correct escape code %c; ignoring size %d",
                  _conn,
                  recvEscape,
@@ -151,7 +150,7 @@ char* fifo_receive_message(int _conn)
             continue;
         }
         if (recvSize <= 0) {
-            slog(SLOG_WARN, SLOG_WARN, "CONN FIFO: Recv escape failed from (%d). closing connection ", _conn);
+            slog(SLOG_WARN, "CONN FIFO: Recv escape failed from (%d). closing connection ", _conn);
             // fifo_close(_conn);
             if (on_disconnect_handler)
                 (*on_disconnect_handler)(_module,_conn);
@@ -161,11 +160,11 @@ char* fifo_receive_message(int _conn)
         }
         if (recvSize != 1) // Should never get here
         {
-            slog(SLOG_WARN, SLOG_WARN, "CONN FIFO: error receiving escape on fifo (%d), val: %d; continue", _conn, recvSize);
+            slog(SLOG_WARN, "CONN FIFO: error receiving escape on fifo (%d), val: %d; continue", _conn, recvSize);
             continue;
         }
 
-        slog(SLOG_INFO, SLOG_INFO, "CONN FIFO: Expecting %d bytes on fifo (%d).", varSize, _conn);
+        slog(SLOG_INFO, "CONN FIFO: Expecting %d bytes on fifo (%d).", varSize, _conn);
 
         /* reading msg */
         allBytesRecv = 0;
@@ -175,7 +174,7 @@ char* fifo_receive_message(int _conn)
         while (allBytesRecv < varSize) {
             recvSize = read(_conn, buf + allBytesRecv, varSize);
             if (recvSize == -1) {
-                slog(SLOG_WARN, SLOG_WARN, "CONN FIFO: Recv msg failed from (%d). closing connection ", _conn);
+                slog(SLOG_WARN, "CONN FIFO: Recv msg failed from (%d). closing connection ", _conn);
                 // fifo_close(_conn);
                 if (on_disconnect_handler)
                     (*on_disconnect_handler)(_module,_conn);
@@ -186,7 +185,7 @@ char* fifo_receive_message(int _conn)
             allBytesRecv += recvSize;
         }
 
-        slog(SLOG_INFO, SLOG_INFO, "CONN FIFO: received %d total bytes on sock (%d): *%s*", allBytesRecv, _conn, buf);
+        slog(SLOG_INFO, "CONN FIFO: received %d total bytes on sock (%d): *%s*", allBytesRecv, _conn, buf);
         return buf;
     } while (1);
 }
@@ -195,7 +194,7 @@ void* fifo_receive_function(void* conn)
 {
     int _conn = *((int*)conn);
     if (_conn <= 0) {
-        slog(SLOG_ERROR, SLOG_ERROR, "CONN: not established with (%d), can't recv", conn);
+        slog(SLOG_ERROR, "CONN: not established with (%d), can't recv", conn);
         return NULL;
     }
     char* buf;
@@ -231,16 +230,16 @@ void fifo_run_receive_thread(int conn)
 	err = pthread_create(&rcvthread, NULL, &fifo_receive_function, (void*)conn_ptr);
 	if (err != 0)
 	{
-		slog(1, SLOG_ERROR, "CONN sockpair: can't create receive thread  for (%d).", conn);
+		slog(SLOG_ERROR, "CONN sockpair: can't create receive thread  for (%d).", conn);
 		return ;
 	}
 	err = pthread_detach(rcvthread);
 	if ( err != 0 )
 	{
-		slog(1, SLOG_ERROR, "CONN sockpair: Could not detach rcv thread for (%d) ", conn);
+		slog(SLOG_ERROR, "CONN sockpair: Could not detach rcv thread for (%d) ", conn);
 		return ;
 	}
-	slog(4, SLOG_INFO, "CONN sockpair: Receive thread created successfully for (%d).", *conn_ptr);
+	slog(SLOG_INFO, "CONN sockpair: Receive thread created successfully for (%d).", *conn_ptr);
 
 }
 

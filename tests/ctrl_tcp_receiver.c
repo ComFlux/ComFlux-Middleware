@@ -182,7 +182,6 @@ void tcp_run_accept_thread(int serversock)
         printf("Could not detach listen thread ");
         return;
     }
-    //slog(SLOG_INFO, SLOG_INFO, "Listen thread created successfully.");
 }
 
 void* tcp_accept_function(void* serversock)
@@ -366,7 +365,6 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 					case ' ': case '\n': case '\r':
 						break;
 					default:
-						//slog(SLOG_ERROR, SLOG_ERROR, "%c", new_data[i]);
 						continue;
 
 				}

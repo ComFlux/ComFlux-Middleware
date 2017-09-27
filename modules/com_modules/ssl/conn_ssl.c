@@ -83,7 +83,7 @@ char* com_init(void* module, const char* cfgfile){
 	conn_ssl_set_srv_keyfile(json_get_str(config, "srv_keyfile"));
 
 	//init ssl
-	slog(SLOG_INFO, SLOG_INFO, "CONN_SSL: init ssl funcations;");
+	slog(SLOG_INFO, "CONN_SSL: init ssl funcations;");
 	SSL_library_init();
 	OpenSSL_add_ssl_algorithms();
 	SSL_load_error_strings();
@@ -101,7 +101,7 @@ char* com_init(void* module, const char* cfgfile){
 	char* server_addr = get_addr(json_get_str(config, "address"));
 	int server_port = get_port(json_get_str(config, "address"));
 	if (server_port == -1) {
-		slog(SLOG_ERROR, SLOG_ERROR, "CONN: Illegal value for server port: %d.",
+		slog(SLOG_ERROR, "CONN: Illegal value for server port: %d.",
 				server_port);
 		return -1;
 	}
@@ -111,7 +111,7 @@ char* com_init(void* module, const char* cfgfile){
 
 	serversock = socket(AF_INET, SOCK_STREAM, 0);
 	if (serversock == -1) {
-		slog(1, SLOG_ERROR, "CONN: Could not create server socket.");
+		slog(SLOG_ERROR, "CONN: Could not create server socket.");
 		return -1;
 	}
 
@@ -120,7 +120,7 @@ char* com_init(void* module, const char* cfgfile){
 	serverin.sin_port = htons(server_port);
 
 	if (bind(serversock, (struct sockaddr*) &serverin, sizeof(serverin)) < 0) {
-		slog(SLOG_ERROR, SLOG_ERROR, "CONN: Bind to %s:%d failed: %s",
+		slog(SLOG_ERROR, "CONN: Bind to %s:%d failed: %s",
 				server_addr, server_port, strerror(errno));
 		free(server_addr);
 		return -1;
@@ -129,15 +129,15 @@ char* com_init(void* module, const char* cfgfile){
 	listen(serversock, 3);
 
 	/*
-	 slog(3, SLOG_INFO, "CONN: Waiting for the app connection... ");
+	 slog(SLOG_INFO, "CONN: Waiting for the app connection... ");
 	 int c = sizeof(struct sockaddr_in);
 	 peersock = accept(serversock, (struct sockaddr *)&peerin, (socklen_t*)&c);
 	 if (peersock < 0)
 	 {
-	 slog(1, SLOG_ERROR, "CONN: accept failed."); //, strerror(peersock)); //
+	 slog(SLOG_ERROR, "CONN: accept failed."); //, strerror(peersock)); //
 	 return 0; // TODO
 	 }
-	 slog(3, SLOG_INFO, "CONN: Connected to api ");
+	 slog(SLOG_INFO, "CONN: Connected to api ");
 
 	 (*on_connect_handler)(peersock);
 
@@ -153,14 +153,14 @@ int com_connect(const char *server_address) {
 	// init client
 
 	if (!com_is_valid_address(server_address)) {
-		slog(SLOG_ERROR, SLOG_ERROR, "Invalid address format given: %s",
+		slog(SLOG_ERROR, "Invalid address format given: %s",
 				server_address);
 		return -1;
 	}
 
 	char* server_addr = get_addr(server_address);
 	int server_port = get_port(server_address);
-	slog(SLOG_INFO, SLOG_INFO, "CONN: Connecting to server %s:%d", server_addr,
+	slog(SLOG_INFO, "CONN: Connecting to server %s:%d", server_addr,
 			server_port);
 
 	int peersock;
@@ -168,7 +168,7 @@ int com_connect(const char *server_address) {
 
 	peersock = socket(AF_INET, SOCK_STREAM, 0);
 	if (peersock == -1) {
-		slog(SLOG_ERROR, SLOG_ERROR, "CONN: Could not create client socket.");
+		slog(SLOG_ERROR, "CONN: Could not create client socket.");
 		return -1;
 	}
 
@@ -177,7 +177,7 @@ int com_connect(const char *server_address) {
 	peerin.sin_port = htons(server_port);
 
 	if (connect(peersock, (struct sockaddr*) &peerin, sizeof(peerin)) < 0) {
-		slog(SLOG_ERROR, SLOG_ERROR, "CONN: Could not connect to server %s:%d",
+		slog(SLOG_ERROR, "CONN: Could not connect to server %s:%d",
 				server_addr, server_port);
 		free(server_addr);
 		return -1;
@@ -193,20 +193,61 @@ int com_connection_close(int conn){
 	return close(conn);
 }
 
-int com_send_data(int conn, const char *msg) {
+int com_send(int conn, void *data, unsigned int size) {
 	if (conn <= 0) {
-		slog(SLOG_ERROR, SLOG_ERROR,
+		slog(SLOG_ERROR,
 				"CONN: not established with (%d), can't send msg *%s*", conn,
 				msg);
 		return -1;
 	}
-	slog(SLOG_INFO, SLOG_INFO, "CONN: send to (%d) *%s*", conn, msg);
+	slog(SLOG_INFO, "CONN: send to (%d) *%s*", conn, msg);
 
 	int allBytesSent; /* sum of all sent sizes */
 	ssize_t sentSize; /* one shot sent size */
 
 	//sleep(1);
-	slog(SLOG_INFO, SLOG_INFO,
+	slog(SLOG_INFO,
+			"CONN: About to send message using ssl on socket (%d)", conn);
+	SSL* ssl;
+	while (!map_contains(skt_ssl, &conn)) {
+		sleep(1);
+		printf("send ssl not found yet\n");
+
+	}
+	ssl = map_get(skt_ssl, &conn);
+
+	allBytesSent = 0;
+	while (allBytesSent < size) {
+		sentSize = SSL_write(ssl, msg + allBytesSent, size - allBytesSent);
+		/*if(varSize - allBytesSent < 512)
+		 sentSize = send(conn , msg+allBytesSent , varSize - allBytesSent , 0);
+		 else
+		 sentSize = send(conn , msg+allBytesSent , 512 , 0);*/
+		if (sentSize < 0) {
+			slog(SLOG_ERROR, "CONN: error sending msg on sock (%d)",
+					conn);
+			break;
+		}
+		allBytesSent += sentSize;
+	}
+
+	return (int) allBytesSent;
+}
+
+int com_send_data(int conn, const char *msg) {
+	if (conn <= 0) {
+		slog(SLOG_ERROR,
+				"CONN: not established with (%d), can't send msg *%s*", conn,
+				msg);
+		return -1;
+	}
+	slog(SLOG_INFO, "CONN: send to (%d) *%s*", conn, msg);
+
+	int allBytesSent; /* sum of all sent sizes */
+	ssize_t sentSize; /* one shot sent size */
+
+	//sleep(1);
+	slog(SLOG_INFO,
 			"CONN: About to send message using ssl on socket (%d)", conn);
 	SSL* ssl;
 	while (!map_contains(skt_ssl, &conn)) {
@@ -225,7 +266,7 @@ int com_send_data(int conn, const char *msg) {
 		 else
 		 sentSize = send(conn , msg+allBytesSent , 512 , 0);*/
 		if (sentSize < 0) {
-			slog(SLOG_ERROR, SLOG_ERROR, "CONN: error sending msg on sock (%d)",
+			slog(SLOG_ERROR, "CONN: error sending msg on sock (%d)",
 					conn);
 			break;
 		}
@@ -272,22 +313,22 @@ void ssl_run_accept_thread(int serversock) {
 	int* serversock_ptr = (int*) malloc(sizeof(int));
 	pthread_t listenthread;
 	*serversock_ptr = serversock;
-	slog(4, SLOG_INFO,
+	slog(SLOG_INFO,
 			"CONN: Waiting for incoming connections for server (%d).",
 			serversock);
 	err = pthread_create(&listenthread, NULL, &ssl_accept_function,
 			serversock_ptr);
 	if (err != 0) {
-		slog(SLOG_ERROR, SLOG_ERROR, "CONN: can't create listen thread"); //: %s", strerror(err));
+		slog(SLOG_ERROR, "CONN: can't create listen thread"); //: %s", strerror(err));
 		return;
 	}
 	err = pthread_detach(listenthread);
 	if (err != 0) {
-		slog(SLOG_ERROR, SLOG_ERROR, "CONN: Could not detach listen thread ");
+		slog(SLOG_ERROR, "CONN: Could not detach listen thread ");
 		return;
 	}
 
-	slog(SLOG_INFO, SLOG_INFO, "Listen thread created successfully.");
+	slog(SLOG_INFO, "Listen thread created successfully.");
 }
 
 void* ssl_accept_function(void* serversock) {
@@ -300,10 +341,10 @@ void* ssl_accept_function(void* serversock) {
 		peersock = accept(*((int*) serversock), (struct sockaddr*) &peerin,
 				(socklen_t*) &c);
 		if (peersock < 0) {
-			slog(1, SLOG_ERROR, "CONN: accept failed for (%d).", serversock);
+			slog(SLOG_ERROR, "CONN: accept failed for (%d).", serversock);
 			return NULL; // TODO
 		}
-		slog(SLOG_INFO, SLOG_INFO, "CONN: connection accpeted by socket (%d) ",
+		slog(SLOG_INFO, "CONN: connection accpeted by socket (%d) ",
 				peersock);
 
 		map_insert(skt_type, &peersock, "s");
@@ -323,33 +364,33 @@ SSL* ssl_start_server(int fd) {
 	method = SSLv23_server_method();
 	ctx = SSL_CTX_new(method);
 	if (!ctx) {
-		slog(SLOG_ERROR, SLOG_ERROR, "Unable to create SSL context\n");
+		slog(SLOG_ERROR, "Unable to create SSL context\n");
 		ERR_print_errors_fp(stderr);
 		exit(EXIT_FAILURE);
 	}
 
-	slog(SLOG_INFO, SLOG_INFO,
+	slog(SLOG_INFO,
 			"CONN: creating server SSL connection on socket (%d) ", fd);
 	// SSL_CTX_set_client_CA_list(ctx, SSL_load_client_CA_file("/home/jie/iot/middleware/src/test/cc@123.com.crt"));
-	slog(SLOG_INFO, SLOG_INFO, "CONN: ssl ca cert file %s ", srv_cafile);
+	slog(SLOG_INFO, "CONN: ssl ca cert file %s ", srv_cafile);
 	SSL_CTX_load_verify_locations(ctx, srv_cafile, ".");
 	// SSL_CTX_set_ecdh_auto(ctx, 1);
 	SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, NULL);
 
 	/* Set the key and cert */
-	slog(SLOG_INFO, SLOG_INFO, "CONN: ssl server cert file %s ", srv_certfile);
+	slog(SLOG_INFO, "CONN: ssl server cert file %s ", srv_certfile);
 	if (SSL_CTX_use_certificate_file(ctx, srv_certfile, SSL_FILETYPE_PEM) < 0) {
 		ERR_print_errors_fp(stderr);
 		exit(EXIT_FAILURE);
 	}
-	slog(SLOG_INFO, SLOG_INFO, "CONN: ssl server key file %s ", srv_keyfile);
+	slog(SLOG_INFO, "CONN: ssl server key file %s ", srv_keyfile);
 	if (SSL_CTX_use_RSAPrivateKey_file(ctx, srv_keyfile, SSL_FILETYPE_PEM)
 			< 0) {
 		ERR_print_errors_fp(stderr);
 		exit(EXIT_FAILURE);
 	}
 	if (!SSL_CTX_check_private_key(ctx)) {
-		slog(SLOG_ERROR, SLOG_ERROR,
+		slog(SLOG_ERROR,
 				"Server private key does not match the public certificate\n");
 	}
 
@@ -363,15 +404,15 @@ SSL* ssl_start_server(int fd) {
 	X509* cert = NULL;
 	if (cert = SSL_get_peer_certificate(ssl)) {
 		if (SSL_get_verify_result(ssl) == X509_V_OK) {
-			slog(SLOG_INFO, SLOG_INFO,
+			slog(SLOG_INFO,
 					"CONN: SSL created successfuly on socket  (%d) ", fd);
 			map_insert(skt_ssl, &fd, ssl);
 			return ssl;
 		} else { // no pass
-			slog(SLOG_ERROR, SLOG_ERROR, "SSL verify not OK\n");
+			slog(SLOG_ERROR, "SSL verify not OK\n");
 		}
 	} else { // no cert
-		slog(SLOG_ERROR, SLOG_ERROR, "No SSL cerf found from peer\n");
+		slog(SLOG_ERROR, "No SSL cerf found from peer\n");
 	}
 	return NULL;
 }
@@ -387,13 +428,13 @@ void ssl_run_receive_thread(int conn) {
 	err = pthread_create(&rcvthread, NULL, &ssl_receive_function,
 			(void*) conn_ptr);
 	if (err != 0) {
-		slog(1, SLOG_ERROR, "CONN: can't create receive thread  for (%d).",
+		slog(SLOG_ERROR, "CONN: can't create receive thread  for (%d).",
 				conn);
 		return;
 	}
 	err = pthread_detach(rcvthread);
 	if (err != 0) {
-		slog(1, SLOG_ERROR, "CONN: Could not detach rcv thread for (%d) ",
+		slog(SLOG_ERROR, "CONN: Could not detach rcv thread for (%d) ",
 				conn);
 		return;
 	}
@@ -403,14 +444,14 @@ void ssl_run_receive_thread(int conn) {
 	if (on_connect_handler != NULL)
 		(*on_connect_handler)(thismodule, conn);
 
-	slog(4, SLOG_INFO, "CONN: Receive thread created successfully for (%d).",
+	slog(SLOG_INFO, "CONN: Receive thread created successfully for (%d).",
 			*conn_ptr);
 }
 
 void* ssl_receive_function(void* conn) {
 	int _conn = *((int*) conn);
 	if (_conn <= 0) {
-		slog(SLOG_ERROR, SLOG_ERROR,
+		slog(SLOG_ERROR,
 				"CONN: not established with (%d), can't recv", _conn);
 		return NULL;
 	}
@@ -458,29 +499,29 @@ SSL* ssl_start_client(int fd) {
 	method = SSLv23_client_method();
 	ctx = SSL_CTX_new(method);
 	if (!ctx) {
-		slog(SLOG_ERROR, SLOG_ERROR, "Unable to create SSL context\n");
+		slog(SLOG_ERROR, "Unable to create SSL context\n");
 		ERR_print_errors_fp(stderr);
 		exit(EXIT_FAILURE);
 	}
 
-	slog(SLOG_INFO, SLOG_INFO,
+	slog(SLOG_INFO,
 			"CONN: creating client SSL connection on socket (%d) ", fd);
-	slog(SLOG_INFO, SLOG_INFO, "CONN: ssl ca cert file %s ", cli_cafile);
+	slog(SLOG_INFO, "CONN: ssl ca cert file %s ", cli_cafile);
 	SSL_CTX_load_verify_locations(ctx, cli_cafile, ".");
 	/* Set the key and cert */
-	slog(SLOG_INFO, SLOG_INFO, "CONN: ssl client cert file %s ", cli_certfile);
+	slog(SLOG_INFO, "CONN: ssl client cert file %s ", cli_certfile);
 	if (SSL_CTX_use_certificate_file(ctx, cli_certfile, SSL_FILETYPE_PEM) < 0) {
 		ERR_print_errors_fp(stderr);
 		exit(EXIT_FAILURE);
 	}
-	slog(SLOG_INFO, SLOG_INFO, "CONN: ssl client key file %s ", cli_keyfile);
+	slog(SLOG_INFO, "CONN: ssl client key file %s ", cli_keyfile);
 	if (SSL_CTX_use_RSAPrivateKey_file(ctx, cli_keyfile, SSL_FILETYPE_PEM)
 			< 0) {
 		ERR_print_errors_fp(stderr);
 		exit(EXIT_FAILURE);
 	}
 	if (!SSL_CTX_check_private_key(ctx)) {
-		slog(SLOG_ERROR, SLOG_ERROR,
+		slog(SLOG_ERROR,
 				"Client private key does not match the public certificate\n");
 	}
 	SSL* ssl = SSL_new(ctx);
@@ -493,16 +534,16 @@ SSL* ssl_start_client(int fd) {
 	X509* cert = NULL;
 	if (cert = SSL_get_peer_certificate(ssl)) {
 		if (SSL_get_verify_result(ssl) == X509_V_OK) {
-			slog(SLOG_INFO, SLOG_INFO,
+			slog(SLOG_INFO,
 					"CONN: SSL created successfuly on socket  (%d) ", fd);
 			printf("SSL created successfully on socket (%d)\n",fd);
 			map_insert(skt_ssl, &fd, ssl);
 			return ssl;
 		} else { // no pass
-			slog(SLOG_ERROR, SLOG_ERROR, "SSL verify not OK\n");
+			slog(SLOG_ERROR, "SSL verify not OK\n");
 		}
 	} else { // no cert
-		slog(SLOG_ERROR, SLOG_ERROR, "No SSL cerf found from peer\n");
+		slog(SLOG_ERROR, "No SSL cerf found from peer\n");
 	}
 	return NULL;
 }
@@ -513,7 +554,7 @@ char* tcp_receive_message(int _conn) {
 	int recvSize; /* one pack received size */
 
 	char* buf;
-	slog(SLOG_INFO, SLOG_INFO,
+	slog(SLOG_INFO,
 			"CONN: About to receive message using ssl on socket (%d)", _conn);
 
 	SSL* ssl;
@@ -530,7 +571,7 @@ char* tcp_receive_message(int _conn) {
 
 	recvSize = SSL_read(ssl, buf, bufSize);
 	if (recvSize <=0 ) {
-		slog(SLOG_WARN, SLOG_WARN,
+		slog(SLOG_WARN,
 				"CONN: Recv msg failed from (%d). closing connection ", _conn);
 		// conn_close(_conn);
 		if (on_disconnect_handler)
@@ -540,7 +581,7 @@ char* tcp_receive_message(int _conn) {
 		return NULL;
 	}
 
-	slog(SLOG_INFO, SLOG_INFO,
+	slog(SLOG_INFO,
 			"CONN: received %d total bytes on sock (%d): *%s*", recvSize, _conn,
 			buf);
 	return buf;

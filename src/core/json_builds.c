@@ -204,7 +204,7 @@ int json_validate_ep_def(JSON * msg)
 {
 	if (json_validate(ep_def_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating ep_schema schema: %s", json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error validating ep_schema schema: %s", json_to_str(msg));
 		return JSON_NOT_VALID;
 	}
 	return JSON_OK;
@@ -213,7 +213,7 @@ int json_validate_ep_remote_def(JSON * msg)
 {
 	if (json_validate(ep_def_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating ep_remote schema: %s", json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error validating ep_remote schema: %s", json_to_str(msg));
 		return JSON_NOT_VALID;
 	}
 	return JSON_OK;
@@ -222,7 +222,7 @@ int json_validate_req_resp(JSON * msg)
 {
 	if (json_validate(req_resp_def_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating ep_req_resp_def schema: %s", json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error validating ep_req_resp_def schema: %s", json_to_str(msg));
 		return JSON_NOT_VALID;
 	}
 	return JSON_OK;
@@ -231,7 +231,7 @@ int json_validate_src_snk(JSON * msg)
 {
 	if (json_validate(src_snk_def_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating ep_src_snk_def schema: %s", json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error validating ep_src_snk_def schema: %s", json_to_str(msg));
 		return JSON_NOT_VALID;
 	}
 	return JSON_OK;
@@ -243,7 +243,7 @@ int json_validate_hello(JSON * msg)
 {
 	if (json_validate(hello_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating hello message schema: %s", json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error validating hello message schema: %s", json_to_str(msg));
 		return JSON_NOT_VALID;
 	}
 	char *version, *session_id;
@@ -252,7 +252,7 @@ int json_validate_hello(JSON * msg)
 
 	if (!validate_version(version))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error incompatible version: %s ... %s", version, json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error incompatible version: %s ... %s", version, json_to_str(msg));
 		return -1;
 	}
 
@@ -263,7 +263,7 @@ int json_validate_hello_ack(JSON * msg)
 {
 	if (json_validate(hello_ack_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating hello ack message schema: %s", json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error validating hello ack message schema: %s", json_to_str(msg));
 		return JSON_NOT_VALID;
 	}
 	char *session_id;
@@ -280,7 +280,7 @@ int json_validate_auth(JSON * msg)
 	return JSON_OK;
 	if (json_validate(auth_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating access message schema: %s", json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error validating access message schema: %s", json_to_str(msg));
 		return JSON_NOT_VALID;
 	}
 
@@ -292,7 +292,7 @@ int json_validate_auth_ack(JSON * msg)
 {
 	if (json_validate(auth_ack_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating access ack message schema: %s", json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error validating access ack message schema: %s", json_to_str(msg));
 		return JSON_NOT_VALID;
 	}
 	int code;
@@ -305,7 +305,7 @@ int json_validate_map(JSON * msg)
 {
 	if (json_validate(map_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating map message schema: %s", json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error validating map message schema: %s", json_to_str(msg));
 		return JSON_NOT_VALID;
 	}
 
@@ -316,7 +316,7 @@ int json_validate_map_ack(JSON * msg)
 {
 	if (json_validate(map_ack_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating map ack message schema: %s", json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error validating map ack message schema: %s", json_to_str(msg));
 		return JSON_NOT_VALID;
 	}
 
@@ -328,7 +328,7 @@ int json_validate_unmap(JSON * msg)
 {
 	if (json_validate(unmap_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating unmap message schema: %s", json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error validating unmap message schema: %s", json_to_str(msg));
 		return JSON_NOT_VALID;
 	}
 
@@ -339,7 +339,7 @@ int json_validate_unmap_ack(JSON * msg)
 {
 	if (json_validate(unmap_ack_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating unmap ack message schema: %s", json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error validating unmap ack message schema: %s", json_to_str(msg));
 		return JSON_NOT_VALID;
 	}
 
@@ -351,7 +351,7 @@ int json_validate_disconnect(JSON * msg)
 {
 	if ( json_validate(disconnect_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating disconnect message schema: %s", json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error validating disconnect message schema: %s", json_to_str(msg));
 		return JSON_NOT_VALID;
 	}
 
@@ -362,7 +362,7 @@ int json_validate_disconnect_ack(JSON * msg)
 {
 	if (json_validate(disconnect_ack_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating disconnect ack message schema: %s", json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error validating disconnect ack message schema: %s", json_to_str(msg));
 		return JSON_NOT_VALID;
 	}
 
@@ -375,7 +375,7 @@ int json_validate_message(LOCAL_EP *lep, JSON * msg)
 {
 	if (json_validate( lep->msg_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating\n"
+		//slog(SLOG_ERROR, "PROTO JSON: error validating\n"
 		//		"\tmessage: %s\n"
 		//		"\twith ep schema: %s", json_to_str(msg), json_to_str(lep->msg_schema));
 		return 0; //JSON_NOT_VALID;
@@ -387,7 +387,7 @@ int json_validate_response(LOCAL_EP *lep, JSON * msg)
 {
 	if ( json_validate(lep->resp_schema, msg))
 	{
-		//slog(1, SLOG_ERROR, "PROTO JSON: error validating disconnect message schema: %s", json_to_str(msg));
+		//slog(SLOG_ERROR, "PROTO JSON: error validating disconnect message schema: %s", json_to_str(msg));
 		return JSON_NOT_VALID;
 	}
 

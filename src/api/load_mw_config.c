@@ -149,7 +149,7 @@ int config_load_com_libs()
 	if(com_libs && libs_array_size)
 	{
 		total = load_libs_array(com_libs, &mw_load_com_module);
-		//slog(SLOG_INFO, SLOG_INFO,
+		//slog(SLOG_INFO,
 		//		"%d out of %d com modules successfully loaded",
 		//		total, libs_array_size);
 	}
@@ -175,7 +175,7 @@ int config_load_access_libs()
 	if(access_libs && libs_array_size)
 	{
 		total = load_libs_array(access_libs, &mw_load_access_module);
-		//slog(SLOG_INFO, SLOG_INFO,
+		//slog(SLOG_INFO,
 		//		"%d out of %d access modules successfully loaded",
 		//		total, libs_array_size);
 	}

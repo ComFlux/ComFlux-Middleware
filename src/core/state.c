@@ -87,7 +87,7 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size) //size sh
 					case ' ': case '\n': case '\r':
 						break;
 					default:
-						//slog(SLOG_ERROR, SLOG_ERROR, "%c", new_data[i]);
+						//slog(SLOG_ERROR, "%c", new_data[i]);
 						continue;
 
 				}
@@ -287,12 +287,12 @@ int init_states()
 
 STATE* states_get(COM_MODULE* module, int conn)
 {
-	/*slog(SLOG_INFO, SLOG_INFO, "getting state, size: %d", map_size(conn_state));*/
+	/*slog(SLOG_INFO, "getting state, size: %d", map_size(conn_state));*/
 
 	char conn_str[105];
 	sprintf(conn_str, "%s:%d", module->name, conn);
 	STATE *state_ptr = map_get(conn_state, conn_str);
-	/*slog(SLOG_INFO, SLOG_INFO, "state(%s:%d) = (%d:%s)", module->name, conn,
+	/*slog(SLOG_INFO, "state(%s:%d) = (%d:%s)", module->name, conn,
 				state_ptr->state, state_get_str(state_ptr->state));*/
 
 	return state_ptr;

@@ -21,8 +21,8 @@ char* strdup_null(const char* str)
     errno = 0;
     char* result = strdup(str);
     if (errno != 0) {
-        //slog(SLOG_ERROR, SLOG_ERROR, "Malloc error: %s", strerror(errno));
-        //slog(SLOG_ERROR, SLOG_ERROR, "while duplicating: *%s*, strlen: %d \n", str, strlen(str));
+        //slog(SLOG_ERROR, "Malloc error: %s", strerror(errno));
+        //slog(SLOG_ERROR, "while duplicating: *%s*, strlen: %d \n", str, strlen(str));
         errno = 0;
     }
     return result;
@@ -75,6 +75,6 @@ char* hash( char *str)
     char* hash = (char*)malloc((n+1)*sizeof(char));
     snprintf(hash, n+1, "%" PRIu64, hash_);
 
-    //slog(4, SLOG_DEBUG, "-----------hash is %s", hash);
+    //slog(SLOG_DEBUG, "-----------hash is %s", hash);
     return hash;
 }

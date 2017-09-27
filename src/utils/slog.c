@@ -100,7 +100,7 @@ void slog_init_args(int log_level_console, int log_level_file,
 
 	_slog_config.log_filename = strdup_null(log_filename);
 
-	slog(SLOG_INFO, SLOG_INFO,
+	slog(SLOG_INFO,
 			"Init with args : %d %d %d %d %s\n",log_level_console,  log_level_file,
 			 log_timestamp,  log_colors,
 			 log_filename);
@@ -119,12 +119,12 @@ void slog_init_simple(int log_level, const char* log_filename)
 		_slog_config.log_level_file = log_level;
 	}
 
-	slog(SLOG_INFO, SLOG_INFO,
+	slog(SLOG_INFO,
 			"Init simple : %d %s\n",log_level,
 			 log_filename);
 }
 
-void slog(int lvl, int lvl_2, const char* format, ...)
+void slog(int lvl, const char* format, ...)
 {
 	char formatted_message[SLOG_MAX_MSG];
 	va_list args;

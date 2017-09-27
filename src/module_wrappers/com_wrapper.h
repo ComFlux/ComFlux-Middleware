@@ -36,7 +36,7 @@ typedef struct _COM_MODULE{
 
 	int   (*fc_connection_close)(int conn);
 	int   (*fc_send_data)(int conn, const char *msg);
-	int   (*fc_send_data_str)(int conn, void *ptr, unsigned int size);
+	int   (*fc_send)(int conn, void *ptr, unsigned int size);
 
 	int   (*fc_set_on_data)(void (*handler)(void*, int, const char*));
 	int   (*fc_set_on_connect)(void (*handler)(void*, int));

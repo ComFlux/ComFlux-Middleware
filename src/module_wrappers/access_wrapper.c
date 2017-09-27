@@ -87,12 +87,12 @@ ACCESS_MODULE* access_module_new(const char* filename, const char* config_json)
     {
 		if ((error = dlerror()) != NULL)
 		{
-			slog(SLOG_ERROR, SLOG_ERROR, "ACCESS_WRAPPER: Failed loading library.\n"
+			slog(SLOG_ERROR, "ACCESS_WRAPPER: Failed loading library.\n"
 					"\tError: %s", error);
 		}
 		else
 		{
-			slog(SLOG_ERROR, SLOG_ERROR, "ACCESS_WRAPPER: Failed loading library.");
+			slog(SLOG_ERROR, "ACCESS_WRAPPER: Failed loading library.");
 		}
 		return NULL;
 	}
@@ -100,7 +100,7 @@ ACCESS_MODULE* access_module_new(const char* filename, const char* config_json)
 	/* load all functions */
 	if(load_all_access_functions(module) != 0)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR,
+		slog(SLOG_ERROR,
 				"ACCESS_WRAPPER: some functions were not found while loading %s library. Err: %s",
 				filename, error);
 
@@ -161,12 +161,12 @@ int access_load_module(const char* filename, const char* config_json)
     {
 		if ((error = dlerror()) != NULL)
 		{
-			slog(SLOG_ERROR, SLOG_ERROR, "ACCESS_WRAPPER: Failed loading library.\n"
+			slog(SLOG_ERROR, "ACCESS_WRAPPER: Failed loading library.\n"
 					"\tError: %s", error);
 		}
 		else
 		{
-			slog(SLOG_ERROR, SLOG_ERROR, "ACCESS_WRAPPER: Failed loading library.");
+			slog(SLOG_ERROR, "ACCESS_WRAPPER: Failed loading library.");
 		}
 		return ACCESS_LIB_NOT_FOUND;
 	}
@@ -174,7 +174,7 @@ int access_load_module(const char* filename, const char* config_json)
 	/* load all functions */
 	if(load_all_access_functions(module) != 0)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR,
+		slog(SLOG_ERROR,
 				"ACCESS_WRAPPER: some functions were not found while loading %s library. Err: %s",
 				filename, error);
 

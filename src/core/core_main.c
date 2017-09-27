@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
 		print_usage_exit();
 
 	// We have at least the correct number of params.
-	/*slog(SLOG_INFO, SLOG_INFO, "CORE MAIN: Starting core with args:\n"
+	/*slog(SLOG_INFO, "CORE MAIN: Starting core with args:\n"
 			"\t%s %s \n"
 			"\t%s %s \n"
 			"\t%s %s \n"

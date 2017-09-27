@@ -141,7 +141,7 @@ char* load_base_module(const char* lib_path, const char* cfgfile) {
 	printf("working in rest %s\n", config_json);
 	basemodule = com_module_new(lib_path, config_json); // com_get_module(path);//change after socketpair with app
 	if (basemodule == NULL) {
-		slog(SLOG_ERROR, SLOG_ERROR, "COMM REST: could not load com module %s",
+		slog(SLOG_ERROR, "COMM REST: could not load com module %s",
 				lib_path);
 		return NULL;
 	}
@@ -307,6 +307,18 @@ int com_connect(const char *addr) {
 
 int com_connection_close(int conn) {
 	return (*(basemodule->fc_connection_close))(conn);
+}
+
+// TODO: rewrite com_send_data using com_send
+int com_send(int conn, void *data, unsigned int size)
+{
+	int ret_value;
+	char* data_str = (char* )malloc(size+1);
+	data_str[size]='\0';
+	memcpy(data, data_str, size);
+	ret_value = com_send_data(conn, data_str);
+	free(data_str);
+	return ret_value;
 }
 
 int com_send_data(int conn, const char *data) {

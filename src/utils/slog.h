@@ -36,6 +36,6 @@ void slog_init_args(int log_level_console, int log_level_file,
  */
 void slog_init_simple(int log_level, const char* log_filename);
 
-void slog(int lvl_1, int lvl_2, const char* format, ...);
+void slog(int lvl, const char* format, ...);
 
 #endif /* SRC_UTILS_SLOG_H_ */

@@ -106,7 +106,7 @@ void map_lookup_handler(MESSAGE* msg)
 
 void unmap_handler(MESSAGE* msg)
 {
-	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE: map handler");
+	//slog(SLOG_DEBUG, "CORE: map handler");
 	JSON *unmap_json = msg->_msg_json;
 	JSON *ep_json = json_get_json(unmap_json, "endpoint");
 	char* ep_name = json_get_str(ep_json, "ep_name");
@@ -132,7 +132,7 @@ void unmap_handler(MESSAGE* msg)
 
 void lookup_handler(MESSAGE* msg)
 {
-	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE: lookup handler %s", message_to_str(msg));
+	//slog(SLOG_DEBUG, "CORE: lookup handler %s", message_to_str(msg));
 
 	COM_MODULE* module = com_get_module(msg->module);
 	if(module == NULL)
@@ -171,7 +171,7 @@ void lookup_handler(MESSAGE* msg)
 /* sends manifest then disconnects */
 void md_handler(MESSAGE* msg)
 {
-	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE: md handler %s", message_to_str(msg));
+	//slog(SLOG_DEBUG, "CORE: md handler %s", message_to_str(msg));
 
 	/* message can be empty */
 	JSON *md_json = manifest_get(MANIFEST_FULL);
@@ -199,7 +199,7 @@ void md_handler(MESSAGE* msg)
 
 void add_rdc_handler(MESSAGE* msg)
 {
-	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE: add rdc handler %s", message_to_str(msg));
+	//slog(SLOG_DEBUG, "CORE: add rdc handler %s", message_to_str(msg));
 	JSON *add_rdc_json = msg->_msg_json;
 	char* rdc_module_name = strdup_null(json_get_str(add_rdc_json, "module"));
 	char* rdc_addr = strdup_null(json_get_str(add_rdc_json, "address"));
@@ -211,7 +211,7 @@ void add_rdc_handler(MESSAGE* msg)
 
 void terminate_handler(MESSAGE* msg)
 {
-	//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE: terminate handler %s", message_to_str(msg));
+	//slog(SLOG_DEBUG, "CORE: terminate handler %s", message_to_str(msg));
 	core_terminate();
 }
 

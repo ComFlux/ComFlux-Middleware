@@ -34,7 +34,7 @@ LOCAL_EP* ep_local_new(JSON *ep_json, void(* from_ext_handler)(MESSAGE*))
 
 	/*if (json_validate_ep_def(json_data))
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "EP LOCAL: Does not pass general ep schema: %s", json_to_str(ep_json));
+		slog(SLOG_ERROR, "EP LOCAL: Does not pass general ep schema: %s", json_to_str(ep_json));
 		return NULL;
 	}*/
 
@@ -157,7 +157,7 @@ void ep_local_free(LOCAL_EP *lep)
 void ep_default_handler_send_to_app(MESSAGE* msg)
 {
 	//printf("here\n");
-	//slog(SLOG_INFO, SLOG_INFO, "EP LOCAL: default handler send_to_app: %d: %s", array_size(((LOCAL_EP*)(msg->ep->data))->filters), msg->msg_str);
+	//slog(SLOG_INFO, "EP LOCAL: default handler send_to_app: %d: %s", array_size(((LOCAL_EP*)(msg->ep->data))->filters), msg->msg_str);
 	//JSON* msg_json = msg->_msg_json;
 	//JSON* filter_json = json_new(NULL);
 	//json_set_array(filter_json, NULL, ((LOCAL_EP*)(msg->ep->data))->filters);
@@ -169,7 +169,7 @@ void ep_default_handler_send_to_app(MESSAGE* msg)
 
 void ep_default_handler_queuing(MESSAGE* msg)
 {
-	//slog(SLOG_INFO, SLOG_INFO, "EP LOCAL: default handler queuing: %s", msg->msg_str);
+	//slog(SLOG_INFO, "EP LOCAL: default handler queuing: %s", msg->msg_str);
 
 	JSON* msg_json = msg->_msg_json;
 	if( msg->status == MSG_REQ && (msg->ep->type == EP_RESP || msg->ep->type == EP_RESP_P))

@@ -293,6 +293,11 @@ int com_connection_close(int conn)
  */
 int com_send_data(int conn, const char *data)
 {
+	return com_send(conn, (void*)data, strlen(data));
+}
+
+int com_send(int conn, void *data, unsigned int size)
+{
 	_mqtt_channel* channel = NULL;
 	char conn_str[20];
 	int err = -1;
@@ -303,7 +308,7 @@ int com_send_data(int conn, const char *data)
 	if(channel != NULL)
 	{
 		//printf("---send ok: (%d:%s)\n", channel->fd, channel->topic_out);
-		err = mosquitto_publish(mosq, NULL, channel->topic_out, strlen(data), data, 1, true);
+		err = mosquitto_publish(mosq, NULL, channel->topic_out, size, data, 1, true);
 	}
 	else
 	{
@@ -312,7 +317,6 @@ int com_send_data(int conn, const char *data)
 
 	return err;
 }
-
 
 int com_set_on_data( void (*handler)(void*, int, const char*) )
 {

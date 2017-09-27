@@ -114,12 +114,12 @@ int com_send_data(int conn, const char* msg)
 {
 	if(conn <= 0)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR,
+		slog(SLOG_ERROR,
 			 "SOCKPAIR: not established with (%d), can't send msg *%s*",
 			 conn, msg);
 		return -1;
 	}
-	slog(SLOG_INFO, SLOG_INFO, "SOCKPAIR: send to (%d) *%s*", conn, msg);
+	slog(SLOG_INFO, "SOCKPAIR: send to (%d) *%s*", conn, msg);
 
 	const uint32_t varSize = strlen (msg);
 	int allBytesSent; /* sum of all sent sizes */
@@ -130,7 +130,7 @@ int com_send_data(int conn, const char* msg)
 	escapeSent = send(conn, &escape, 1, 0);
 	if (allBytesSent != sizeof (uint32_t) || escapeSent != 1)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR,
+		slog(SLOG_ERROR,
 			 "SOCKPAIR: error sending size on sock (%d): %s",
 			 conn, strerror(errno));
 
@@ -152,7 +152,7 @@ int com_send_data(int conn, const char* msg)
 			sentSize = send(conn , msg+allBytesSent , 512 , 0);*/
 		if (sentSize < 0)
 		{
-			slog(SLOG_ERROR, SLOG_ERROR,
+			slog(SLOG_ERROR,
 				 "SOCKPAIR: error sending msg on sock (%d)",
 				 conn);
 			break;
@@ -177,7 +177,7 @@ char* sockpair_receive_message(int _conn)
 		recvSize = recv(_conn , (char*)&varSize, sizeof(uint32_t), 0);
 		if(recvSize <= 0)
 		{
-			slog(SLOG_WARN, SLOG_WARN, "SOCKPAIR: Recv size failed from (%d). Code %d. Closing connection ", _conn, recvSize);
+			slog(SLOG_WARN, "SOCKPAIR: Recv size failed from (%d). Code %d. Closing connection ", _conn, recvSize);
 
             if (on_disconnect_handler)
                 (*on_disconnect_handler)(NULL, _conn);
@@ -188,7 +188,7 @@ char* sockpair_receive_message(int _conn)
 		}
 		if (recvSize != sizeof (uint32_t))
 		{
-			slog(SLOG_WARN, SLOG_WARN,
+			slog(SLOG_WARN,
 				 "SOCKPAIR: error receiving size on sock (%d), val: %d; continue",
 				 _conn, recvSize);
 			continue;
@@ -198,14 +198,14 @@ char* sockpair_receive_message(int _conn)
 		recvSize = recv(_conn , &recvEscape, 1, 0);
 		if(recvEscape != escape)
 		{
-			slog(SLOG_WARN, SLOG_WARN,
+			slog(SLOG_WARN,
 				"SOCKPAIR: On sock (%d), did not receive correct escape code %c; ignoring size %d",
 				 _conn, recvEscape, recvSize);
 			continue;
 		}
 		if(recvSize <= 0)
 		{
-			slog(SLOG_WARN, SLOG_WARN, "SOCKPAIR: Recv escape failed from (%d). closing connection ", _conn);
+			slog(SLOG_WARN, "SOCKPAIR: Recv escape failed from (%d). closing connection ", _conn);
 
             if (on_disconnect_handler)
                 (*on_disconnect_handler)(NULL, _conn);
@@ -216,13 +216,13 @@ char* sockpair_receive_message(int _conn)
 		}
 		if (recvSize != 1) // Should never get here
 		{
-			slog(SLOG_WARN, SLOG_WARN,
+			slog(SLOG_WARN,
 				 "SOCKPAIR: error receiving escape on sock (%d), val: %d; continue",
 				 _conn, recvSize);
 			continue;
 		}
 
-		slog(SLOG_INFO, SLOG_INFO, "SOCKPAIR: Expecting %d bytes on sock (%d).", varSize, _conn);
+		slog(SLOG_INFO, "SOCKPAIR: Expecting %d bytes on sock (%d).", varSize, _conn);
 
 		/* reading msg */
 		allBytesRecv = 0;
@@ -234,7 +234,7 @@ char* sockpair_receive_message(int _conn)
 			recvSize = recv(_conn , buf+allBytesRecv , varSize , 0);
 			if(recvSize == -1)
 			{
-				slog(SLOG_WARN, SLOG_WARN, "SOCKPAIR: Recv msg failed from (%d). closing connection ", _conn);
+				slog(SLOG_WARN, "SOCKPAIR: Recv msg failed from (%d). closing connection ", _conn);
 
 	            if (on_disconnect_handler)
 	                (*on_disconnect_handler)(NULL, _conn);
@@ -246,7 +246,7 @@ char* sockpair_receive_message(int _conn)
 			allBytesRecv += recvSize;
 		}
 
-		slog(SLOG_INFO, SLOG_INFO, "SOCKPAIR: received %d total bytes on sock (%d): *%s*", allBytesRecv, _conn, buf);
+		slog(SLOG_INFO, "SOCKPAIR: received %d total bytes on sock (%d): *%s*", allBytesRecv, _conn, buf);
 		return buf;
 
 	}while(1);
@@ -256,16 +256,16 @@ char* sockpair_receive_message(int _conn)
 int com_send_data_alt(int conn, const char* msg)
 {
     if (conn <= 0) {
-        slog(SLOG_ERROR, SLOG_ERROR, "SOCKPAIR: connection not established with (%d), can't send msg *%s*", conn, msg);
+        slog(SLOG_ERROR, "SOCKPAIR: connection not established with (%d), can't send msg *%s*", conn, msg);
         return -1;
     }
-    slog(SLOG_INFO, SLOG_INFO, "SOCKPAIR: send to (%d) *%s*\n", conn, msg);
+    slog(SLOG_INFO, "SOCKPAIR: send to (%d) *%s*\n", conn, msg);
     //printf("SOCKPAIR: send to (%d) *%s*\n", conn, msg);
 
     const uint32_t varSize = strlen(msg);
     int allBytesSent; /* sum of all sent sizes */
     ssize_t sentSize; /* one shot sent size */
-    slog(SLOG_INFO, SLOG_INFO, "SOCKPAIR: About to send message using tcp on socket (%d)", conn);
+    slog(SLOG_INFO, "SOCKPAIR: About to send message using tcp on socket (%d)", conn);
 
     allBytesSent = 0;
     while (allBytesSent < varSize)
@@ -277,7 +277,7 @@ int com_send_data_alt(int conn, const char* msg)
                 sentSize = send(conn , msg+allBytesSent , 512 , 0);*/
         if (sentSize < 0)
         {
-        	slog(SLOG_ERROR, SLOG_ERROR, "SOCKPAIR: error sending msg on sock (%d)", conn);
+        	slog(SLOG_ERROR, "SOCKPAIR: error sending msg on sock (%d)", conn);
         	break;
         }
         allBytesSent += sentSize;
@@ -321,7 +321,7 @@ char* sockpair_receive_message_alt(int _conn)
     int recvSize;     /* one pack received size */
     unsigned char recvEscape;
     char* buf;
-    slog(SLOG_INFO, SLOG_INFO, "SOCKPAIR: About to receive message using tcp on socket (%d)", _conn);
+    slog(SLOG_INFO, "SOCKPAIR: About to receive message using tcp on socket (%d)", _conn);
 
         /* reading msg */
         //allBytesRecv = 0;
@@ -329,7 +329,7 @@ char* sockpair_receive_message_alt(int _conn)
         memset(buf, '\0', (512 + 1));
         recvSize = recv(_conn, buf, 512, 0);
         if (recvSize <= 0) {
-            slog(SLOG_WARN, SLOG_WARN, "SOCKPAIR: Recv msg failed from (%d). closing connection ", _conn);
+            slog(SLOG_WARN, "SOCKPAIR: Recv msg failed from (%d). closing connection ", _conn);
             // connection_close(_conn);
             if (on_disconnect_handler)
                 (*on_disconnect_handler)(thismodule,_conn);
@@ -338,7 +338,7 @@ char* sockpair_receive_message_alt(int _conn)
             return NULL;
         }
         //buf[recvSize] = '\n';
-        slog(SLOG_INFO, SLOG_INFO, "SOCKPAIR: received %d total bytes on sock (%d): *%s*", recvSize, _conn, buf);
+        slog(SLOG_INFO, "SOCKPAIR: received %d total bytes on sock (%d): *%s*", recvSize, _conn, buf);
 
         return buf;
 }
@@ -351,7 +351,7 @@ void* sockpair_receive_function(void *conn)
 	free(conn);
 	if(_conn <= 0)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR,
+		slog(SLOG_ERROR,
 			 "SOCKPAIR: not established with (%d), can't recv",
 			 conn);
 		return NULL;
@@ -391,16 +391,16 @@ void  sockpair_run_receive_thread(int conn)
 	err = pthread_create(&rcvthread, NULL, &sockpair_receive_function, (void*)conn_ptr);
 	if (err != 0)
 	{
-		slog(1, SLOG_ERROR, "SOCKPAIR: can't create receive thread  for (%d).", conn);
+		slog(SLOG_ERROR, "SOCKPAIR: can't create receive thread  for (%d).", conn);
 		return ;
 	}
 	err = pthread_detach(rcvthread);
 	if ( err != 0 )
 	{
-		slog(1, SLOG_ERROR, "SOCKPAIR: Could not detach rcv thread for (%d) ", conn);
+		slog(SLOG_ERROR, "SOCKPAIR: Could not detach rcv thread for (%d) ", conn);
 		return ;
 	}
-	slog(4, SLOG_INFO, "SOCKPAIR: Receive thread created successfully for (%d).", *conn_ptr);
+	slog(SLOG_INFO, "SOCKPAIR: Receive thread created successfully for (%d).", *conn_ptr);
 	recv_threads_runs = 1;
 }
 

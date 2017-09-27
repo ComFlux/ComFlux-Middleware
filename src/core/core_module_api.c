@@ -375,7 +375,7 @@ void core_add_rdc_array(Array* argv)
 	COM_MODULE* module = com_get_module(module_name);
 	if(module == NULL)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR, "CORE FUNC: core_add_rdc_array:\n"
+		//slog(SLOG_ERROR, "CORE FUNC: core_add_rdc_array:\n"
 		//	"\tcould not find COM module %s",
 		//	module_name);
 	}
@@ -535,11 +535,11 @@ int core_load_access_module_array(Array* argv)
 
 MESSAGE* _core_call_array(const char* module_id, const char* function_id, const char* return_type, Array* args)
 {
-	slog(SLOG_DEBUG, "CORE API CALL: %s", __func__);
+	slog(SLOG_INFO, "CORE API CALL: %s", __func__);
 	char fc_id[50];
 	_core_get_id(fc_id, module_id, function_id, return_type);
 
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: function call %s %s %s (%s)", module_id, function_id, return_type, fc_id);
+	slog(SLOG_INFO, "CORE FUNC: function call %s %s %s (%s)", module_id, function_id, return_type, fc_id);
 	//char *fc_res_str = NULL;
 	JSON *fc_res_json = json_new(NULL);
 
@@ -553,12 +553,12 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 		void (*fc)(Array*) = map_get(void_function_table_array, fc_id);
 		if (fc == NULL)
 		{
-			//slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s ", fc_id);
+			//slog(SLOG_ERROR, "CORE FUNC: Could not find function id: %s ", fc_id);
 			json_free(fc_res_json);
 			return NULL;
 		}
 		(*fc)(args);
-		//slog(SLOG_DEBUG, SLOG_DEBUG, "CORE FUNC: function call %s done ",fc_id);
+		//slog(SLOG_DEBUG, "CORE FUNC: function call %s done ",fc_id);
 
 		json_free(fc_res_json);
 		return NULL;
@@ -568,7 +568,7 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 		int (*fc)(Array*) = map_get(int_function_table_array, fc_id);
 		if (fc == NULL)
 		{
-			//slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s", fc_id);
+			//slog(SLOG_ERROR, "CORE FUNC: Could not find function id: %s", fc_id);
 			json_free(fc_res_json);
 			return NULL;
 		}
@@ -586,7 +586,7 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 		char* (*fc)(Array*) = map_get(string_function_table_array, fc_id);
 		if (fc == NULL)
 		{
-			//slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s", fc_id);
+			//slog(SLOG_ERROR, "CORE FUNC: Could not find function id: %s", fc_id);
 			json_free(fc_res_json);
 			return NULL;
 		}
@@ -598,7 +598,7 @@ MESSAGE* _core_call_array(const char* module_id, const char* function_id, const 
 		char* (*fc)(Array*) = map_get(message_function_table_array, fc_id);
 		if (fc == NULL)
 		{
-			//slog(1, SLOG_ERROR, "CORE FUNC: Could not find function id: %s", fc_id);
+			//slog(SLOG_ERROR, "CORE FUNC: Could not find function id: %s", fc_id);
 			json_free(fc_res_json);
 			return NULL;
 		}

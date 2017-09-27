@@ -76,13 +76,13 @@ int rdcs_set_addr(COM_MODULE* module, const char* addr, RDC* r)
 {
 	if(r == NULL)
 	{
-		slog(SLOG_INFO, SLOG_INFO, "rdc is null");
+		slog(SLOG_INFO, "rdc is null");
 		return -1;
 	}
 
 	char* addr_str=(char*) malloc(105*sizeof(char));
 	sprintf(addr_str, "%s:%s", module->name, addr);
-	slog(SLOG_INFO, SLOG_INFO, "inserting  rdc %s", addr_str);
+	slog(SLOG_INFO, "inserting  rdc %s", addr_str);
 	return map_insert(rdcs, addr_str, r);
 }
 
@@ -90,7 +90,7 @@ int rdcs_add(RDC* r)
 {
 	if(r == NULL)
 	{
-		slog(SLOG_INFO, SLOG_INFO, "rdc is null");
+		slog(SLOG_INFO, "rdc is null");
 		return -1;
 	}
 
@@ -99,7 +99,7 @@ int rdcs_add(RDC* r)
 		sprintf(addr_str, "(null):%s", r->addr);
 	else
 		sprintf(addr_str, "%s:%s", r->module->name, r->addr);
-	slog(SLOG_INFO, SLOG_INFO, "inserting  rdc %s", addr_str);
+	slog(SLOG_INFO, "inserting  rdc %s", addr_str);
 	return map_insert(rdcs, addr_str, r);
 }
 
@@ -138,13 +138,13 @@ void rdc_register(RDC* r, MESSAGE* register_msg, int flag)
 {
 	if(r == NULL)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "RDC: Can't register with null RDC");
+		slog(SLOG_ERROR, "RDC: Can't register with null RDC");
 		return;
 	}
 
 	if(flag != RDC_REGISTER && flag != RDC_UNREGISTER)
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "RDC: Unknown flag for register: %d", flag);
+		slog(SLOG_ERROR, "RDC: Unknown flag for register: %d", flag);
 		return;
 	}
 
@@ -185,7 +185,7 @@ void rdc_register(RDC* r, MESSAGE* register_msg, int flag)
 	}
 	else
 	{
-		slog(SLOG_ERROR, SLOG_ERROR,
+		slog(SLOG_ERROR,
 				"RDC: %s; Could not perform: %s",
 				r->addr,
 				(flag==RDC_REGISTER)?"register":"unregister");
@@ -269,7 +269,7 @@ void rdc_lookup(RDC* r, MESSAGE* lookup_query)//, JSON* ep_query, JSON* cpt_quer
 
 	core_ep_send_request(ep_lookup, generate_id(), message_to_str(lookup_query));
 
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE: Lookup request sent to %s", r->addr);
+	slog(SLOG_DEBUG, "CORE: Lookup request sent to %s", r->addr);
 
 	int c = 0;
 	while(r->state == RDC_STATE_LOOKUP && c < 5) {
@@ -278,7 +278,7 @@ void rdc_lookup(RDC* r, MESSAGE* lookup_query)//, JSON* ep_query, JSON* cpt_quer
     }
 
 	r->state = RDC_STATE_REG;
-	slog(SLOG_DEBUG, SLOG_DEBUG, "CORE: Lookup response size: %d", array_size(r->lookup_result));
+	slog(SLOG_DEBUG, "CORE: Lookup response size: %d", array_size(r->lookup_result));
 
 }
 

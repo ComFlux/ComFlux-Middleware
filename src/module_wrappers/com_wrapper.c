@@ -43,7 +43,7 @@ int load_all_com_functions(COM_MODULE *module)
 //	{
 //		return -1;
 //	}
-	module->fc_send_data_str = dlsym(module->handle, "com_send_data_str");
+	module->fc_send = dlsym(module->handle, "com_send");
 //	if ((error = dlerror()) != NULL)
 //	{
 //		return -1;
@@ -107,12 +107,12 @@ COM_MODULE* com_module_new(const char* filename, const char* config_json)
 	{
 		if ((error = dlerror()) != NULL)
 		{
-			slog(SLOG_ERROR, SLOG_ERROR, "COM_WRAPPER: Failed loading library.\n"
+			slog(SLOG_ERROR, "COM_WRAPPER: Failed loading library.\n"
 					"\tError: %s", error);
 		}
 		else
 		{
-			slog(SLOG_ERROR, SLOG_ERROR, "COM_WRAPPER: Failed loading library.");
+			slog(SLOG_ERROR, "COM_WRAPPER: Failed loading library.");
 		}
 		return NULL;
 	}
@@ -121,7 +121,6 @@ COM_MODULE* com_module_new(const char* filename, const char* config_json)
 	if(load_all_com_functions(module) != 0)
 	{
 		slog(SLOG_ERROR,
-		SLOG_ERROR,
 			"COM_WRAPPER: some functions were not found while loading %s library. Err: %s",
 			filename, error);
 
@@ -191,12 +190,12 @@ int com_load_module(const char* filename, const char* config_json)
 	{
 		if ((error = dlerror()) != NULL)
 		{
-			slog(SLOG_ERROR, SLOG_ERROR, "COM_WRAPPER: Failed loading library.\n"
+			slog(SLOG_ERROR, "COM_WRAPPER: Failed loading library.\n"
 					"\tError: %s", error);
 		}
 		else
 		{
-			slog(SLOG_ERROR, SLOG_ERROR, "COM_WRAPPER: Failed loading library.");
+			slog(SLOG_ERROR, "COM_WRAPPER: Failed loading library.");
 		}
 		return COM_LIB_NOT_FOUND;
 	}
@@ -204,7 +203,6 @@ int com_load_module(const char* filename, const char* config_json)
 	if(load_all_com_functions(module) != 0)
 	{
 		slog(SLOG_ERROR,
-		SLOG_ERROR,
 			"COM_WRAPPER: some functions were not found while loading %s library. Err: %s",
 			filename, error);
 
@@ -296,7 +294,7 @@ int com_send_data_str_wrapper(const char* modulename, int conn, void* data, unsi
 	if (module == NULL)
 		return COM_MODULE_NOT_FOUND;
 
-	return (*(module->fc_send_data_str))(conn, data, size);
+	return (*(module->fc_send))(conn, data, size);
 }
 
 int com_set_on_data_wrapper(const char* modulename,

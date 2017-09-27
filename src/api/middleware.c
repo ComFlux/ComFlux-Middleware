@@ -127,7 +127,7 @@ char* mw_init(const char* cpt_name, int log_lvl, bool use_socketpair)
 	int sockpair_err = socketpair(AF_LOCAL, SOCK_STREAM, 0, fds_blocking_call);
 	if(sockpair_err)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR, "MW: Blocking call socketpair error: %d.", sockpair_err);
+		//slog(SLOG_ERROR, "MW: Blocking call socketpair error: %d.", sockpair_err);
 		return NULL;
 	}
 
@@ -136,7 +136,7 @@ char* mw_init(const char* cpt_name, int log_lvl, bool use_socketpair)
 	sockpair_err = setsockopt(fds_blocking_call[1], SOL_SOCKET, SO_RCVTIMEO, (char*)&sock_timeout, sizeof(sock_timeout));
 	if(sockpair_err)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR, "MW: Blocking call socketpair error: %d.", sockpair_err);
+		//slog(SLOG_ERROR, "MW: Blocking call socketpair error: %d.", sockpair_err);
 		return NULL;
 	}
 
@@ -169,7 +169,7 @@ char* mw_init(const char* cpt_name, int log_lvl, bool use_socketpair)
 	/* spawn the core mw and block connect to it */
 #ifdef __ANDROID__ // On Android the core runs in a separate service.
 	if (core_connection < 0) {
-		//slog(SLOG_FATAL, SLOG_FATAL, "MW: Unable to connect to core.");
+		//slog(SLOG_FATAL, "MW: Unable to connect to core.");
 		exit(1);
 	}
 #else // __ANDROID__
@@ -205,7 +205,7 @@ char* mw_init(const char* cpt_name, int log_lvl, bool use_socketpair)
 		app_core_conn = fifo_init_server(app_name);
 		if (app_core_conn <= 0)
 		{
-			//slog(SLOG_FATAL, SLOG_FATAL, "MW: Unable to start fifo with the core.");
+			//slog(SLOG_FATAL, "MW: Unable to start fifo with the core.");
 			exit(1);
 		}
 		fifo_run_receive_thread(app_core_conn);
@@ -261,7 +261,7 @@ int mw_call_module_function(
 
 	const char *tmp=va_arg(arguments, const char*);
 	while(tmp!=NULL){
-		array_add(argv, tmp);  // Strings are NOT freed by array_free, so create duplicates here.
+		array_add(argv, (void*)tmp);  // Strings are NOT freed by array_free, so create duplicates here.
 		tmp=va_arg(arguments, const char*);
 	}
 
@@ -299,7 +299,7 @@ void* mw_call_module_function_blocking(
 
 	const char *tmp=va_arg(arguments, const char*);
 	while(tmp!=NULL){
-		array_add(argv, tmp);  // Strings are freed by array_free, so create duplicates here.
+		array_add(argv, (void*)tmp);  // Strings are freed by array_free, so create duplicates here.
 		tmp=va_arg(arguments, const char*);
 	}
 
@@ -396,12 +396,12 @@ int mw_load_com_module(const char* libpath, const char* cfgpath)
 
 	if(abs_lib_path==NULL)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR, "MW: Com module invalid path %s.", libpath);
+		//slog(SLOG_ERROR, "MW: Com module invalid path %s.", libpath);
 		return -1;
 	}
 	if(abs_cfg_path==NULL)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR, "MW: Cfg file invalid path %s.", cfgpath);
+		//slog(SLOG_ERROR, "MW: Cfg file invalid path %s.", cfgpath);
 		return -1;
 	}
 
@@ -652,12 +652,12 @@ void* api_on_message(void* data)
 
 void api_on_connect(void* module, int conn)
 {
-	//slog(SLOG_INFO, SLOG_INFO, "MW: Core connected.");
+	//slog(SLOG_INFO, "MW: Core connected.");
 }
 
 void api_on_disconnect(void* module, int conn)
 {
-	//slog(SLOG_WARN, SLOG_WARN, "MW: Core disconnected.");
+	//slog(SLOG_WARN, "MW: Core disconnected.");
 	shutdown(app_core_conn,1);
 	exit(0);
 }
@@ -719,7 +719,7 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 					case ' ': case '\n': case '\r':
 						break;
 					default:
-						//slog(SLOG_ERROR, SLOG_ERROR, "%c", new_data[i]);
+						//slog(SLOG_ERROR, "%c", new_data[i]);
 						continue;
 
 				}

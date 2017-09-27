@@ -18,6 +18,7 @@
 #include <conn_fifo.h>
 
 #include <string.h>
+#include <unistd.h> // for write
 
 /* to check*/
 #include "manifest.h"
@@ -27,7 +28,7 @@ extern STATE* app_state;
 /* callbacks for the com modules */
 void core_on_data(COM_MODULE* module, int conn, const char* data)
 {
-	/*slog(SLOG_INFO, SLOG_INFO, "CORE:core_on_data\n"
+	/*slog(SLOG_INFO, "CORE:core_on_data\n"
 			"\tfrom: (%s:%d)\n"
 			"\tdata: *%s*", module->name, conn, data);*/
 	STATE* state_ptr = states_get(module, conn);
@@ -43,13 +44,13 @@ void core_on_connect(COM_MODULE* module, int conn)
 	if (app_state == NULL)
 	{
 		core_terminate();
-		//slog(SLOG_FATAL, SLOG_FATAL, "CORE:core_on_connect: Component not connected.");
+		//slog(SLOG_FATAL, "CORE:core_on_connect: Component not connected.");
 		exit(EXIT_FAILURE);
 	}
 	if (module == app_state->module && conn == app_state->conn)
 	{
 		core_terminate();
-		//slog(SLOG_FATAL, SLOG_FATAL, "CORE:core_on_connect: Something went wrong.");
+		//slog(SLOG_FATAL, "CORE:core_on_connect: Something went wrong.");
 		exit(EXIT_FAILURE);
 	}
 
@@ -93,7 +94,7 @@ void core_on_disconnect(COM_MODULE* module, int conn)
 
 	if(state_ptr == NULL)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR, "CORE:core_on_disconnect: invalid null state");
+		//slog(SLOG_ERROR, "CORE:core_on_disconnect: invalid null state");
 		return;
 	}
 
@@ -156,7 +157,7 @@ void core_on_proto_message(STATE* state_ptr, MESSAGE* _msg)
 			core_proto_check_auth(state_ptr, _msg);
 		if(state_ptr->am_auth && state_ptr->is_auth)
 		{
-			//slog(SLOG_INFO, SLOG_INFO, "CORE:change callback 1\n");
+			//slog(SLOG_INFO, "CORE:change callback 1\n");
 			state_ptr->on_message = &core_on_message;
 		}
 		break;
@@ -165,7 +166,7 @@ void core_on_proto_message(STATE* state_ptr, MESSAGE* _msg)
 			core_proto_check_auth_ack(state_ptr, _msg);
 		if(state_ptr->am_auth && state_ptr->is_auth)
 		{
-			//slog(SLOG_INFO, SLOG_INFO, "CORE:change callback 2\n");
+			//slog(SLOG_INFO, "CORE:change callback 2\n");
 			state_ptr->on_message = &core_on_message;
 		}
 		break;
@@ -318,7 +319,7 @@ void core_on_first_message(STATE* state_ptr, MESSAGE* msg)
 
 	/*if (!strcmp(data, app_key))
 	{
-		slog(SLOG_ERROR, SLOG_ERROR, "CORE: core_on_first_message: invalid key; ignoring");
+		slog(SLOG_ERROR, "CORE: core_on_first_message: invalid key; ignoring");
 		return;
 	}*/
 
@@ -429,7 +430,6 @@ void recv_stream_msg(MESSAGE* msg)
 	LOCAL_EP* lep = (LOCAL_EP*)msg->ep->data;
 	char* data = json_get_str(msg->_msg_json, "stream");
 	int data_size = strlen(data);
-	printf("--------: %d -- %d\n\n", strlen(data), total_stream);
 	//fifo_send_message(lep->fifo, data);//was str
 	int tot = 0;
 	do{
@@ -441,6 +441,6 @@ void recv_stream_msg(MESSAGE* msg)
 
 void send_error_message(STATE* state_ptr, char *msg)
 {
-	//slog(SLOG_ERROR, SLOG_ERROR, "CORE: send error %s to (%s:%d)", msg, state_ptr->module->name, state_ptr->conn);
+	//slog(SLOG_ERROR, "CORE: send error %s to (%s:%d)", msg, state_ptr->module->name, state_ptr->conn);
 	//conn_send_message(conn, msg);
 }

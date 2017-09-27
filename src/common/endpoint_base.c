@@ -43,7 +43,7 @@ ENDPOINT* endpoint_init(const char* name, const char *description, int type,
 
 	if(type <= 0 || type >= 12)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR, "ENDPOINT: wrong ep_type: %d ", type);
+		//slog(SLOG_ERROR, "ENDPOINT: wrong ep_type: %d ", type);
 		endpoint_free(ep);
 		return NULL;
 	}
@@ -56,7 +56,7 @@ ENDPOINT* endpoint_init(const char* name, const char *description, int type,
 	}
 	else if(msg_str == NULL)
 	{
-		//slog(SLOG_ERROR, SLOG_ERROR, "ENDPOINT: no msg specified");
+		//slog(SLOG_ERROR, "ENDPOINT: no msg specified");
 		endpoint_free(ep);
 		return NULL;
 	}
@@ -69,7 +69,7 @@ ENDPOINT* endpoint_init(const char* name, const char *description, int type,
 	{
 		if( resp_str == NULL)
 		{
-			//slog(SLOG_ERROR, SLOG_ERROR, "ENDPOINT: no response msg specified");
+			//slog(SLOG_ERROR, "ENDPOINT: no response msg specified");
 			endpoint_free(ep);
 			return NULL;
 		}
