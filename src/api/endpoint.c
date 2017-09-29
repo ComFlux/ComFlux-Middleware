@@ -237,18 +237,14 @@ ENDPOINT* endpoint_new_rr_p_file(const char* name, const char *description,
 int endpoint_register(ENDPOINT *ep)
 {
 	char*    ep_str = NULL;
-	//MESSAGE* reg_msg = NULL;
 
 	MESSAGE* ret_msg = NULL;
 	JSON*    ret_json = NULL;
 	int      return_value = -1;
 
 	ep_str = ep_to_str(ep);
-	//reg_msg = message_new(ep_str, MSG_CMD);
 
-	//reg_msg->ep = ep;
     char* result = (char*) mw_call_module_function_blocking(
-            NULL,
             "core", "register_endpoint", "int",
             ep_str, NULL);
 
@@ -263,8 +259,7 @@ int endpoint_register(ENDPOINT *ep)
 	{
 		json_free(ret_json);
 		message_free(ret_msg);
-		//message_free(reg_msg);
-		//TODO: free(ep_str);
+		free(ep_str);
 
 		return return_value;
 	}
@@ -273,10 +268,7 @@ int endpoint_register(ENDPOINT *ep)
 
 void endpoint_unregister(ENDPOINT *ep)
 {
-	//MESSAGE *reg_msg = message_new(ep_to_str(ep), MSG_REM_EP);
-	//reg_msg->ep = ep;
     mw_call_module_function(
-            NULL,
             "core", "remove_endpoint", "void",
             ep->id, NULL);
 }
@@ -293,10 +285,8 @@ void endpoint_send_message(ENDPOINT* endpoint, const char* msg)
 	MESSAGE *src_msg = message_new(msg, MSG_MSG);
 	src_msg->ep = endpoint;
 
-	//endpoint_send(ep, src_msg);
 	char* msg_str = message_to_str(src_msg);
     mw_call_module_function(
-            NULL,
             "core", "ep_send_message", "void",
             endpoint->id, src_msg->msg_id, msg_str, NULL);
 
@@ -310,10 +300,8 @@ void endpoint_send_message_json(ENDPOINT* endpoint, JSON* msg_json)
 	MESSAGE *src_msg = message_new_json(msg_json, MSG_MSG);
 	src_msg->ep = endpoint;
 
-	//endpoint_send(ep, src_msg);
 	char* msg_str = message_to_str(src_msg);
     mw_call_module_function(
-            NULL,
             "core", "ep_send_message", "void",
             endpoint->id, src_msg->msg_id, msg_str, NULL);
 
@@ -324,7 +312,6 @@ void endpoint_send_message_json(ENDPOINT* endpoint, JSON* msg_json)
 void endpoint_start_stream(ENDPOINT* endpoint)
 {
     mw_call_module_function(
-            NULL,
             "core", "ep_stream_start", "void",
             endpoint->id, NULL);
 }
@@ -332,7 +319,6 @@ void endpoint_start_stream(ENDPOINT* endpoint)
 void endpoint_stop_stream(ENDPOINT* endpoint)
 {
     mw_call_module_function(
-            NULL,
             "core", "ep_stream_stop", "void",
             endpoint->id, NULL);
 }
@@ -340,7 +326,6 @@ void endpoint_stop_stream(ENDPOINT* endpoint)
 void endpoint_send_stream(ENDPOINT* endpoint, char* msg)
 {
     mw_call_module_function(
-            NULL,
             "core", "ep_stream_send", "void",
             endpoint->id, msg, NULL);
 }
@@ -359,7 +344,6 @@ char* endpoint_send_request(ENDPOINT* endpoint, const char* msg)
 	char* msg_str = message_to_str(req_msg);
 
     mw_call_module_function(
-            req_msg->msg_id,
             "core", "ep_send_request", "void",
             endpoint->id, req_msg->msg_id, msg_str, NULL);
 
@@ -387,7 +371,6 @@ MESSAGE* endpoint_send_request_blocking(ENDPOINT* endpoint, const char* msg)
 	char* msg_str = message_to_str(req_msg);
 
 	char* result = (char*) mw_call_module_function_blocking(
-			req_msg->msg_id,
 			"core", "ep_send_request", "void",
 			endpoint->id, req_msg->msg_id, msg_str, NULL);
 
@@ -409,7 +392,6 @@ void endpoint_send_response(ENDPOINT* endpoint, const char* req_id, const char* 
     char* msg_str = message_to_str(resp_msg);
 
     mw_call_module_function(
-            resp_msg->msg_id,
             "core", "ep_send_response", "void",
             endpoint->id, resp_msg->msg_id, msg_str, NULL);
 
@@ -430,7 +412,6 @@ void endpoint_send_last_response(ENDPOINT* endpoint, const char* req_id, const c
 	resp_msg->ep = endpoint;
 
     mw_call_module_function(
-            req_id,
             "core", "ep_send_response", "void",
             endpoint->id, req_id,
             message_to_str(resp_msg), NULL);
@@ -442,14 +423,15 @@ void endpoint_send_last_response(ENDPOINT* endpoint, const char* req_id, const c
 /* internal */
 void endpoint_send(ENDPOINT* endpoint, MESSAGE* msg)
 {
-    mw_call_module_function(NULL, "core", "ep_send_message", "void", endpoint, message_to_str(msg), NULL);
+    mw_call_module_function(
+    		"core", "ep_send_message", "void",
+			endpoint, message_to_str(msg), NULL);
 }
 
 /* ask the core if there are queued messages for @ep */
 int endpoint_more_messages(ENDPOINT* endpoint)
 {
 	char* result = (char*) mw_call_module_function_blocking(
-			NULL,
 			"core", "ep_more_messages", "int",
 			endpoint->id, NULL);
 
@@ -467,7 +449,6 @@ int endpoint_more_messages(ENDPOINT* endpoint)
 int endpoint_more_requests(ENDPOINT* endpoint)
 {
 	char* result = (char*) mw_call_module_function_blocking(
-			NULL,
 			"core", "ep_more_requests", "int",
 			endpoint->id, NULL);
 
@@ -485,7 +466,6 @@ int endpoint_more_requests(ENDPOINT* endpoint)
 int endpoint_more_responses(ENDPOINT* endpoint, const char* req_id)
 {
 	char* result = (char*) mw_call_module_function_blocking(
-			NULL,
 			"core", "ep_more_responses", "int",
 			endpoint->id, req_id, NULL);
 
@@ -503,7 +483,6 @@ int endpoint_more_responses(ENDPOINT* endpoint, const char* req_id)
 MESSAGE* endpoint_fetch_message(ENDPOINT* endpoint)
 {
 	char* result = (char*) mw_call_module_function_blocking(
-			NULL,
 			"core", "ep_receive_message", "message",
 			endpoint->id, NULL);
 
@@ -518,7 +497,6 @@ MESSAGE* endpoint_fetch_message(ENDPOINT* endpoint)
 MESSAGE* endpoint_fetch_request(ENDPOINT* endpoint)
 {
 	char* result = mw_call_module_function_blocking(
-			NULL,
 			"core", "ep_receive_request", "message",
 			endpoint->id, NULL);
 
@@ -536,7 +514,6 @@ MESSAGE* endpoint_fetch_request(ENDPOINT* endpoint)
 MESSAGE* endpoint_fetch_response(ENDPOINT* endpoint, const char* req_id)
 {
 	char* result = (char*) mw_call_module_function_blocking(
-			req_id,
 			"core", "ep_receive_response", "message",
 			endpoint->id, req_id, NULL);
 
@@ -554,7 +531,6 @@ MESSAGE* endpoint_fetch_response(ENDPOINT* endpoint, const char* req_id)
 void endpoint_add_filter(ENDPOINT* endpoint, const char* filter)
 {
     mw_call_module_function(
-            NULL,
             "core", "ep_add_filter", "void",
             endpoint->id, filter, NULL);
 }
@@ -562,7 +538,6 @@ void endpoint_add_filter(ENDPOINT* endpoint, const char* filter)
 void endpoint_set_filters(ENDPOINT* endpoint, const char* filter_json)
 {
     mw_call_module_function(
-            NULL,
             "core", "ep_reset_filter", "void",
             endpoint->id, filter_json, NULL);
 }
@@ -570,7 +545,6 @@ void endpoint_set_filters(ENDPOINT* endpoint, const char* filter_json)
 void endpoint_set_accesss(ENDPOINT* endpoint, const char* subject)
 {
     mw_call_module_function(
-            NULL,
             "core", "ep_set_access", "void",
             endpoint->id, subject, NULL);
 }
@@ -578,7 +552,6 @@ void endpoint_set_accesss(ENDPOINT* endpoint, const char* subject)
 void endpoint_reset_accesss(ENDPOINT* endpoint, const char* subject)
 {
     mw_call_module_function(
-            NULL,
             "core", "ep_reset_access", "void",
             endpoint->id, subject, NULL);
 }
@@ -630,7 +603,6 @@ Array* ep_get_all_connections(ENDPOINT* endpoint)
 
 	/* endpoint update core */
 	char* resp = mw_call_module_function_blocking(
-			NULL,
 			"core", "ep_get_all_connections", "string",
 			endpoint->id, NULL);
 	MESSAGE* resp_msg = message_parse(resp);
@@ -647,47 +619,44 @@ Array* ep_get_all_connections(ENDPOINT* endpoint)
 
 void endpoint_update_description(ENDPOINT* ep, const char *description)
 {
-	if(ep != NULL)
-	{
-		free(ep->description);
-		ep->description = strdup(description);
+	if (ep == NULL)
+		return;
 
-		/* endpoint update core */
-        mw_call_module_function(
-                NULL,
-                "core", "update_description", "void",
-                description, NULL);
-	}
+	free(ep->description);
+	ep->description = strdup(description);
+
+	/* endpoint update core */
+	mw_call_module_function(
+			"core", "update_description", "void",
+			description, NULL);
 }
 
 void endpoint_update_resp(ENDPOINT* ep, const char *resp_fn)
 {
-	if(ep != NULL)
-	{
-		free(ep->resp);
-		ep->resp = text_load_from_file(resp_fn);
+	if (ep == NULL)
+		return;
 
-		/* endpoint update core */
-        mw_call_module_function(
-                NULL,
-                "core", "update_resp", "void",
-                ep->resp, NULL);
-	}
+	free(ep->resp);
+	ep->resp = text_load_from_file(resp_fn);
+
+	/* endpoint update core */
+	mw_call_module_function(
+			"core", "update_resp", "void",
+			ep->resp, NULL);
 }
 
 void endpoint_update_msg(ENDPOINT* ep, const char *msg_fn)
 {
-	if(ep != NULL)
-	{
-		free(ep->msg);
-		ep->msg = text_load_from_file(msg_fn);
+	if (ep == NULL)
+		return;
 
-		/* endpoint update core */
-        mw_call_module_function(
-                NULL,
-                "core", "update_msg", "void",
-                ep->msg, NULL);
-	}
+	free(ep->msg);
+	ep->msg = text_load_from_file(msg_fn);
+
+	/* endpoint update core */
+	mw_call_module_function(
+			"core", "update_msg", "void",
+			ep->msg, NULL);
 }
 
 
@@ -719,7 +688,6 @@ int endpoint_map_to(ENDPOINT* endpoint, const char* address, const char* ep_quer
 
 
 	result = (char*) mw_call_module_function_blocking(
-			NULL,
 			"core", "map", "int",
 			endpoint->id, address, ep_query, cpt_query,
 			NULL);
@@ -762,7 +730,6 @@ int endpoint_map_module(ENDPOINT* endpoint, const char* module, const char* addr
 		cpt_query = "";
 
 	result = (char*) mw_call_module_function_blocking(
-			NULL,
 			"core", "map_module", "int",
 			endpoint->id, module, address, ep_query, cpt_query,
 			NULL);
@@ -797,7 +764,6 @@ void endpoint_map_lookup(ENDPOINT* endpoint, const char* ep_query, const char* c
 	sprintf(max_nb_str, "%d", max_maps);
 
 	mw_call_module_function(
-			NULL,
 			"core", "map_lookup", "void",
 			endpoint->id, ep_query, cpt_query, max_nb_str, NULL);
 }
@@ -808,7 +774,6 @@ void endpoint_map_lookup(ENDPOINT* endpoint, const char* ep_query, const char* c
 int endpoint_unmap_from(ENDPOINT* endpoint, const char* addr)
 {
 	char* result = (char*) mw_call_module_function_blocking(
-			NULL,
 			"core", "unmap", "int",
 			endpoint->id, addr, NULL);
 
@@ -832,7 +797,6 @@ int endpoint_unmap_connection(ENDPOINT* endpoint, const char* module, int conn)
 	sprintf(conn_str, "%d", conn);
 
 	char* result = (char*) mw_call_module_function_blocking(
-			NULL,
 			"core", "unmap_connection", "int",
 			endpoint->id, module, conn_str, NULL);
 
@@ -853,7 +817,6 @@ int endpoint_unmap_connection(ENDPOINT* endpoint, const char* module, int conn)
 int endpoint_unmap_all(ENDPOINT* endpoint)
 {
 	char* result = (char*) mw_call_module_function_blocking(
-			NULL,
 			"core", "unmap_all", "int",
 			endpoint->id, NULL);
 
@@ -869,7 +832,6 @@ int endpoint_unmap_all(ENDPOINT* endpoint)
 int endpoint_divert(ENDPOINT *ep, char *ep_id_from, char* addr, char *ep_id_to)
 {
 	char* result = (char*) mw_call_module_function_blocking(
-			NULL,
 			"core", "divert", "string",
 			ep->id, ep_id_from, addr, ep_id_to, NULL);
 

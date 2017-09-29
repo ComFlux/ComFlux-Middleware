@@ -69,7 +69,6 @@ const char* mw_get_manifest();
  * @return Status code (0 = OK), if the message was sent successfully.
  */
 int mw_call_module_function(
-		const char* msg_id,
 		const char* module_id,
 		const char* function_id,
 		const char* return_type,
@@ -94,7 +93,6 @@ int mw_call_module_function(
  * @return Status code (0 = OK), if the message was sent successfully.
  */
 void* mw_call_module_function_blocking(
-        const char* msg_id,
 		const char* module_id,
 		const char* function_id,
 		const char* return_type,

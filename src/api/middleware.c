@@ -221,7 +221,8 @@ char* mw_init(const char* cpt_name, int log_lvl, bool use_socketpair)
 
 void mw_terminate_core()
 {
-	mw_call_module_function(NULL, "core", "terminate", "void",
+	mw_call_module_function(
+			"core", "terminate", "void",
 			NULL);
 }
 
@@ -229,7 +230,8 @@ void mw_add_manifest(const char* manifest_str)
 {
 	MESSAGE *md_msg = message_new(manifest_str, MSG_CMD);
 	char* md_str = message_to_str(md_msg);
-	mw_call_module_function(NULL, "core", "add_manifest", "void",
+	mw_call_module_function(
+			"core", "add_manifest", "void",
 			md_str, NULL);
 
 	free(md_str);
@@ -240,7 +242,6 @@ void mw_add_manifest(const char* manifest_str)
 const char* mw_get_manifest()
 {
 	const char* manifest_str = (char*) mw_call_module_function_blocking(
-			NULL,
 			"core", "get_manifest", "string",
 			NULL, NULL);
 
@@ -248,7 +249,6 @@ const char* mw_get_manifest()
 }
 
 int mw_call_module_function(
-		const char* msg_id,
 		const char* module_id,
 		const char* function_id,
 		const char* return_type,
@@ -273,7 +273,7 @@ int mw_call_module_function(
 	json_set_str(msg_json, "return_type", return_type);
 	json_set_array(msg_json, "args", argv);
 
-	MESSAGE* send_msg =  message_new_id_json(msg_id, msg_json, MSG_CMD);
+	MESSAGE* send_msg =  message_new_json(msg_json, MSG_CMD);
 	char* send_str = message_to_str(send_msg);
 	int result = (*(sockpair_module->fc_send_data))(app_core_conn, send_str);
 
@@ -286,7 +286,6 @@ int mw_call_module_function(
 }
 
 void* mw_call_module_function_blocking(
-		const char * msg_id,
 		const char * module_id,
 		const char * function_id,
 		const char * return_type,
@@ -311,19 +310,14 @@ void* mw_call_module_function_blocking(
 	json_set_str(msg_json, "return_type", strdup_null(return_type));
 	json_set_array(msg_json, "args", argv);
 
-	char *_msg_id = strdup_null(msg_id);
-	if (_msg_id == NULL) {
-		_msg_id = message_generate_id();
-	}
 
-	MESSAGE* send_msg =  message_new_id_json(_msg_id, msg_json, MSG_CMD);
+	MESSAGE* send_msg =  message_new_json(msg_json, MSG_CMD);
 	char* send_str = message_to_str(send_msg);
 	(*(sockpair_module->fc_send_data))(app_core_conn, send_str);
 
 	array_free(argv);
 	json_free(msg_json);
-	strcpy(blocking_msg_id, _msg_id);
-	free(_msg_id);
+	strcpy(blocking_msg_id, send_msg->msg_id);
 	free(send_str);
 	message_free(send_msg);
 
@@ -345,7 +339,6 @@ void* mw_call_module_function_blocking(
 void mw_add_rdc(const char* module, const char* address)
 {
 	mw_call_module_function(
-			NULL,
 			"core", "add_rdc", "void",
 			module, address, NULL);
 }
@@ -353,7 +346,6 @@ void mw_add_rdc(const char* module, const char* address)
 void mw_register_rdcs()
 {
 	mw_call_module_function(
-			NULL,
 			"core", "rdc_register", "void",
 			NULL);
 }
@@ -364,7 +356,6 @@ void mw_tell_register_rdcs(const char* address)  // TODO: maybe a better alterna
 		return;
 
 	mw_call_module_function(
-			NULL,
 			"core", "rdc_register", "void",
 			address, NULL);
 }
@@ -372,7 +363,6 @@ void mw_tell_register_rdcs(const char* address)  // TODO: maybe a better alterna
 void mw_unregister_rdcs()
 {
 	mw_call_module_function(
-			NULL,
 			"core", "rdc_unregister", "void",
 			NULL);
 }
@@ -383,7 +373,6 @@ void mw_tell_unregister_rdcs(const char* address)
 		return;
 
 	mw_call_module_function(
-			NULL,
 			"core", "rdc_unregister", "void",
 			address, NULL);
 }
@@ -408,7 +397,6 @@ int mw_load_com_module(const char* libpath, const char* cfgpath)
 	char* config_json = text_load_from_file(cfgpath);
 
 	char* result = (char*) mw_call_module_function_blocking(
-			NULL,
 			"core", "load_com_module", "int",
 			abs_lib_path, config_json, NULL);
 
@@ -444,7 +432,6 @@ int mw_load_access_module(const char* libpath, const char* cfgpath)
 	char* config_json = text_load_from_file(cfgpath);
 
 	char* result = (char*)mw_call_module_function_blocking(
-			NULL,
 			"core", "load_access_module", "int",
 			abs_lib_path, config_json, NULL);
 
@@ -470,7 +457,6 @@ char* mw_get_remote_metdata(const char* module, int conn)
 	char conn_str[10];
 	sprintf(conn_str, "%d", conn);
 	char* resp = (char*) mw_call_module_function_blocking(
-			NULL,
 			"core", "get_remote_metdata", "string",
 			module, conn_str, NULL);
 	if(resp == NULL)
@@ -609,17 +595,18 @@ void* api_on_message(void* data)
 {
 	const char * msg = (const char*) data;
 
-	//printf("on comp %s\n", (msg));
 	MESSAGE *msg_ = message_parse(msg);
 
 	//printf("**** msg %s, %s :: %d, \n", msg_->msg_id, blocking_msg_id, waiting_blocking_call);
 
 	if (waiting_blocking_call == 1)
+	{
 		if (msg_->msg_id && strcmp(blocking_msg_id, msg_->msg_id) == 0)
 		{
 			waiting_blocking_call = 0;
 			sync_trigger(fds_blocking_call[0], msg);
 		}
+	}
 
 	if (msg_->ep==NULL)
 	{
