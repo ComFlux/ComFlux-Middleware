@@ -359,6 +359,8 @@ void endpoint_send_stream(ENDPOINT* endpoint, char* msg);
  */
 char* endpoint_send_request(ENDPOINT* endpoint, const char* msg);
 
+char* endpoint_send_request_json(ENDPOINT* endpoint, JSON* msg);
+
 /**
  * @brief Send a text request over an endpoint, to all mapped remotes, then block
  * until a response is received (or a timeout is triggered).  **Note:** Cannot
@@ -375,6 +377,8 @@ char* endpoint_send_request(ENDPOINT* endpoint, const char* msg);
  */
 MESSAGE* endpoint_send_request_blocking(ENDPOINT* endpoint, const char* msg);
 
+MESSAGE* endpoint_send_request_json_blocking(ENDPOINT* endpoint, JSON* msg);
+
 /**
  * @brief Send a text response over an endpoint.
  *
@@ -390,6 +394,8 @@ MESSAGE* endpoint_send_request_blocking(ENDPOINT* endpoint, const char* msg);
  */
 void endpoint_send_response(ENDPOINT* endpoint, const char* req_id, const char* msg);
 
+void endpoint_send_response_json(ENDPOINT* endpoint, const char* req_id, JSON* msg);
+
 /**
  * @brief Send the final text response over a response+ endpoint.
  *
@@ -404,6 +410,8 @@ void endpoint_send_response(ENDPOINT* endpoint, const char* req_id, const char* 
  *
  */
 void endpoint_send_last_response(ENDPOINT* endpoint, const char* req_id, const char* msg);
+
+void endpoint_send_last_response_json(ENDPOINT* endpoint, const char* req_id, JSON* msg);
 
 /**
  * @brief Send a message over an endpoint. This is an internal function, and its

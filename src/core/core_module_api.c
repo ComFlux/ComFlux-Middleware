@@ -375,14 +375,12 @@ void core_add_rdc_array(Array* argv)
 	COM_MODULE* module = com_get_module(module_name);
 	if(module == NULL)
 	{
-		//slog(SLOG_ERROR, "CORE FUNC: core_add_rdc_array:\n"
-		//	"\tcould not find COM module %s",
-		//	module_name);
+		slog(SLOG_ERROR, "CORE API: %s:\n"
+					"\tcould not find COM module %s",
+					__func__, module_name);
+		return;
 	}
-	else
-	{
-		core_add_rdc(module, addr);
-	}
+	core_add_rdc(module, addr);
 }
 
 void core_rdc_register_array(Array* argv)

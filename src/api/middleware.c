@@ -328,8 +328,6 @@ void* mw_call_module_function_blocking(
 
 	char* result = sync_wait(fds_blocking_call[1]);
 
-	//char result[5000];
-	//recv(fds_blocking_call[1], result, 5000, 0);
 	waiting_blocking_call = 0;
 
 	return result;
@@ -350,9 +348,9 @@ void mw_register_rdcs()
 			NULL);
 }
 
-void mw_tell_register_rdcs(const char* address)  // TODO: maybe a better alternative to 'tell'.
+void mw_tell_register_rdcs(const char* module, const char* address)  // TODO: maybe a better alternative to 'tell'.
 {
-	if (address == NULL)
+	if (module == NULL)
 		return;
 
 	mw_call_module_function(
@@ -367,7 +365,7 @@ void mw_unregister_rdcs()
 			NULL);
 }
 
-void mw_tell_unregister_rdcs(const char* address)
+void mw_tell_unregister_rdcs(const char* module, const char* address)
 {
 	if (address == NULL)
 		return;
@@ -385,12 +383,10 @@ int mw_load_com_module(const char* libpath, const char* cfgpath)
 
 	if(abs_lib_path==NULL)
 	{
-		//slog(SLOG_ERROR, "MW: Com module invalid path %s.", libpath);
 		return -1;
 	}
 	if(abs_cfg_path==NULL)
 	{
-		//slog(SLOG_ERROR, "MW: Cfg file invalid path %s.", cfgpath);
 		return -1;
 	}
 
@@ -407,7 +403,6 @@ int mw_load_com_module(const char* libpath, const char* cfgpath)
 	JSON* map_json = msg->_msg_json;
 	int return_value = json_get_int(map_json, "return_value");
 
-	//free(result);
 	message_free(msg);
 	json_free(map_json);
 
@@ -442,7 +437,6 @@ int mw_load_access_module(const char* libpath, const char* cfgpath)
 	JSON* map_json = msg->_msg_json;
 	int return_value = json_get_int(map_json, "return_value");
 
-	//free(result);
 	message_free(msg);
 	json_free(map_json);
 
@@ -540,7 +534,6 @@ int core_spawn_fd(int fds, char* app_name)
 		ioctl(fds_blocking_call[1], FIONBIO, &count);
 		char* result = sync_wait(fds_blocking_call[1]);
 
-		//close(fds[0]);
 	}
 	else /* error */
 	{   /*todo error handling*/
@@ -614,11 +607,8 @@ void* api_on_message(void* data)
 	}
 	else if(msg_->status == MSG_STREAM_CMD && msg_->ep->type == EP_STR_SNK)
 	{
-		printf("\n\nstream start ..... %s \n\n", message_to_str(msg_));//was str
-		//JSON* msg_json = json_new(msg_->msg);
-		//char * fifo_name = msg_->msg_id; //was str
-		//int stream_fd = json_get_str(msg_json, "fifo_name");
-		//stream_fd_global = fifo_init_client(fifo_name);
+		//printf("\n\nstream start ..... %s \n\n", message_to_str(msg_));//was str
+
 		(*msg_->ep->handler)(msg_);
 		goto final;
 	}
@@ -631,20 +621,20 @@ void* api_on_message(void* data)
 	final:{
 		json_free(msg_->_msg_json);
 		message_free(msg_);
-		//free(data);
-		//pthread_exit(NULL);
+
+
 		return NULL;
 	}
 }
 
 void api_on_connect(void* module, int conn)
 {
-	//slog(SLOG_INFO, "MW: Core connected.");
+	slog(SLOG_INFO, "MW %s: Core successfully connected.", __func__);
 }
 
 void api_on_disconnect(void* module, int conn)
 {
-	//slog(SLOG_WARN, "MW: Core disconnected.");
+	slog(SLOG_ERROR, "MW %s: Core disconnected. Closing.", __func__);
 	shutdown(app_core_conn,1);
 	exit(0);
 }
@@ -729,12 +719,6 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 							buffer_set(buffer, new_data, word_start, word_end);
 							/* apply the callback for this connection */
 
-							//printf(" -- %s\n", buffer->data);
-	//printf("1\n\n");
-							//pthread_t api_on_msg_thread;
-							//pthread_create(&api_on_msg_thread, NULL, api_on_message, strdup_null(buffer->data));
-
-	//printf("3\n\n");
 							api_on_message(buffer->data);
 							buffer_reset(buffer);
 

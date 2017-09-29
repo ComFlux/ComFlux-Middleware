@@ -122,7 +122,7 @@ void mw_register_rdcs();
  *		Address of remote component.
  *
  */
-void mw_tell_register_rdcs(const char* address);
+void mw_tell_register_rdcs(const char* module, const char* address);
 
 /**
  * @brief Unregister this component from all added RDCs, preventing
@@ -137,7 +137,7 @@ void mw_unregister_rdcs();
  * @param address
  *		Address of remote component.
  */
-void mw_tell_unregister_rdcs(const char* address);
+void mw_tell_unregister_rdcs(const char* module, const char* address);
 
 /**
  * @brief Load a com module in the core.

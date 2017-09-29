@@ -355,9 +355,31 @@ char* endpoint_send_request(ENDPOINT* endpoint, const char* msg)
 	return msg_id;
 }
 
+char* endpoint_send_request_json(ENDPOINT* endpoint, JSON* msg)
+{
+	MESSAGE* req_msg = message_new_json(msg, MSG_REQ);
+	req_msg->ep = endpoint;
+
+	char* msg_str = message_to_str(req_msg);
+
+    mw_call_module_function(
+            "core", "ep_send_request", "void",
+            endpoint->id, req_msg->msg_id, msg_str, NULL);
+
+	char* msg_id = strdup_null(req_msg->msg_id);
+
+	free(msg_str);
+	message_free(req_msg);
+
+	return msg_id;
+}
+
 MESSAGE* endpoint_send_request_blocking(ENDPOINT* endpoint, const char* msg)
 {
-	//if (!endpoint->queuing) {}
+	if (!endpoint->queuing) {
+		slog(SLOG_ERROR,
+			 "Cannot block to wait for response on a non-queueing endpoint.");
+	}
 
 	const char* _msg;
 	if (msg != NULL)
@@ -366,6 +388,31 @@ MESSAGE* endpoint_send_request_blocking(ENDPOINT* endpoint, const char* msg)
 		_msg = "";
 
 	MESSAGE* req_msg = message_new(_msg, MSG_REQ);
+	req_msg->ep = endpoint;
+
+	char* msg_str = message_to_str(req_msg);
+
+	char* result = (char*) mw_call_module_function_blocking(
+			"core", "ep_send_request", "void",
+			endpoint->id, req_msg->msg_id, msg_str, NULL);
+
+	MESSAGE* resp = message_parse(result);
+
+	free(result);
+	free(msg_str);
+	message_free(req_msg);
+
+	return resp;
+}
+
+MESSAGE* endpoint_send_request_json_blocking(ENDPOINT* endpoint, JSON* msg)
+{
+	if (!endpoint->queuing) {
+		slog(SLOG_ERROR,
+			 "Cannot block to wait for response on a non-queueing endpoint.");
+	}
+
+	MESSAGE* req_msg = message_new_json(msg, MSG_REQ);
 	req_msg->ep = endpoint;
 
 	char* msg_str = message_to_str(req_msg);
@@ -399,6 +446,22 @@ void endpoint_send_response(ENDPOINT* endpoint, const char* req_id, const char* 
     message_free(resp_msg);
 }
 
+void endpoint_send_response_json(ENDPOINT* endpoint, const char* req_id, JSON* msg)
+{
+	MESSAGE *resp_msg = message_new_json(msg, MSG_RESP_NEXT);
+	resp_msg->msg_id = strdup(req_id);
+	resp_msg->ep = endpoint;
+
+    char* msg_str = message_to_str(resp_msg);
+
+    mw_call_module_function(
+            "core", "ep_send_response", "void",
+            endpoint->id, resp_msg->msg_id, msg_str, NULL);
+
+    free(msg_str);
+    message_free(resp_msg);
+}
+
 void endpoint_send_last_response(ENDPOINT* endpoint, const char* req_id, const char* msg)
 {
 	MESSAGE * resp_msg;
@@ -408,6 +471,27 @@ void endpoint_send_last_response(ENDPOINT* endpoint, const char* req_id, const c
 
 	//resp_msg = message_new(ep, req_id, msg, MSG_RESP_LAST); /* 1 = the last message */
 	resp_msg = message_new(msg, MSG_RESP_LAST);
+	resp_msg->msg_id = strdup_null(req_id);
+	resp_msg->ep = endpoint;
+
+    mw_call_module_function(
+            "core", "ep_send_response", "void",
+            endpoint->id, req_id,
+            message_to_str(resp_msg), NULL);
+
+	json_free(new_msg);
+	message_free(resp_msg);
+}
+
+void endpoint_send_last_response_json(ENDPOINT* endpoint, const char* req_id, JSON* msg)
+{
+	MESSAGE * resp_msg;
+	JSON* new_msg = json_new(NULL);
+	json_set_str(new_msg, "ep_name", endpoint->name);
+	json_set_json(new_msg, "response", msg);
+
+	//resp_msg = message_new(ep, req_id, msg, MSG_RESP_LAST); /* 1 = the last message */
+	resp_msg = message_new_json(msg, MSG_RESP_LAST);
 	resp_msg->msg_id = strdup_null(req_id);
 	resp_msg->ep = endpoint;
 
