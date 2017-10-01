@@ -117,6 +117,15 @@ ENDPOINT* endpoint_new_resp_p(const char* name, const char *description,
 			callback_function, NULL);
 }
 
+ENDPOINT* endpoint_new_resp_p_file(const char* name, const char* description,
+                             const char* msg_path, const char* resp_path,
+                             void (*callback_function)(MESSAGE*))
+{
+	return endpoint_new(name, description, EP_RESP_P,
+			text_load_from_file(msg_path), text_load_from_file(resp_path),
+				callback_function, NULL);
+}
+
 ENDPOINT* endpoint_new_rr(const char* name, const char *description,
                           const char *msg_str, const char *resp_str,
                           void (*callback_function)(MESSAGE*))
@@ -154,80 +163,71 @@ ENDPOINT* endpoint_new_stream_snk(const char* name, const char *description,
 
 /* file schema declaration */
 
-ENDPOINT* endpoint_new_src_file(const char* name, const char *description, const char *msg_fn)
+ENDPOINT* endpoint_new_src_file(const char* name, const char *description, const char *msg_path)
 {
 	return endpoint_new(name, description, EP_SRC,
-			text_load_from_file(msg_fn), NULL,
+			text_load_from_file(msg_path), NULL,
 			NULL, NULL);
 }
 
-ENDPOINT* endpoint_new_snk_file(const char* name, const char *description, const char *msg_fn,
+ENDPOINT* endpoint_new_snk_file(const char* name, const char *description, const char *msg_path,
                            void (*callback_function)(MESSAGE*))
 {
 	return endpoint_new(name, description, EP_SNK,
-			text_load_from_file(msg_fn), NULL,
+			text_load_from_file(msg_path), NULL,
 			callback_function, NULL);
 }
 
-ENDPOINT* endpoint_new_ss_file(const char* name, const char *description, const char *msg_fn,
+ENDPOINT* endpoint_new_ss_file(const char* name, const char *description, const char *msg_path,
                           void (*callback_function)(MESSAGE*))
 {
 	return endpoint_new(name, description, EP_SS,
-			text_load_from_file(msg_fn), NULL,
+			text_load_from_file(msg_path), NULL,
 			callback_function, NULL);
 }
 
 ENDPOINT* endpoint_new_req_file(const char* name, const char *description,
-                           const char *msg_fn, const char *resp_fn,
+                           const char *msg_path, const char *resp_path,
 						   void (*callback_function)(MESSAGE*))
 {
 	return endpoint_new(name, description, EP_REQ,
-			text_load_from_file(msg_fn), text_load_from_file(resp_fn),
+			text_load_from_file(msg_path), text_load_from_file(resp_path),
 			callback_function, NULL);
 }
 
 ENDPOINT* endpoint_new_resp_file(const char* name, const char *description,
-                            const char *msg_fn, const char *resp_fn,
+                            const char *msg_path, const char *resp_path,
 		                    void (*callback_function)(MESSAGE*))
 {
 	return endpoint_new(name, description, EP_RESP,
-			text_load_from_file(msg_fn), text_load_from_file(resp_fn),
+			text_load_from_file(msg_path), text_load_from_file(resp_path),
 			callback_function, NULL);
 }
 
 ENDPOINT* endpoint_new_req_p_file(const char* name, const char *description,
-                             const char *msg_fn, const char *resp_fn,
+                             const char *msg_path, const char *resp_path,
                              void (*callback_function)(MESSAGE*))
 {
 	return endpoint_new(name, description, EP_REQ_P,
-			text_load_from_file(msg_fn), text_load_from_file(resp_fn),
-			callback_function, NULL);
-}
-
-ENDPOINT* endpoint_new_resp_p_file(const char* name, const char *description,
-                              const char *msg_fn, const char *resp_fn,
-                              void (*callback_function)(MESSAGE*))
-{
-	return endpoint_new(name, description, EP_RESP_P,
-			text_load_from_file(msg_fn), text_load_from_file(resp_fn),
+			text_load_from_file(msg_path), text_load_from_file(resp_path),
 			callback_function, NULL);
 }
 
 ENDPOINT* endpoint_new_rr_file(const char* name, const char *description,
-                          const char *msg_fn, const char *resp_fn,
+                          const char *msg_path, const char *resp_path,
                           void (*callback_function)(MESSAGE*))
 {
 	return endpoint_new(name, description, EP_RR,
-			text_load_from_file(msg_fn), text_load_from_file(resp_fn),
+			text_load_from_file(msg_path), text_load_from_file(resp_path),
 			 callback_function, NULL);
 }
 
 ENDPOINT* endpoint_new_rr_p_file(const char* name, const char *description,
-                            const char *msg_fn, const char *resp_fn,
+                            const char *msg_path, const char *resp_path,
                             void (*callback_function)(MESSAGE*))
 {
 	return endpoint_new(name, description, EP_RR_P,
-			text_load_from_file(msg_fn), text_load_from_file(resp_fn),
+			text_load_from_file(msg_path), text_load_from_file(resp_path),
 			callback_function, NULL);
 }
 
@@ -715,13 +715,13 @@ void endpoint_update_description(ENDPOINT* ep, const char *description)
 			description, NULL);
 }
 
-void endpoint_update_resp(ENDPOINT* ep, const char *resp_fn)
+void endpoint_update_resp(ENDPOINT* ep, const char *resp_path)
 {
 	if (ep == NULL)
 		return;
 
 	free(ep->resp);
-	ep->resp = text_load_from_file(resp_fn);
+	ep->resp = text_load_from_file(resp_path);
 
 	/* endpoint update core */
 	mw_call_module_function(
@@ -729,13 +729,13 @@ void endpoint_update_resp(ENDPOINT* ep, const char *resp_fn)
 			ep->resp, NULL);
 }
 
-void endpoint_update_msg(ENDPOINT* ep, const char *msg_fn)
+void endpoint_update_msg(ENDPOINT* ep, const char *msg_path)
 {
 	if (ep == NULL)
 		return;
 
 	free(ep->msg);
-	ep->msg = text_load_from_file(msg_fn);
+	ep->msg = text_load_from_file(msg_path);
 
 	/* endpoint update core */
 	mw_call_module_function(

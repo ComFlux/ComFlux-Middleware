@@ -54,17 +54,16 @@ const char* mw_get_manifest();
  * @brief Invoke a function on the core, passing parameters.  Send **only**
  * strings as variable arguments.
  *
- * @param msg_id
- *		**TODO:** Documentation.
- *
  * @param module_id
- *		**TODO:** Documentation.
+ *		Module name. Currently core.
  *
  * @param function_id 
- *		**TODO:** Documentation.
+ *		Function external identifier or name.
  *
  * @param return_type
- *		**TODO:** Documentation.
+ *		Expected type of the return value.
+ *		Can be int, float, string, MESSAGE,
+ *		or void, if no response is expected.
  *
  * @return Status code (0 = OK), if the message was sent successfully.
  */
@@ -78,17 +77,16 @@ int mw_call_module_function(
  * @brief Invoke a function on the core, passing parameters.  Send **only**
  * strings as variable arguments.
  *
- * @param msg_id
- *		**TODO:** Documentation.
- *
  * @param module_id
- *		**TODO:** Documentation.
+ *		Module name. Currently core.
  *
  * @param function_id 
- *		**TODO:** Documentation.
+ *		Function external identifier or name.
  *
  * @param return_type
- *		**TODO:** Documentation.
+ *		Expected type of the return value.
+ *		Can be int, float, string, MESSAGE,
+ *		or void, if no response is expected.
  *
  * @return Status code (0 = OK), if the message was sent successfully.
  */

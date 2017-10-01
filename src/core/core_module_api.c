@@ -392,7 +392,13 @@ void core_rdc_register_array(Array* argv)
 		char* addr = (char*)array_get( argv, 0 );
 		char* module_name = (char*)array_get( argv, 1 );
 		COM_MODULE* module = com_get_module(module_name);
-
+		if(module == NULL)
+		{
+			slog(SLOG_ERROR, "CORE API: %s:\n"
+						"\tcould not find COM module %s",
+						__func__, module_name);
+			return;
+		}
 		core_rdc_register(module, addr);
 	}
 }

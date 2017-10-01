@@ -27,7 +27,7 @@ double time_total = 0;
 unsigned int count_msg = 0;
 
 
-void print_callback(const MESSAGE* msg)
+void print_callback(MESSAGE* msg)
 {
 
 	//printf("%d \n", sizeof(message_to_str(msg)));

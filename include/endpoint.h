@@ -18,22 +18,22 @@
  *		A simple name to describe the endpoint. This will be available to mapping queries.
  *
  * @param type
- *		Type of endpoint (source, sink, request(+), resp(+)).
+ *		Type of endpoint (source, sink, request(+), resp(+), stream src, stream sink).
  *
  * @param description
  *		A more detailed description of the endpoint's purpose.
  *
- * @param msg_fn
- *		Path-to and filename of the message schema JSON.
+ * @param msg_str
+ *		String for a message or request schema JSON.
  *
- * @param resp_fn
- *		TODO: Add documentation.
+ * @param resp_str
+ *		String for a response schema JSON.
  *
  * @param callback_function
  *		Function to be invoked by the mw when a message is received on this endpoint.
  *
  * @param id
- *		TODO: Add documentation.
+ *		Endpoint identifier.
  *
  * @return
  *		Pointer to the newly created endpoint struct.
@@ -42,6 +42,34 @@ ENDPOINT* endpoint_new(const char* name, const char* description, int type,
                        const char* msg_str, const char* resp_str,
                        void (*callback_function)(MESSAGE*),
                        const char* id);
+
+/**
+ * @brief Create a new source endpoint in the core where schemas are red from file.
+ *
+ * @param name
+ *		A simple name to describe the endpoint. This will be available to mapping queries.
+ *
+ * @param type
+ *		Type of endpoint (source, sink, request(+), resp(+), stream src, stream sink).
+ *
+ * @param description
+ *		A more detailed description of the endpoint's purpose.
+ *
+ * @param msg_path
+ *		Path-to to the message or request schema JSON.
+ *
+ * @param resp_path
+ *		Path-to to the response schema JSON.
+ *
+ * @param callback_function
+ *		Function to be invoked by the mw when a message is received on this endpoint.
+ *
+ * @param id
+ *		Endpoint identifier.
+ *
+ * @return
+ *		Pointer to the newly created endpoint struct.
+ */
 ENDPOINT* endpoint_new_file(const char* name, const char* description, int type,
                        const char* msg_path, const char* resp_path,
                        void (*callback_function)(MESSAGE*),
@@ -56,14 +84,30 @@ ENDPOINT* endpoint_new_file(const char* name, const char* description, int type,
  * @param description
  *		A more detailed description of the endpoint's purpose.
  *
- * @param msg_fn
- *		Path-to and filename of the message schema JSON.
+ * @param msg_str
+ *		String for the message schema JSON.
  *
  * @return
  *		Pointer to the newly created endpoint struct.
  */
 ENDPOINT* endpoint_new_src(const char* name, const char* description,
 		const char* msg_str);
+
+/**
+ * @brief Create a new source endpoint in the core.
+ *
+ * @param name
+ *		A simple name to describe the endpoint. This will be available to mapping queries.
+ *
+ * @param description
+ *		A more detailed description of the endpoint's purpose.
+ *
+ * @param msg_path
+ *		Path-to to the message schema JSON.
+ *
+ * @return
+ *		Pointer to the newly created endpoint struct.
+ */
 ENDPOINT* endpoint_new_src_file(const char* name, const char* description,
 		const char* msg_path);
 
@@ -76,8 +120,8 @@ ENDPOINT* endpoint_new_src_file(const char* name, const char* description,
  * @param description
  *		A more detailed description of the endpoint's purpose.
  *
- * @param msg_fn
- *		Path-to and filename of the message schema JSON.
+ * @param msg_str
+ *		Path to the message schema JSON.
  *
  * @param callback_function
  *		Function to be invoked by the mw when a message is received on this endpoint.
@@ -89,6 +133,24 @@ ENDPOINT* endpoint_new_snk(const char* name, const char* description,
 		                   const char* msg_str,
                            void (*callback_function)(MESSAGE*));
 
+/**
+ * @brief Create a new sink endpoint in the core.
+ *
+ * @param name
+ *		A simple name to describe the endpoint. This will be available to mapping queries.
+ *
+ * @param description
+ *		A more detailed description of the endpoint's purpose.
+ *
+ * @param msg_path
+ *		Path to the message schema JSON.
+ *
+ * @param callback_function
+ *		Function to be invoked by the mw when a message is received on this endpoint.
+ *
+ * @return
+ *		Pointer to the newly created endpoint struct.
+ */
 ENDPOINT* endpoint_new_snk_file(const char* name, const char* description,
 		                   const char* msg_path,
                            void (*callback_function)(MESSAGE*));
@@ -102,8 +164,8 @@ ENDPOINT* endpoint_new_snk_file(const char* name, const char* description,
  * @param description
  *		A more detailed description of the endpoint's purpose.
  *
- * @param msg_fn
- *		Path-to and filename of the message schema JSON.
+ * @param msg_str
+ *		String of the message schema JSON.
  *
  * @param callback_function
  *		Function to be invoked by the mw when a message is received on this endpoint.
@@ -115,6 +177,24 @@ ENDPOINT* endpoint_new_ss(const char* name, const char* description,
 		                  const char* msg_str,
                           void (*callback_function)(MESSAGE*));
 
+/**
+ * @brief Create a new source-sink endpoint in the core.
+ *
+ * @param name
+ *		A simple name to describe the endpoint. This will be available to mapping queries.
+ *
+ * @param description
+ *		A more detailed description of the endpoint's purpose.
+ *
+ * @param msg_path
+ *		Path to the message schema JSON.
+ *
+ * @param callback_function
+ *		Function to be invoked by the mw when a message is received on this endpoint.
+ *
+ * @return Pointer to the newly created endpoint struct.
+ *
+ */
 ENDPOINT* endpoint_new_ss_file(const char* name, const char* description,
 		                  const char* msg_path,
                           void (*callback_function)(MESSAGE*));
@@ -128,11 +208,11 @@ ENDPOINT* endpoint_new_ss_file(const char* name, const char* description,
  * @param description
  *		A more detailed description of the endpoint's purpose.
  *
- * @param msg_fn
- *		Path-to and filename of the request schema JSON.
+ * @param msg_str
+ *		String of the request schema JSON.
  *
- * @param resp_fn
- *		Path-to and filename of the response schema JSON.
+ * @param resp_str
+ *		String of the response schema JSON.
  *
  * @param callback_function
  *		Function to be invoked by the mw when a response is received on this endpoint.
@@ -143,8 +223,30 @@ ENDPOINT* endpoint_new_ss_file(const char* name, const char* description,
 ENDPOINT* endpoint_new_req(const char* name, const char* description,
                            const char* msg_str, const char* resp_str,
                            void (*callback_function)(MESSAGE*));
+
+/**
+ * @brief Create a new request endpoint in the core.
+ *
+ * @param name
+ *		A simple name to describe the endpoint. This will be available to mapping queries.
+ *
+ * @param description
+ *		A more detailed description of the endpoint's purpose.
+ *
+ * @param msg_path
+ *		Path to the request schema JSON.
+ *
+ * @param resp_path
+ *		Path to the response schema JSON.
+ *
+ * @param callback_function
+ *		Function to be invoked by the mw when a response is received on this endpoint.
+ *
+ * @return Pointer to the newly created endpoint struct.
+ *
+ */
 ENDPOINT* endpoint_new_req_file(const char* name, const char* description,
-                           const char* msg_fn, const char* resp_fn,
+                           const char* msg_path, const char* resp_path,
                            void (*callback_function)(MESSAGE*));
 
 /**
@@ -156,11 +258,11 @@ ENDPOINT* endpoint_new_req_file(const char* name, const char* description,
  * @param description
  *		A more detailed description of the endpoint's purpose.
  *
- * @param msg_fn
- *		Path-to and filename of the request schema JSON.
+ * @param msg_str
+ *		String of the message schema JSON.
  *
- * @param resp_fn
- *		Path-to and filename of the response schema JSON.
+ * @param resp_str
+ *		String of the response schema JSON.
  *
  * @param callback_function
  *		Function to be invoked by the mw when a response is received on this endpoint.
@@ -171,8 +273,30 @@ ENDPOINT* endpoint_new_req_file(const char* name, const char* description,
 ENDPOINT* endpoint_new_resp(const char* name, const char* description,
                             const char* msg_str, const char* resp_str,
                             void (*callback_function)(MESSAGE*));
+
+/**
+ * @brief Create a new response endpoint in the core.
+ *
+ * @param name
+ *		A simple name to describe the endpoint. This will be available to mapping queries.
+ *
+ * @param description
+ *		A more detailed description of the endpoint's purpose.
+ *
+ * @param msg_path
+ *		Path to the message schema JSON.
+ *
+ * @param resp_path
+ *		Path to the response schema JSON.
+ *
+ * @param callback_function
+ *		Function to be invoked by the mw when a response is received on this endpoint.
+ *
+ * @return Pointer to the newly created endpoint struct.
+ *
+ */
 ENDPOINT* endpoint_new_resp_file(const char* name, const char* description,
-                            const char* msg_fn, const char* resp_fn,
+                            const char* msg_path, const char* resp_path,
                             void (*callback_function)(MESSAGE*));
 
 /**
@@ -184,11 +308,11 @@ ENDPOINT* endpoint_new_resp_file(const char* name, const char* description,
  * @param description
  *		A more detailed description of the endpoint's purpose.
  *
- * @param msg_fn
- *		Path-to and filename of the request schema JSON.
+ * @param msg_str
+ *		String of the message schema JSON.
  *
- * @param resp_fn
- *		Path-to and filename of the response schema JSON.
+ * @param resp_str
+ *		String of the response schema JSON.
  *
  * @param callback_function
  *		Function to be invoked by the mw when a response is received on this endpoint.
@@ -199,8 +323,30 @@ ENDPOINT* endpoint_new_resp_file(const char* name, const char* description,
 ENDPOINT* endpoint_new_req_p(const char* name, const char* description,
                              const char* msg_str, const char* resp_str,
                              void (*callback_function)(MESSAGE*));
+
+/**
+ * @brief Create a new request+ endpoint in the core.
+ *
+ * @param name
+ *		A simple name to describe the endpoint. This will be available to mapping queries.
+ *
+ * @param description
+ *		A more detailed description of the endpoint's purpose.
+ *
+ * @param msg_path
+ *		Path to the message or request schema JSON.
+ *
+ * @param resp_path
+ *		Path to the response schema JSON.
+ *
+ * @param callback_function
+ *		Function to be invoked by the mw when a response is received on this endpoint.
+ *
+ * @return Pointer to the newly created endpoint struct.
+ *
+ */
 ENDPOINT* endpoint_new_req_p_file(const char* name, const char* description,
-                             const char* msg_fn, const char* resp_fn,
+                             const char* msg_path, const char* resp_path,
                              void (*callback_function)(MESSAGE*));
 
 /**
@@ -212,11 +358,11 @@ ENDPOINT* endpoint_new_req_p_file(const char* name, const char* description,
  * @param description
  *		A more detailed description of the endpoint's purpose.
  *
- * @param msg_fn
- *		Path-to and filename of the request schema JSON.
+ * @param msg_str
+ *		String of the request schema JSON.
  *
- * @param resp_fn
- *		Path-to and filename of the response schema JSON.
+ * @param resp_str
+ *		String of the response schema JSON.
  *
  * @param callback_function
  *		Function to be invoked by the mw when a response is received on this endpoint.
@@ -227,8 +373,31 @@ ENDPOINT* endpoint_new_req_p_file(const char* name, const char* description,
 ENDPOINT* endpoint_new_resp_p(const char* name, const char* description,
                               const char* msg_str, const char* resp_str,
                               void (*callback_function)(MESSAGE*));
+
+/**
+ * @brief Create a new response+ endpoint in the core.
+ *
+ * @param name
+ *		A simple name to describe the endpoint. This will be available to mapping queries.
+ *
+ * @param description
+ *		A more detailed description of the endpoint's purpose.
+ *
+ * @param msg_path
+ *		Path to the message schema JSON.
+ *
+ * @param resp_path
+ *		Path to the response schema JSON.
+ *
+ * @param callback_function
+ *		Function to be invoked by the mw when a response is received on this endpoint.
+ *
+ * @return Pointer to the newly created endpoint struct.
+ *
+ */
+
 ENDPOINT* endpoint_new_resp_p_file(const char* name, const char* description,
-                             const char* msg_fn, const char* resp_fn,
+                             const char* msg_path, const char* resp_path,
                              void (*callback_function)(MESSAGE*));
 
 /**
@@ -240,11 +409,11 @@ ENDPOINT* endpoint_new_resp_p_file(const char* name, const char* description,
  * @param description
  *		A more detailed description of the endpoint's purpose.
  *
- * @param msg_fn
- *		Path-to and filename of the request schema JSON.
+ * @param msg_str
+ *		String of the request schema JSON.
  *
- * @param resp_fn
- *		Path-to and filename of the response schema JSON.
+ * @param resp_str
+ *		String of the response schema JSON.
  *
  * @param callback_function
  *		Function to be invoked by the mw when a response is received on this endpoint.
@@ -255,8 +424,30 @@ ENDPOINT* endpoint_new_resp_p_file(const char* name, const char* description,
 ENDPOINT* endpoint_new_rr(const char* name, const char* description,
                           const char* msg_str, const char* resp_str,
                           void (*callback_function)(MESSAGE*));
+
+/**
+ * @brief Create a new request-response endpoint in the core.
+ *
+ * @param name
+ *		A simple name to describe the endpoint. This will be available to mapping queries.
+ *
+ * @param description
+ *		A more detailed description of the endpoint's purpose.
+ *
+ * @param msg_path
+ *		Path to the request schema JSON.
+ *
+ * @param resp_path
+ *		Path to the response schema JSON.
+ *
+ * @param callback_function
+ *		Function to be invoked by the mw when a response is received on this endpoint.
+ *
+ * @return Pointer to the newly created endpoint struct.
+ *
+ */
 ENDPOINT* endpoint_new_rr_file(const char* name, const char* description,
-                          const char* msg_fn, const char* resp_fn,
+                          const char* msg_path, const char* resp_path,
                           void (*callback_function)(MESSAGE*));
 
 /**
@@ -268,11 +459,11 @@ ENDPOINT* endpoint_new_rr_file(const char* name, const char* description,
  * @param description
  *		A more detailed description of the endpoint's purpose.
  *
- * @param msg_fn
- *		Path-to and filename of the request schema JSON.
+ * @param msg_str
+ *		String of the request schema JSON.
  *
- * @param resp_fn
- *		Path-to and filename of the response schema JSON.
+ * @param resp_str
+ *		String of the response schema JSON.
  *
  * @param callback_function
  *		Function to be invoked by the mw when a response is received on this endpoint.
@@ -281,7 +472,32 @@ ENDPOINT* endpoint_new_rr_file(const char* name, const char* description,
  *
  */
 ENDPOINT* endpoint_new_rr_p(const char* name, const char* description,
-                            const char* msg_fn, const char* resp_fn,
+                            const char* msg_str, const char* resp_str,
+                            void (*callback_function)(MESSAGE*));
+
+/**
+ * @brief Create a new request-response+ endpoint in the core.
+ *
+ * @param name
+ *		A simple name to describe the endpoint. This will be available to mapping queries.
+ *
+ * @param description
+ *		A more detailed description of the endpoint's purpose.
+ *
+ * @param msg_path
+ *		Path to the request schema JSON.
+ *
+ * @param resp_path
+ *		Path to the response schema JSON.
+ *
+ * @param callback_function
+ *		Function to be invoked by the mw when a response is received on this endpoint.
+ *
+ * @return Pointer to the newly created endpoint struct.
+ *
+ */
+ENDPOINT* endpoint_new_rr_p_file(const char* name, const char* description,
+                            const char* msg_path, const char* resp_path,
                             void (*callback_function)(MESSAGE*));
 
 /**
@@ -337,13 +553,18 @@ void endpoint_remove(ENDPOINT* endpoint);
  *
  */
 void endpoint_send_message(ENDPOINT* endpoint, const char* msg);
+
+/**
+ * @brief Send a text message over an endpoint, to all mapped remotes.
+ *
+ * @param endpoint
+ *		Endpoint over which to send message.
+ *
+ * @param msg_json
+ *		JSON message to send.
+ *
+ */
 void endpoint_send_message_json(ENDPOINT* endpoint, JSON* msg_json);
-
-
-void endpoint_start_stream(ENDPOINT* endpoint);
-void endpoint_stop_stream(ENDPOINT* endpoint);
-void endpoint_send_stream(ENDPOINT* endpoint, char* msg);
-
 
 /**
  * @brief Send a text request over an endpoint, to all mapped remotes.
@@ -359,6 +580,18 @@ void endpoint_send_stream(ENDPOINT* endpoint, char* msg);
  */
 char* endpoint_send_request(ENDPOINT* endpoint, const char* msg);
 
+/**
+ * @brief Send a text request over an endpoint, to all mapped remotes.
+ *
+ * @param endpoint
+ *		Endpoint over which to send request.
+ *
+ * @param msg
+ *		JSON request to send.
+ *
+ * @return The request message id, immediately, so response demultiplexing may
+ * be handled by the developer if they choose not use a handler.
+ */
 char* endpoint_send_request_json(ENDPOINT* endpoint, JSON* msg);
 
 /**
@@ -377,6 +610,20 @@ char* endpoint_send_request_json(ENDPOINT* endpoint, JSON* msg);
  */
 MESSAGE* endpoint_send_request_blocking(ENDPOINT* endpoint, const char* msg);
 
+/**
+ * @brief Send a text request over an endpoint, to all mapped remotes, then block
+ * until a response is received (or a timeout is triggered).  **Note:** Cannot
+ * be called on non-queueing (i.e. handler) endpoints.
+ *
+ * @param endpoint
+ *		Endpoint over which to send request.
+ *
+ * @param msg
+ *		JSON request to send.
+ *
+ * @return The received response. If no response is received before a timeout, NULL is returned.
+ *
+ */
 MESSAGE* endpoint_send_request_json_blocking(ENDPOINT* endpoint, JSON* msg);
 
 /**
@@ -394,6 +641,19 @@ MESSAGE* endpoint_send_request_json_blocking(ENDPOINT* endpoint, JSON* msg);
  */
 void endpoint_send_response(ENDPOINT* endpoint, const char* req_id, const char* msg);
 
+/**
+ * @brief Send a text response over an endpoint.
+ *
+ * @param endpoint
+ *		Endpoint over which to send response.
+ *
+ * @param req_id
+ *		The id of the request we are responding to.
+ *
+ * @param msg
+ *		JSON response to send.
+ *
+ */
 void endpoint_send_response_json(ENDPOINT* endpoint, const char* req_id, JSON* msg);
 
 /**
@@ -411,7 +671,49 @@ void endpoint_send_response_json(ENDPOINT* endpoint, const char* req_id, JSON* m
  */
 void endpoint_send_last_response(ENDPOINT* endpoint, const char* req_id, const char* msg);
 
+/**
+ * @brief Send the final text response over a response+ endpoint.
+ *
+ * @param endpoint
+ *		Endpoint over which to send response.
+ *
+ * @param req_id
+ *		The id of the request we are responding to.
+ *
+ * @param msg
+ *		JSON response to send.
+ *
+ */
 void endpoint_send_last_response_json(ENDPOINT* endpoint, const char* req_id, JSON* msg);
+
+
+/**
+ * @brief Start streaming on the endpoint by opening a fifo with the incomming socket.
+ *
+ * @param endpoint
+ *		Streaming endpoint.
+ *
+ */
+void endpoint_start_stream(ENDPOINT* endpoint);
+
+/**
+ * @brief Stop streaming on the endpoint.
+ *
+ * @param endpoint
+ *		Streaming endpoint.
+ *
+ */
+void endpoint_stop_stream(ENDPOINT* endpoint);
+
+/**
+ * @brief Send a chink of the stream on the endpoint.
+ *
+ * @param endpoint
+ *		Streaming endpoint.
+ *
+ */
+void endpoint_send_stream(ENDPOINT* endpoint, char* msg);
+
 
 /**
  * @brief Send a message over an endpoint. This is an internal function, and its
@@ -587,6 +889,30 @@ Array* ep_get_all_connections(ENDPOINT* endpoint);
  * @return Status code (0 = OK), depending on whether mapping was successful.
  */
 int endpoint_map_to(ENDPOINT* endpoint, const char* address,  const char* ep_query, const char* cpt_query);
+
+
+/**
+ * @brief Map a local endpoint to a remote endpoint associated with a component
+ * at a known address. The remote endpoint is selected by the remote component,
+ * according to the given query.
+ *
+ * **Note:** an empty query will match all endpoints (of the correct type).
+ *
+ * @param endpoint
+ *		Endpoint to which to map the result of the given query to.
+ *
+ * @param address
+ *		Address of the remote components whose endpoints will be matched against
+ *		the given query.
+ *
+ * @param ep_query
+ *		A string containing a filter on the endpoint metadata
+ *
+ *@param cpt_query
+ *		A string containing a filter on the component manifest
+ *
+ * @return Status code (0 = OK), depending on whether mapping was successful.
+ */
 int endpoint_map_module(ENDPOINT* endpoint, const char* module, const char* address, const char* ep_query, const char* cpt_query);
 
 /**
