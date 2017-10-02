@@ -342,6 +342,56 @@ int com_send_data(int pconn, const char* msg) {
 	return (int) allBytesSent;
 }
 
+
+int com_send(int pconn, const void* msg, unsigned int size) {
+	// printf("about to send msg%d\n", pconn);
+	// in udp, conn is actually the peer's port (destination port); this is for distinguish the peers from the same fd
+	char* buffer;
+	buffer = (char*) malloc(sizeof(char) * 10);
+	snprintf(buffer, 10, "%d", pconn);
+	int conn;
+	if (map_contains(idfd, buffer)) {
+		conn = *((int*) (map_get(idfd, buffer)));
+	} else {
+		conn = pconn;
+	}
+	struct sockaddr_in peer;
+	snprintf(buffer, 10, "%d", pconn);
+	// printf("%d \n", map_size(idsktaddr));
+	if (map_contains(idsktaddr, buffer)) {
+		peer = *((struct sockaddr_in*) (map_get(idsktaddr, buffer)));
+		printf(
+				"about to send msg to %d ,send to conn %d  port %d; map size %d\n",
+				pconn, conn, ntohs(peer.sin_port), map_size(idsktaddr));
+	} else {
+		slog(SLOG_ERROR,
+				"CONN UDP: not established with (%d)",
+				conn);
+		return -1;
+	}
+
+	int allBytesSent; /* sum of all sent sizes */
+	ssize_t sentSize; /* one shot sent size */
+
+	allBytesSent = 0;
+	while (allBytesSent < size) {
+		sentSize = sendto(conn, msg + allBytesSent, size - allBytesSent, 0,
+				(struct sockaddr*) &peer, sizeof(peer));
+		/*if(varSize - allBytesSent < 512)
+		 sentSize = send(conn , msg+allBytesSent , varSize - allBytesSent , 0);
+		 else
+		 sentSize = send(conn , msg+allBytesSent , 512 , 0);*/
+		if (sentSize < 0) {
+			slog(SLOG_ERROR,
+					"CONN UDP: error sending msg on sock (%d)", conn);
+			break;
+		}
+		allBytesSent += sentSize;
+	}
+	slog(SLOG_INFO, "CONN UDP: send to (%d) finished ", conn);
+	return (int) allBytesSent;
+}
+
 int com_connection_close(int conn) {
 	return 0;
 }

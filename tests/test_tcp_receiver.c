@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 	char* ep_query_str = json_to_str(ep_query_json);
 	char* cpt_query_str = "";
 
-	char* addr = text_load_from_file("snk_mqtt.cfg.json");
+	char* addr = text_load_from_file("snk_mqtt.cfg.json");*/
 	/* map according to the query *
 	int map_result = endpoint_map_to(ep_snk,
 			addr, ep_query_str, cpt_query_str);

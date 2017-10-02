@@ -529,7 +529,7 @@ int ep_send_message(LOCAL_EP *lep, MESSAGE* msg)
 	return 0;
 }
 
-int ep_send(LOCAL_EP *lep, void* data, unsigned int size)
+int ep_send(LOCAL_EP *lep, const void* data, unsigned int size)
 {
 	//LOCAL_EP *lep = (LOCAL_EP*)(ep->data);
 	STATE* state;

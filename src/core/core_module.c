@@ -254,7 +254,6 @@ int core_ep_send_message(LOCAL_EP* lep, const char* msg_id, const char* msg)
         return EP_NO_SEND;
 
     MESSAGE* msg_msg = message_parse(msg);
-    //TODO: make correct fcs for stream/src
     if (json_validate_message(lep, msg_msg->_msg_json))
         return EP_NO_VALID;
 

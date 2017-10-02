@@ -193,7 +193,7 @@ int com_connection_close(int conn){
 	return close(conn);
 }
 
-int com_send(int conn, void *data, unsigned int size) {
+int com_send(int conn, const void *data, unsigned int size) {
 	if (conn <= 0) {
 		slog(SLOG_ERROR,
 				"CONN: not established with (%d), can't send msg *%s*", conn,

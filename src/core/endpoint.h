@@ -159,7 +159,7 @@ int ep_send_json(LOCAL_EP *lep, JSON* json, const char* msg_id, int status);
 
 int ep_send_message(LOCAL_EP *lep, MESSAGE* msg);
 
-int ep_send(LOCAL_EP *lep, void* data, unsigned int size);
+int ep_send(LOCAL_EP *lep, const void* data, unsigned int size);
 
 /* send json message on a specific com modules */
 //int ep_module_send_json(ENDPOINT *ep, COM_MODULE* module, JSON* json);

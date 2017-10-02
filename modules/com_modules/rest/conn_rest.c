@@ -310,12 +310,12 @@ int com_connection_close(int conn) {
 }
 
 // TODO: rewrite com_send_data using com_send
-int com_send(int conn, void *data, unsigned int size)
+int com_send(int conn, const void *data, unsigned int size)
 {
 	int ret_value;
 	char* data_str = (char* )malloc(size+1);
 	data_str[size]='\0';
-	memcpy(data, data_str, size);
+	memcpy(data_str, data, size);
 	ret_value = com_send_data(conn, data_str);
 	free(data_str);
 	return ret_value;
@@ -373,7 +373,9 @@ int com_send_data(int conn, const char *data) {
 	if (json_get_int(json, "status") == 9) {
 		if (map_get(skttype, &conn) == NULL) {	//sending to client
 			char* httpheader =
-					"HTTP/1.1 200 OK\r\nServer: Apache\r\nContent-Type: text/json; charset=UTF-8\r\n\r\n";
+					"HTTP/1.1 200 OK\r\n"
+					"Server: Apache\r\n"
+					"Content-Type: text/json; charset=UTF-8\r\n\r\n";
 			strcpy(datatosend, httpheader);
 			strcat(datatosend, data);
 			strcat(datatosend, "\n\n\0");

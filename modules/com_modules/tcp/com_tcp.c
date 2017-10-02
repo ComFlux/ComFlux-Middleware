@@ -121,7 +121,7 @@ int com_connection_close(int conn)
 }
 
 
-int com_send(int conn, void *data, unsigned int size)
+int com_send(int conn, const void *data, unsigned int size)
 {
     if (conn <= 0) {
         return -1;

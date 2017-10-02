@@ -296,7 +296,7 @@ int com_send_data(int conn, const char *data)
 	return com_send(conn, (void*)data, strlen(data));
 }
 
-int com_send(int conn, void *data, unsigned int size)
+int com_send(int conn, const void *data, unsigned int size)
 {
 	_mqtt_channel* channel = NULL;
 	char conn_str[20];

@@ -31,7 +31,7 @@ int com_connection_close(int conn);
  * @conn: connection id / socket
  * @data: data to be transmitted
  */
-int com_send(int conn, void *data, unsigned int size);
+int com_send(int conn, const void *data, unsigned int size);
 
 /*
  * simple send string data to a connection

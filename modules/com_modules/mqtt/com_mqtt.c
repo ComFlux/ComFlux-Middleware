@@ -274,7 +274,7 @@ int com_connection_close(int conn)
 /*
  * publish data on the conn topic
  */
-int com_send(int conn, void *data, unsigned int size)
+int com_send(int conn, const void *data, unsigned int size)
 {
 	_mqtt_channel* channel = NULL;
 	char conn_str[20];
