@@ -276,7 +276,7 @@ int com_send_data(int conn, const char *msg) {
 	return (int) allBytesSent;
 }
 
-int com_set_on_data(void (*handler)(void*, int, const char*)) {
+int com_set_on_data(void (*handler)(void*, int, const void*, unsigned int)) {
 	on_data_handler = handler;
 }
 int com_set_on_connect(void (*handler)(void*, int)) {
@@ -485,7 +485,7 @@ void* ssl_receive_function(void* conn) {
 
 		/* apply message handler in a different thread */
 		if (on_data_handler != NULL)
-			(*on_data_handler)(thismodule, _conn, buf);
+			(*on_data_handler)(thismodule, _conn, buf, strlen(buf));
 
 		free(buf); /* TODO: it can't be passed btw threads */
 

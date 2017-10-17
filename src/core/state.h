@@ -48,9 +48,10 @@ BUFFER* buffer_new(struct _STATE* state);
 
 void buffer_free(BUFFER* buffer);
 
-void buffer_set(BUFFER* buffer, const char* new_data, int new_start, int new_end);
+void buffer_set(BUFFER* buffer, const void* new_data,
+		unsigned int new_start, unsigned int new_end);
 
-void buffer_update(BUFFER* buffer, const char* new_data, int new_end);
+void buffer_update(BUFFER* buffer, const void* new_data, unsigned int new_end);
 //size should be fixed?
 
 

@@ -156,6 +156,33 @@ void ep_local_free(LOCAL_EP *lep)
 
 void ep_default_handler_send_to_app(MESSAGE* msg)
 {
+
+	const char delim1 = '{';
+	const char delim2 = '}';
+	const char* delim21 = "}{";
+	const char a = 'a', b = 'b';
+
+	COM_MODULE* sockpair_module = app_state->module;
+	(*(sockpair_module->fc_send))(app_state->conn, &delim1, 1);
+
+	(*(sockpair_module->fc_send))(app_state->conn, &a, 1);
+	(*(sockpair_module->fc_send))(app_state->conn, &delim1, 1);
+	(*(sockpair_module->fc_send))(app_state->conn, msg->ep->id, 10);
+	(*(sockpair_module->fc_send))(app_state->conn, delim21, 2);
+
+	char* return_msg = message_to_str(msg);
+	char str[11];
+	sprintf(str, "%010lu", strlen(return_msg));
+
+	//printf("sendig: %s %s\n", str, return_msg);
+	(*(sockpair_module->fc_send))(app_state->conn, str, 10);
+	(*(sockpair_module->fc_send))(app_state->conn, delim21, 2);
+	(*(sockpair_module->fc_send))(app_state->conn, return_msg, strlen(return_msg));
+
+	(*(sockpair_module->fc_send))(app_state->conn, &delim2, 1);
+	(*(sockpair_module->fc_send))(app_state->conn, &delim2, 1);
+	free(return_msg);
+
 	//printf("here\n");
 	//slog(SLOG_INFO, "EP LOCAL: default handler send_to_app: %d: %s", array_size(((LOCAL_EP*)(msg->ep->data))->filters), msg->msg_str);
 	//JSON* msg_json = msg->_msg_json;
@@ -163,7 +190,7 @@ void ep_default_handler_send_to_app(MESSAGE* msg)
 	//json_set_array(filter_json, NULL, ((LOCAL_EP*)(msg->ep->data))->filters);
 	//if(json_filter_validate_array(msg_json, ((LOCAL_EP*)(msg->ep->data))->filters))
 	{
-		state_send_message(app_state, msg);
+		//state_send_message(app_state, msg);
 	}
 }
 

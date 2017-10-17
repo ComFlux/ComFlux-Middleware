@@ -119,7 +119,7 @@ int core_load_access_module_array(Array* argv);
  * calls one of the functions declared above.
  * checks and assigns the parameters from an array
  */
-MESSAGE* _core_call_array(
+char* _core_call_array(
 		const char* module_id,
 		const char* fc_name,
 		const char* fc_return,

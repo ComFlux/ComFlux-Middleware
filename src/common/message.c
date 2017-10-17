@@ -199,10 +199,10 @@ char* message_to_str(MESSAGE* msg)
 
 char* message_generate_id()
 {
-	static int counter_messages=0;
+	static unsigned long counter_messages=1;
 	//static char id[10];
 	char *id = (char*)malloc(11*sizeof(char));
-	sprintf(id, "%d", counter_messages);
+	sprintf(id, "%010lu", counter_messages);
 	counter_messages +=1;
 	return id;
 }

@@ -18,7 +18,7 @@
  * The callback for all com  modules.
  * Parse a data stream into messages and then calls the core_on_message.
  */
-void core_on_data(COM_MODULE* module, int conn, const char* data);
+void core_on_data(COM_MODULE* module, int conn, const void* data, unsigned int size);
 
 void core_on_connect(COM_MODULE* module, int conn);
 
@@ -40,8 +40,10 @@ void core_on_message(STATE* state, MESSAGE* msg);
  * state is always app_state, but will keep the signature
  * message type should be msg_cmd
  */
-void core_on_component_message(STATE* state, MESSAGE* msg);
-
+//void core_on_component_message(STATE* state, MESSAGE* msg);
+void core_on_component_message(STATE* state_ptr, const char* msg_id,
+		const char* module_id, const char* function_id, const char* return_type,
+		Array *args);
 
 /* before connecting to the app */
 void core_on_first_message(STATE* state, MESSAGE* msg);

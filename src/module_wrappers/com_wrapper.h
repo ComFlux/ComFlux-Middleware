@@ -38,7 +38,7 @@ typedef struct _COM_MODULE{
 	int   (*fc_send_data)(int conn, const char *msg);
 	int   (*fc_send)(int conn, const void *ptr, unsigned int size);
 
-	int   (*fc_set_on_data)(void (*handler)(void*, int, const char*));
+	int   (*fc_set_on_data)(void (*handler)(void*, int, const void*, unsigned int));
 	int   (*fc_set_on_connect)(void (*handler)(void*, int));
 	int   (*fc_set_on_disconnect)(void (*handler)(void*, int));
 	// where void* stands for module id
@@ -99,7 +99,7 @@ int com_init_wrapper(const char* modulename, const char* configfilename);
 int com_connect_wrapper(const char* modulename, const char *remote_addr);
 int com_connection_close_wrapper(const char* modulename, int conn);
 int com_send_data_wrapper(const char* modulename, int conn, const char *data);
-int com_set_on_data_wrapper(const char* modulename, void (*handler)(void*, int, const char*) );
+int com_set_on_data_wrapper(const char* modulename, void (*handler)(void*, int, const void*, unsigned int) );
 int com_set_on_connect_wrapper(const char* modulename, void (*handler)(void*, int) );
 int com_set_on_disconnect_wrapper(const char* modulename, void (*handler)(void*, int) );
 int com_is_valid_address_wrapper(const char* modulename, const char* full_address);

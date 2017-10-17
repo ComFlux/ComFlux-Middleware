@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
 	JSON *ep_query_json = json_new(NULL);
 	json_set_array(ep_query_json, NULL, ep_query_array);
 	char* ep_query_str = json_to_str(ep_query_json);
-	char* cpt_query_str = "";
+	char* cpt_query_str = "[]";
 
 
 	/* build a message */

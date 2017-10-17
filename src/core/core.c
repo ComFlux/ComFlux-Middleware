@@ -111,10 +111,9 @@ int core_init_fd(int fd, const char* _app_name, const char* _app_key)
 			sockpair_config);
 #endif
 
-	(*(fd_module->fc_set_on_data))((void (*)(void *, int, const char *))core_on_data);
+	(*(fd_module->fc_set_on_data))((void (*)(void *, int, const void *, unsigned int))core_on_data);
 	(*(fd_module->fc_set_on_connect))((void (*)(void *, int))core_on_connect);
 	(*(fd_module->fc_set_on_disconnect))((void (*)(void *, int))core_on_disconnect);
-
 
 	STATE* state_ptr = state_new(fd_module, fd, STATE_FIRST_MSG);
 	state_ptr->on_message = &core_on_first_message;

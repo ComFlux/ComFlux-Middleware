@@ -154,11 +154,11 @@ char* load_base_module(const char* lib_path, const char* cfgfile) {
 }
 
 //received data from base module
-void on_message_for_base(void* module, int fd, const char* msg) {
+void on_message_for_base(void* module, int fd, const void* msg, unsigned int size) {
 	//process data from (tcp) rest -> json (core)
 	//remove http header
 
-	printf("on data: %d %s\n", fd, msg);
+	printf("on data: %d %*s\n", fd, size, msg);
 	JSON *datatosend = json_new(NULL);
 	if (map_get(skttype, &fd) == NULL) {//data from client: transfer GET to json msg
 		/*fake map message via ep_name, ep_type,
@@ -241,7 +241,9 @@ void on_message_for_base(void* module, int fd, const char* msg) {
 	printf("%s\n", json_to_str(datatosend));
 
 	//send message to core
-	(*on_data_handler)(this, fd, json_to_str(datatosend));
+	char* msg_to_core = json_to_str(datatosend);
+	(*on_data_handler)(this, fd, msg_to_core, strlen(msg_to_core));
+	free(msg_to_core);
 }
 void on_connect_for_base(void* module, int fd) {
 	//take care of the protocol here
@@ -355,8 +357,10 @@ int com_send_data(int conn, const char *data) {
 		json_set_str(ack_json, "msg", json_to_str(msg_json));
 
 		//printf("send back: %s\n\n", json_to_str(ack_json));
+		char* msg_to_str = json_to_str(ack_json);
 		(*on_data_handler)(this, peer->fd,
-				json_to_str(ack_json));
+				msg_to_str, strlen(msg_to_str));
+		free(msg_to_str);
 
 		json_free(ep_md_json);
 		json_free(msg_json);
@@ -392,7 +396,7 @@ int com_send_data(int conn, const char *data) {
 
 }
 
-int com_set_on_data(void (*handler)(void*, int, const char*)) {
+int com_set_on_data(void (*handler)(void*, int, const void*, unsigned int)) {
 	on_data_handler = handler;
 	return (on_data_handler != NULL);
 }

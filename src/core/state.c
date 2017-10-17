@@ -7,8 +7,11 @@
 
 #include "state.h"
 
+#include "message.h"
 #include <hashmap.h>
 #include <stdio.h>
+
+extern STATE* app_state;
 
 #define BUFFER_FINAL 	0
 #define BUFFER_JSON  	1
@@ -52,8 +55,13 @@ void buffer_reset(BUFFER* buffer)
 	buffer->data[0]='\0';
 }
 
-void buffer_set(BUFFER* buffer, const char* new_buf, int new_start, int new_end)
+void buffer_set(BUFFER* buffer, const void* new_buf, unsigned int new_start, unsigned int new_end)
 {
+	/*printf("----old %d *%*s* \n"
+			"----new %d *%*s*\n\n",
+			buffer->size, buffer->size, buffer->data,
+			new_end-new_start, new_end-new_start, new_buf+new_start);
+	*/
 	char* old_buf = buffer->data;
 	int new_size = new_end-new_start;
 	buffer->data = (char*) malloc(buffer->size + new_size + 1);
@@ -62,21 +70,73 @@ void buffer_set(BUFFER* buffer, const char* new_buf, int new_start, int new_end)
 	buffer->size = buffer->size + new_size;
 	buffer->data[buffer->size] = '\0';
 
-	//printf("----buffer set %d %d %d: %s\n", new_start, new_end, buffer->size, buffer->data);
 	free(old_buf);
 }
 
-
-void buffer_update(BUFFER* buffer, const char* new_data, int new_size) //size should be fixed?
+void buffer_app_set(BUFFER *buffer)
 {
-	int i=0;
-	int word_start = i;
-	int word_end = i;
+	static int first = 1;
+	if (first)
+	{
+		first = 0;
+		return;
+	}
+
+	char module_id[5], function_id[18], return_type[4], msg_id[11];
+	void* arg = NULL;
+	int cmd=0;
+	sscanf(buffer->data, "{{%d}{%4s}{%17s}{%3s}{%10s}",
+			&cmd, module_id, function_id, return_type, msg_id);
+
+	char arg_void[buffer->size-46];
+	memcpy(arg_void, buffer->data+48, buffer->size-48);
+	arg_void[buffer->size-48]='\0';
+
+	//printf (">>>> %d--%s--%s--%s--%s\n",
+	//		cmd,module_id, function_id, return_type, msg_id);
+	//printf (">>>>%s--\n", arg_void);
+
+
+	Array *arg_array=array_new(ELEM_TYPE_STR);
+	int size=0;
+	char* arg1;
+	char* head=arg_void;
+
+
+	sscanf(head, "{%010d}", &size);
+	while(size){
+		arg1=(char*)malloc(size*sizeof(char)+1);
+		memcpy(arg1, head+12, size);
+		arg1[size]='\0';
+		//sscanf(arg_void, "%*s", size, arg1);
+
+		//printf ("   >>>>size: %d--\n", size);
+		//printf ("   >>>>text: %s--\n", arg1);
+
+		array_add(arg_array, arg1);
+		head = head+size+12;
+
+		size = 0;
+		sscanf(head, "{%010d}", &size);
+	};
+
+	core_on_component_message(NULL, msg_id,
+			module_id, function_id, return_type,
+			arg_array);
+
+}
+
+void buffer_update(BUFFER* buffer, const void* new_data, unsigned int new_size) //size should be fixed?
+{
+	unsigned int i=0;
+	unsigned int word_start = i;
+	unsigned int word_end = i;
+
 	for(i=0; i<new_size; i++)
 	{
 		switch(buffer->buffer_state){
 			case BUFFER_FINAL:
-				switch (new_data[i])
+				switch (((char*)new_data)[i])
 				{
 					case '{':
 						buffer->brackets += 1;
@@ -94,7 +154,7 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size) //size sh
 				break;
 
 			case BUFFER_JSON:
-				switch (new_data[i])
+				switch (((char*)new_data)[i])
 				{
 					case '{':
 						buffer->brackets += 1;
@@ -109,11 +169,19 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size) //size sh
 							word_end = i+1;
 							buffer_set(buffer, new_data, word_start, word_end);
 							/* apply the callback for this connection */
-							MESSAGE* msg = message_parse(buffer->data);
-							JSON* js=msg->_msg_json;
-							(*buffer->state->on_message)(buffer->state, msg);
-							json_free(js);
-							message_free(msg);
+							if(buffer->state == app_state)
+							{
+								buffer_app_set(buffer);
+							}
+							else
+							{
+								MESSAGE* msg = message_parse(buffer->data);
+								JSON* js=msg->_msg_json;
+								(*buffer->state->on_message)(buffer->state, msg);
+								json_free(js);
+								message_free(msg);
+							}
+
 							buffer_reset(buffer);
 							buffer->size = 0;
 							word_start = i+1;
@@ -132,7 +200,7 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size) //size sh
 				}
 				break;
 			case BUFFER_STR_1:
-				switch (new_data[i])
+				switch (((char*)new_data)[i])
 				{
 					case '\\':
 						buffer->buffer_state = BUFFER_ESC_1;
@@ -148,7 +216,7 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size) //size sh
 				buffer->buffer_state = BUFFER_STR_1;
 				break;
 			case BUFFER_STR_2:
-				switch (new_data[i])
+				switch (((char*)new_data)[i])
 				{
 					case '\\':
 						buffer->buffer_state = BUFFER_ESC_2;
@@ -173,7 +241,6 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size) //size sh
 }
 
 
-extern STATE* app_state;
 
 STATE* state_new(COM_MODULE* module, int conn, int state)
 {

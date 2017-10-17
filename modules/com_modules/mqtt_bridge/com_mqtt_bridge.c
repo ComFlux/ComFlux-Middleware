@@ -169,7 +169,7 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
     	strncpy(buf, message->payload, message->payloadlen);
 
     	/* send data to the core */
-        (*on_data_handler)(thismodule, channel->fd, buf);
+        (*on_data_handler)(thismodule, channel->fd, buf, strlen(buf));
 
         goto final;
     }
@@ -318,7 +318,7 @@ int com_send(int conn, const void *data, unsigned int size)
 	return err;
 }
 
-int com_set_on_data( void (*handler)(void*, int, const char*) )
+int com_set_on_data( void (*handler)(void*, int, const void*, unsigned int) )
 {
     on_data_handler = handler;
     return (on_data_handler != NULL);

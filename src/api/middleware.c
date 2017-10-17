@@ -73,12 +73,12 @@ int core_spawn_addr(char* core_addr);
 int core_spawn_fd(int fds, char* core_addr);
 int core_spawn_fifo(char* app_name); // not used yet
 
-void api_on_data(COM_MODULE* module, int conn, const char * msg);
+void api_on_data(COM_MODULE* module, int conn, const void * msg, unsigned int size);
 void api_on_connect(void* module, int conn);
 void api_on_disconnect(void* module, int conn);
 
 void* api_on_message(void* data);
-void api_on_first_data(COM_MODULE* module, int conn, const char* msg);
+void api_on_first_data(COM_MODULE* module, int conn, const void* msg, unsigned int size);
 
 
 /* buffer stuff */
@@ -93,9 +93,9 @@ typedef struct _BUFFER{
 
 BUFFER* api_buffer = NULL;
 
-void buffer_set(BUFFER* buffer, const char* new_buf, int new_start, int new_end);
+void buffer_set(BUFFER* buffer, const void* new_buf, unsigned int new_start, unsigned int new_end);
 
-void buffer_update(BUFFER* buffer, const char* new_data, int new_size);
+void buffer_update(BUFFER* buffer, const void* new_data, unsigned int new_size);
 
 void buffer_reset(BUFFER* buffer);
 
@@ -188,7 +188,7 @@ char* mw_init(const char* cpt_name, int log_lvl, bool use_socketpair)
 				"{\"is_server\":1}");
 #endif
 
-		(*(sockpair_module->fc_set_on_data))((void (*)(void *, int, const char *))api_on_first_data);
+		(*(sockpair_module->fc_set_on_data))((void (*)(void *, int, const void *, unsigned int))api_on_first_data);
 		(*(sockpair_module->fc_set_on_connect))(api_on_connect);
 		(*(sockpair_module->fc_set_on_disconnect))(api_on_disconnect);
 
@@ -222,7 +222,7 @@ char* mw_init(const char* cpt_name, int log_lvl, bool use_socketpair)
 void mw_terminate_core()
 {
 	mw_call_module_function(
-			"core", "terminate", "void",
+			"core", "terminate________", "voi",
 			NULL);
 }
 
@@ -231,7 +231,7 @@ void mw_add_manifest(const char* manifest_str)
 	MESSAGE *md_msg = message_new(manifest_str, MSG_CMD);
 	char* md_str = message_to_str(md_msg);
 	mw_call_module_function(
-			"core", "add_manifest", "void",
+			"core", "add_manifest", "voi",
 			md_str, NULL);
 
 	free(md_str);
@@ -242,13 +242,13 @@ void mw_add_manifest(const char* manifest_str)
 const char* mw_get_manifest()
 {
 	const char* manifest_str = (char*) mw_call_module_function_blocking(
-			"core", "get_manifest", "string",
+			"core", "get_manifest", "str",
 			NULL, NULL);
 
 	return manifest_str;
 }
 
-int mw_call_module_function(
+int mw_call_module_function2(
 		const char* module_id,
 		const char* function_id,
 		const char* return_type,
@@ -285,7 +285,65 @@ int mw_call_module_function(
 	return result;
 }
 
-void* mw_call_module_function_blocking(
+const char delim1 = '{';
+const char delim2 = '}';
+//const char delim_a = ' ';
+//const char delim_b = ',';
+const char* delim21 = "}{";
+const char* cmd = "15";
+const char* arg_start = "\"a\":{";
+
+char str[14];
+int mw_call_module_function(
+		const char* module_id,
+		const char* function_id,
+		const char* return_type,
+		...)
+{
+
+	char *msg_id = message_generate_id();
+	(*(sockpair_module->fc_send))(app_core_conn, &delim1, 1);
+
+	(*(sockpair_module->fc_send))(app_core_conn, &delim1, 1);
+	(*(sockpair_module->fc_send))(app_core_conn, cmd, 2);
+	(*(sockpair_module->fc_send))(app_core_conn, delim21, 2);
+	(*(sockpair_module->fc_send))(app_core_conn, module_id, 4);
+	(*(sockpair_module->fc_send))(app_core_conn, delim21, 2);
+	(*(sockpair_module->fc_send))(app_core_conn, function_id, 17);
+	(*(sockpair_module->fc_send))(app_core_conn, delim21, 2);
+	(*(sockpair_module->fc_send))(app_core_conn, return_type, 3);
+	(*(sockpair_module->fc_send))(app_core_conn, delim21, 2);
+	(*(sockpair_module->fc_send))(app_core_conn, msg_id, 10);
+	(*(sockpair_module->fc_send))(app_core_conn, delim21, 2);
+
+
+	//(*(sockpair_module->fc_send))(app_core_conn, delim, 5);
+
+	va_list arguments;
+	va_start(arguments, return_type);
+	const char *tmp=va_arg(arguments, const char*);
+	while(tmp!=NULL){
+		sprintf(str, "{%010lu}", strlen(tmp));
+		(*(sockpair_module->fc_send))(app_core_conn, str, 12);
+		(*(sockpair_module->fc_send))(app_core_conn, tmp, strlen(tmp));
+
+		tmp=va_arg(arguments, const char*);
+		//if(tmp)
+		//	(*(sockpair_module->fc_send))(app_core_conn, &delim_b, 1);
+	}
+
+	sprintf(str, "{%010d}", 0);
+	(*(sockpair_module->fc_send))(app_core_conn, str, 12);
+	(*(sockpair_module->fc_send))(app_core_conn, &delim2, 1);
+	(*(sockpair_module->fc_send))(app_core_conn, &delim2, 1);
+
+	va_end(arguments);
+
+	free(msg_id);
+	return 0;
+}
+
+void* mw_call_module_function_blocking2(
 		const char * module_id,
 		const char * function_id,
 		const char * return_type,
@@ -333,18 +391,68 @@ void* mw_call_module_function_blocking(
 	return result;
 }
 
+void* mw_call_module_function_blocking(
+		const char* module_id,
+		const char* function_id,
+		const char* return_type,
+		...)
+{
+
+	char *msg_id = message_generate_id();
+	(*(sockpair_module->fc_send))(app_core_conn, &delim1, 1);
+
+	(*(sockpair_module->fc_send))(app_core_conn, &delim1, 1);
+	(*(sockpair_module->fc_send))(app_core_conn, cmd, 2);
+	(*(sockpair_module->fc_send))(app_core_conn, delim21, 2);
+	(*(sockpair_module->fc_send))(app_core_conn, module_id, 4);
+	(*(sockpair_module->fc_send))(app_core_conn, delim21, 2);
+	(*(sockpair_module->fc_send))(app_core_conn, function_id, 17);
+	(*(sockpair_module->fc_send))(app_core_conn, delim21, 2);
+	(*(sockpair_module->fc_send))(app_core_conn, return_type, 3);
+	(*(sockpair_module->fc_send))(app_core_conn, delim21, 2);
+	(*(sockpair_module->fc_send))(app_core_conn, msg_id, 10);
+	(*(sockpair_module->fc_send))(app_core_conn, delim21, 2);
+
+	//(*(sockpair_module->fc_send))(app_core_conn, arg_start, 5);
+
+	va_list arguments;
+	va_start(arguments, return_type);
+	const char *tmp=va_arg(arguments, const char*);
+	while(tmp!=NULL){
+		sprintf(str, "{%010lu}", strlen(tmp));
+		(*(sockpair_module->fc_send))(app_core_conn, str, 12);
+		(*(sockpair_module->fc_send))(app_core_conn, tmp, strlen(tmp));
+
+		tmp=va_arg(arguments, const char*);
+		//if(tmp)
+		//	(*(sockpair_module->fc_send))(app_core_conn, &delim_b, 1);
+	}
+
+	sprintf(str, "{%010d}", 0);
+	(*(sockpair_module->fc_send))(app_core_conn, str, 12);
+	(*(sockpair_module->fc_send))(app_core_conn, &delim2, 1);
+	(*(sockpair_module->fc_send))(app_core_conn, &delim2, 1);
+
+	va_end(arguments);
+
+	strcpy(blocking_msg_id, msg_id);
+	waiting_blocking_call = 1;
+	char* result = sync_wait(fds_blocking_call[1]);
+
+	return result;
+}
 
 void mw_add_rdc(const char* module, const char* address)
 {
 	mw_call_module_function(
-			"core", "add_rdc", "void",
+			"core", "add_rdc", "voi",
 			module, address, NULL);
 }
 
 void mw_register_rdcs()
 {
 	mw_call_module_function(
-			"core", "rdc_register", "void",
+			"core", "rdc_register", "voi",
 			NULL);
 }
 
@@ -354,14 +462,14 @@ void mw_tell_register_rdcs(const char* module, const char* address)  // TODO: ma
 		return;
 
 	mw_call_module_function(
-			"core", "rdc_register", "void",
+			"core", "rdc_register", "voi",
 			address, NULL);
 }
 
 void mw_unregister_rdcs()
 {
 	mw_call_module_function(
-			"core", "rdc_unregister", "void",
+			"core", "rdc_unregister", "voi",
 			NULL);
 }
 
@@ -371,7 +479,7 @@ void mw_tell_unregister_rdcs(const char* module, const char* address)
 		return;
 
 	mw_call_module_function(
-			"core", "rdc_unregister", "void",
+			"core", "rdc_unregister", "voi",
 			address, NULL);
 }
 
@@ -393,18 +501,18 @@ int mw_load_com_module(const char* libpath, const char* cfgpath)
 	char* config_json = text_load_from_file(cfgpath);
 
 	char* result = (char*) mw_call_module_function_blocking(
-			"core", "load_com_module", "int",
+			"core", "load_com_module__", "int",
 			abs_lib_path, config_json, NULL);
 
 	if(result == NULL)
 		return -1;
 
-	MESSAGE* msg = message_parse(result);
-	JSON* map_json = msg->_msg_json;
-	int return_value = json_get_int(map_json, "return_value");
-
-	message_free(msg);
-	json_free(map_json);
+	//MESSAGE* msg = message_parse(result);
+	//JSON* map_json = msg->_msg_json;
+	int return_value = -1; //json_get_int(map_json, "return_value");
+	sscanf(result, "%010d", &return_value);
+	//message_free(msg);
+	//json_free(map_json);
 
 	return return_value;
 }
@@ -427,7 +535,7 @@ int mw_load_access_module(const char* libpath, const char* cfgpath)
 	char* config_json = text_load_from_file(cfgpath);
 
 	char* result = (char*)mw_call_module_function_blocking(
-			"core", "load_access_module", "int",
+			"core", "load_acc_module__", "int",
 			abs_lib_path, config_json, NULL);
 
 	if(result == NULL)
@@ -451,7 +559,7 @@ char* mw_get_remote_metdata(const char* module, int conn)
 	char conn_str[10];
 	sprintf(conn_str, "%d", conn);
 	char* resp = (char*) mw_call_module_function_blocking(
-			"core", "get_remote_metdata", "string",
+			"core", "get_remote_manif_", "str",
 			module, conn_str, NULL);
 	if(resp == NULL)
 		return NULL;
@@ -577,9 +685,9 @@ int core_spawn_fifo(char* app_name)
 	return EXIT_SUCCESS;
 }
 
-void api_on_first_data(COM_MODULE* module, int conn, const char* msg)
+void api_on_first_data(COM_MODULE* module, int conn, const void* msg, unsigned int size)
 {
-	(*(sockpair_module->fc_set_on_data))((void (*)(void *, int, const char *))api_on_data);
+	(*(sockpair_module->fc_set_on_data))((void (*)(void *, int, const void *, unsigned int))api_on_data);
 	waiting_blocking_call = 0;
 	sync_trigger(fds_blocking_call[0], "{}");
 }
@@ -587,20 +695,64 @@ void api_on_first_data(COM_MODULE* module, int conn, const char* msg)
 void* api_on_message(void* data)
 {
 	const char * msg = (const char*) data;
+	//printf("***** received: %s\n\n", msg);
 
-	MESSAGE *msg_ = message_parse(msg);
+	char cmd = msg[1];
+	char msg_id[11], ep_id[11];
 
-	//printf("**** msg %s, %s :: %d, \n", msg_->msg_id, blocking_msg_id, waiting_blocking_call);
+	int size;
+	char* msg_data;
+
+	if(cmd == 'a')/* from core */
+	{
+		strncpy(ep_id, data+3, 10);
+		ep_id[10]='\0';
+
+		sscanf(data+14, "{%010d}", &size);
+		msg_data = (char*) malloc((size+1)*sizeof(char));
+		strncpy(msg_data, data+27, size);
+		msg_data[size]='\0';
+
+		MESSAGE* msg = message_parse(msg_data);
+		ENDPOINT* ep = msg->ep;
+		if (ep)
+		{
+			(*(ep->handler))(msg);
+		}
+		else
+			goto final;
+
+	}
+	else if(cmd == 'b') /* external */
+	{
+		strncpy(msg_id, data+3, 10);
+		msg_id[10]='\0';
+
+		sscanf(data+19, "{%010d}", &size);
+		msg_data = (char*) malloc((size+1)*sizeof(char));
+		strncpy(msg_data, data+32, size);
+		msg_data[size]='\0';
+
+	}
+
+
+
+
+
+	//printf("***** size: %d; msg: %s\n", size, msg_data);
+	//MESSAGE *msg_ = message_parse(msg);
+
+	//printf("**** >>> %s, %s :: %d, \n", msg_id, blocking_msg_id, waiting_blocking_call);
 
 	if (waiting_blocking_call == 1)
 	{
-		if (msg_->msg_id && strcmp(blocking_msg_id, msg_->msg_id) == 0)
+		if (strcmp(blocking_msg_id, msg_id) == 0)
 		{
 			waiting_blocking_call = 0;
-			sync_trigger(fds_blocking_call[0], msg);
+			sync_trigger(fds_blocking_call[0], msg_data);
 		}
 	}
-
+/*
 	if (msg_->ep==NULL)
 	{
 		goto final;
@@ -617,10 +769,12 @@ void* api_on_message(void* data)
 		(*msg_->ep->handler)(msg_);
 		goto final;
 	}
+	*/
 
 	final:{
-		json_free(msg_->_msg_json);
-		message_free(msg_);
+		free(msg_data);
+		//json_free(msg_->_msg_json);
+		//message_free(msg_);
 
 
 		return NULL;
@@ -639,9 +793,9 @@ void api_on_disconnect(void* module, int conn)
 	exit(0);
 }
 
-void api_on_data(COM_MODULE* module, int conn, const char* data)
+void api_on_data(COM_MODULE* module, int conn, const void* data, unsigned int size)
 {
-	buffer_update(api_buffer, data, strlen(data));
+	buffer_update(api_buffer, data, size);
 }
 
 
@@ -652,7 +806,7 @@ void api_on_data(COM_MODULE* module, int conn, const char* data)
 #define BUFFER_STR_1 	4
 #define BUFFER_ESC_1 	5
 
-void buffer_set(BUFFER* buffer, const char* new_buf, int new_start, int new_end)
+void buffer_set(BUFFER* buffer, const void* new_buf, unsigned int new_start, unsigned int new_end)
 {
 	char* old_buf = buffer->data;
 	int new_size = new_end-new_start;
@@ -675,17 +829,17 @@ void buffer_reset(BUFFER* buffer)
 	buffer->data[0]='\0';
 }
 
-void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
+void buffer_update(BUFFER* buffer, const void* new_data, unsigned int new_size)
 {
 	
-	int i=0;
-	int word_start = i;
-	int word_end = i;
+	unsigned int i=0;
+	unsigned int word_start = i;
+	unsigned int word_end = i;
 	for(i=0; i<new_size; i++)
 	{
 		switch(buffer->buffer_state){
 			case BUFFER_FINAL:
-				switch (new_data[i])
+				switch (((char*)new_data)[i])
 				{
 					case '{':
 						buffer->brackets += 1;
@@ -703,7 +857,7 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 				break;
 
 			case BUFFER_JSON:
-				switch (new_data[i])
+				switch (((char*)new_data)[i])
 				{
 					case '{':
 						buffer->brackets += 1;
@@ -739,7 +893,7 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 				}
 				break;
 			case BUFFER_STR_1:
-				switch (new_data[i])
+				switch (((char*)new_data)[i])
 				{
 					case '\\':
 						buffer->buffer_state = BUFFER_ESC_1;
@@ -755,7 +909,7 @@ void buffer_update(BUFFER* buffer, const char* new_data, int new_size)
 				buffer->buffer_state = BUFFER_STR_1;
 				break;
 			case BUFFER_STR_2:
-				switch (new_data[i])
+				switch (((char*)new_data)[i])
 				{
 					case '\\':
 						buffer->buffer_state = BUFFER_ESC_2;

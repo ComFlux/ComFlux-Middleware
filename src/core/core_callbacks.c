@@ -26,13 +26,13 @@
 extern STATE* app_state;
 
 /* callbacks for the com modules */
-void core_on_data(COM_MODULE* module, int conn, const char* data)
+void core_on_data(COM_MODULE* module, int conn, const void* data, unsigned int size)
 {
 	/*slog(SLOG_INFO, "CORE:core_on_data\n"
 			"\tfrom: (%s:%d)\n"
 			"\tdata: *%s*", module->name, conn, data);*/
 	STATE* state_ptr = states_get(module, conn);
-	buffer_update(state_ptr->buffer, data, strlen(data));
+	buffer_update(state_ptr->buffer, data, size);
 }
 
 extern int map_sync_pipe[2];
@@ -180,9 +180,7 @@ void core_on_proto_message(STATE* state_ptr, MESSAGE* _msg)
 }
 
 /*
- * Handles messages related to hello and auth handshake.
- * this handler is assigned to states of transport layer modules
- * -- those for which is_bridge returns 1.
+ * Handles messages between remote and local endpoints.
  */
 void core_on_message(STATE* state_ptr, MESSAGE* _msg)
 {
@@ -246,64 +244,52 @@ void core_on_message(STATE* state_ptr, MESSAGE* _msg)
 	}
 	//message_free(_msg);
 }
-
+//{a{MiFjpFCUJ7}{0000000184}{{ "status": 9, "msg_json": { "value": "41.24'12.2\"N 2.10'26.5\"E", "date": "2012-04-23T18:25:43.511Z" }, "ep_id": "MiFjpFCUJ7", "msg_id": "0000000008", "conn": 8, "module": "comtcp" }}}
 /* core_on_component_message handles messages from the component.
  * This handler is assigned only to the app_state */
-void core_on_component_message(STATE* state_ptr, MESSAGE* msg)
+
+const char delim1 = '{';
+const char delim2 = '}';
+const char* delim21 = "}{";
+const char a = 'a', b = 'b';
+
+void core_on_component_message(STATE* state_ptr, const char* msg_id,
+		const char* module_id, const char* function_id, const char* return_type,
+		Array *args)
 {
-	/* checking errors */
-	if(state_ptr == NULL)
-	{
-		return;
-	}
-	if(msg == NULL)
-	{
-		return;
-	}
-	if(state_ptr != app_state)
-	{
-		return;
-	}
-	if(msg->status != MSG_CMD)
-	{
-		return;
-	}
-	if(state_ptr->state != STATE_APP_MSG)
-	{
-		return;
-	}
+	char *return_msg = _core_call_array(module_id, function_id, return_type, args);
 
-	/* all is good, parse function call signature */
-	JSON* cmd_json = msg->_msg_json;
-	char *module_id = json_get_str(cmd_json, "module_id");
-	char *function_id = json_get_str(cmd_json, "function_id");
-	char *return_type = json_get_str(cmd_json, "return_type");
-	Array *args = json_get_array(cmd_json, "args");
-
-	MESSAGE *return_msg = _core_call_array(module_id, function_id, return_type, args);
-
-	/* get the result back to the component */
+	/* get the result back to the component*/
 	if(return_msg != NULL)
 	{
-		return_msg->msg_id = (char*) malloc(11 * sizeof(char));
-		strncpy(return_msg->msg_id, msg->msg_id, 10);
-		state_send_message(app_state, return_msg);
-	}
+		char str[11];
+		COM_MODULE* sockpair_module = app_state->module;
+		(*(sockpair_module->fc_send))(app_state->conn, &delim1, 1);
 
-	free(module_id);
-	free(function_id);
-	free(return_type);
-	array_free(args);
+		(*(sockpair_module->fc_send))(app_state->conn, &b, 1);
+		(*(sockpair_module->fc_send))(app_state->conn, &delim1, 1);
+		(*(sockpair_module->fc_send))(app_state->conn, msg_id, 10);
+		(*(sockpair_module->fc_send))(app_state->conn, delim21, 2);
+		(*(sockpair_module->fc_send))(app_state->conn, return_type, 3);
+		(*(sockpair_module->fc_send))(app_state->conn, delim21, 2);
+		sprintf(str, "%010lu", strlen(return_msg));
+		(*(sockpair_module->fc_send))(app_state->conn, str, 10);
+		(*(sockpair_module->fc_send))(app_state->conn, delim21, 2);
+		(*(sockpair_module->fc_send))(app_state->conn, return_msg, strlen(return_msg));
 
-	if(return_msg)
-	{
-		json_free(return_msg->_msg_json);
-		message_free(return_msg);
+		(*(sockpair_module->fc_send))(app_state->conn, &delim2, 1);
+		(*(sockpair_module->fc_send))(app_state->conn, &delim2, 1);
+		free(return_msg);
+
+		//printf("result: %s\n", message_to_str(return_msg));
+		//return_msg->msg_id = (char*) malloc(11 * sizeof(char));
+		//strncpy(return_msg->msg_id, msg_id, 10);
+		//state_send_message(app_state, return_msg);
+
+		//json_free(return_msg->_msg_json);
+		//message_free(return_msg);
 	}
-	//message_free(msg);
-	//json_free(cmd_json);
 }
-
 
 /* This function is called only for the app to register to the core */
 void core_on_first_message(STATE* state_ptr, MESSAGE* msg)
@@ -369,15 +355,10 @@ void call_external_command_handler(STATE* state_ptr, MESSAGE* msg)
 	/* apply the handler of the ep for incoming messages */
 	if(state_ptr->lep->ep->handler != NULL)
 	{
-		//printf("bad %s\n", message_to_str(msg));
 		(*state_ptr->lep->ep->handler)(msg);
 	}
-	else
-	{
-		//printf(" to app %s\n", message_to_str(msg));
-		//state_send_message(app_state, msg);
-		(*(app_state->module->fc_send))(app_state->conn, msg->data, msg->size);
-	}
+	else/* do nothing*/
+	{	}
 }
 
 void recv_stream_cmd(MESSAGE* msg)
@@ -403,7 +384,6 @@ void recv_stream_cmd(MESSAGE* msg)
 		lep->fifo = fifo_init_server(lep->fifo_name);
 
 		msg->msg_id = strdup_null(lep->fifo_name); //was str
-		//printf("message---- %s\n", message_to_str(msg));
 		state_send_message(app_state, msg);
 		return;
 	}

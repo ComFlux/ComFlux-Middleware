@@ -57,6 +57,7 @@ ENDPOINT* endpoint_init(const char* name, const char *description, int type,
 	else if(msg_str == NULL)
 	{
 		//slog(SLOG_ERROR, "ENDPOINT: no msg specified");
+		printf("no msg specified\n");
 		endpoint_free(ep);
 		return NULL;
 	}

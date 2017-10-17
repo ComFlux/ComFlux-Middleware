@@ -229,16 +229,16 @@ char* udp_receive_message(int _conn) {
 				printf("msg on serv %d\n", _conn);
 				if (on_data_handler != NULL)
 					(*on_data_handler)(thismodule, ntohs(peerin->sin_port),
-							buf);
+							buf, strlen(buf));
 			} else {
 				printf("msg on cli%d\n", _conn);
 				if (on_data_handler != NULL)
-					(*on_data_handler)(thismodule, _conn, buf);
+					(*on_data_handler)(thismodule, _conn, buf, strlen(buf));
 			}
 		} else { // from peer
 			printf("msg on peer%d\n", _conn);
 			if (on_data_handler != NULL)
-				(*on_data_handler)(thismodule, ntohs(peerin->sin_port), buf);
+				(*on_data_handler)(thismodule, ntohs(peerin->sin_port), buf, strlen(buf));
 		}
 
 		return buf;
@@ -396,7 +396,7 @@ int com_connection_close(int conn) {
 	return 0;
 }
 
-int com_set_on_data(void (*handler)(void*, int, const char*)) {
+int com_set_on_data(void (*handler)(void*, int, const void*, unsigned int)) {
 	on_data_handler = handler;
 	// return (int)map_insert(handler_table, &conn, _handler);
 	return 0;

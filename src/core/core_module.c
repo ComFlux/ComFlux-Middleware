@@ -38,13 +38,14 @@ extern HashMap* rdcs;
 
 extern int map_sync_pipe[2];
 
-extern void core_on_data(COM_MODULE* module, int conn, const char* data);
+extern void core_on_data(COM_MODULE* module, int conn, const void* data, unsigned int size);
 extern void core_on_connect(COM_MODULE* module, int conn);
 extern void core_on_disconnect(COM_MODULE* module, int conn);
 
 int core_register_endpoint(const char* json)
 {
 	slog(SLOG_DEBUG, "CORE: %s", __func__);
+
 	JSON* ep_json = json_new(json);
     LOCAL_EP *lep = ep_local_new(ep_json, NULL);
     json_free(ep_json);
@@ -253,14 +254,15 @@ int core_ep_send_message(LOCAL_EP* lep, const char* msg_id, const char* msg)
     if (!ep_can_send(lep->ep))
         return EP_NO_SEND;
 
-    MESSAGE* msg_msg = message_parse(msg);
-    if (json_validate_message(lep, msg_msg->_msg_json))
+    JSON* msg_json = json_new(msg);
+    if (json_validate_message(lep, msg_json))
         return EP_NO_VALID;
 
-    ep_send(lep, msg, strlen(msg));
+    MESSAGE* msg_msg = message_new_id_json(msg_id, msg_json, MSG_MSG);
+    char* msg_to_send = message_to_str(msg_msg);
+    ep_send(lep, msg_to_send, strlen(msg_to_send));
 
-    json_free(msg_msg->_msg_json);
-    message_free(msg_msg);
+    json_free(msg_json);
 
     return 0;
 }
@@ -647,16 +649,18 @@ int core_load_com_module(const char* lib_path, const char* config_json)
     COM_MODULE* com_module = com_module_new(lib_path, config_json); // com_get_module(path);//change after socketpair with app
 
     if (com_module == NULL) {
+    	printf("CORE FUNC: could not load com module %s\n", lib_path);
         //slog(SLOG_ERROR, SLOG_ERROR, "CORE FUNC: could not load com module %s", lib_path);
         return -1;
     }
 
-    (*(com_module->fc_set_on_data))((void (*)(void *, int, const char *))core_on_data);
+    (*(com_module->fc_set_on_data))((void (*)(void *, int, const void*, unsigned int))core_on_data);
     (*(com_module->fc_set_on_connect))((void (*)(void *, int))core_on_connect);
     (*(com_module->fc_set_on_disconnect))((void (*)(void *, int))core_on_disconnect);
 
     map_update(com_modules, (void*)com_module->name, (void*)com_module);
 
+    printf("ok\n\n");
     return 0;
 }
 
@@ -670,6 +674,7 @@ int core_load_access_module(const char* path, const char* config_json)
 
 char* core_ep_get_all_connections(LOCAL_EP* lep)
 {
+	printf("het ll connections: %d\n\n", array_size(lep->mappings_states));
 	slog(SLOG_DEBUG, "CORE: %s", __func__);
 
 	if(lep==NULL)

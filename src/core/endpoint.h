@@ -53,6 +53,7 @@ typedef struct _LOCAL_EP{
 
 	/* handler called for messages from the app.
 	 * external msgs: ep->handler.
+	 * TODO: not used yet
 	 */
 	void (*fromapp_handler)(MESSAGE*);
 

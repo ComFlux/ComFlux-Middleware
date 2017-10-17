@@ -157,7 +157,7 @@ int com_send_data(int conn, const char* msg)
     return (int)com_send(conn, (void*)msg, varSize);
 }
 
-int com_set_on_data( void (*handler)(void*, int, const char*) )
+int com_set_on_data( void (*handler)(void*, int, const void*, unsigned int) )
 {
     on_data_handler = handler;
     return (on_data_handler != NULL);
@@ -363,7 +363,7 @@ void* tcp_receive_function(void* conn)
 
         /* apply message handler */
         if (on_data_handler != NULL)
-            (*on_data_handler)(thismodule,_conn, buf);
+            (*on_data_handler)(thismodule,_conn, buf, strlen(buf));
 
         free(buf); /* TODO: it can't be passed btw threads */
 

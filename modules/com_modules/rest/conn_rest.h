@@ -9,11 +9,11 @@
 #define MODULES_COM_MODULES_REST_CONN_REST_H_
 
 char* load_base_module(const char* lib_path, const char* cfgfile);
-void (*on_data_handler)(void*, int, const char*);
+void (*on_data_handler)(void*, int, const void*, unsigned int);
 void (*on_connect_handler)(void*, int);
 void (*on_disconnect_handler)(void*, int);
 
-void on_message_for_base(void*, int, const char*);
+void on_message_for_base(void*, int, const void*, unsigned int);
 void on_connect_for_base(void*, int);
 void on_disconnect_for_base(void*, int);
 

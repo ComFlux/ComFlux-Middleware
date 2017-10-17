@@ -251,14 +251,14 @@ int endpoint_register(ENDPOINT *ep)
 	if (result == NULL)
 		goto final;
 
-	ret_msg = message_parse(result);
-	ret_json = ret_msg->_msg_json;
-	return_value = json_get_int(ret_json, "return_value");
-
+	//ret_msg = message_parse(result);
+	//ret_json = ret_msg->_msg_json;
+	//return_value = json_get_int(ret_json, "return_value");
+	sscanf(result, "%010d", &return_value);
 	final:
 	{
-		json_free(ret_json);
-		message_free(ret_msg);
+		//json_free(ret_json);
+		//message_free(ret_msg);
 		free(ep_str);
 
 		return return_value;
@@ -269,7 +269,7 @@ int endpoint_register(ENDPOINT *ep)
 void endpoint_unregister(ENDPOINT *ep)
 {
     mw_call_module_function(
-            "core", "remove_endpoint", "void",
+            "core", "remove_endpoint__", "voi",
             ep->id, NULL);
 }
 
@@ -282,51 +282,46 @@ void endpoint_remove(ENDPOINT* endpoint)
 
 void endpoint_send_message(ENDPOINT* endpoint, const char* msg)
 {
-	MESSAGE *src_msg = message_new(msg, MSG_MSG);
-	src_msg->ep = endpoint;
+	//MESSAGE *src_msg = message_new(msg, MSG_MSG);
+	//src_msg->ep = endpoint;
 
-	char* msg_str = message_to_str(src_msg);
+	//char* msg_str = message_to_str(src_msg);
+	char* msg_id=message_generate_id();
     mw_call_module_function(
-            "core", "ep_send_message", "void",
-            endpoint->id, src_msg->msg_id, msg_str, NULL);
+            "core", "ep_send_message__", "voi",
+            endpoint->id, msg_id, msg, NULL);
 
-	free(msg_str);
-	json_free(src_msg->_msg_json);
-	message_free(src_msg);
+	free(msg_id);
+	//json_free(src_msg->_msg_json);
+	//message_free(src_msg);
 }
 
 void endpoint_send_message_json(ENDPOINT* endpoint, JSON* msg_json)
 {
-	MESSAGE *src_msg = message_new_json(msg_json, MSG_MSG);
-	src_msg->ep = endpoint;
+	char* msg = json_to_str(msg_json);
+	endpoint_send_message(endpoint, msg);
 
-	char* msg_str = message_to_str(src_msg);
-    mw_call_module_function(
-            "core", "ep_send_message", "void",
-            endpoint->id, src_msg->msg_id, msg_str, NULL);
-
-	free(msg_str);
-	message_free(src_msg);
+	free(msg);
 }
 
 void endpoint_start_stream(ENDPOINT* endpoint)
 {
     mw_call_module_function(
-            "core", "ep_stream_start", "void",
+            "core", "ep_stream_start", "voi",
             endpoint->id, NULL);
 }
 
 void endpoint_stop_stream(ENDPOINT* endpoint)
 {
     mw_call_module_function(
-            "core", "ep_stream_stop", "void",
+            "core", "ep_stream_stop", "voi",
             endpoint->id, NULL);
 }
 
 void endpoint_send_stream(ENDPOINT* endpoint, char* msg)
 {
     mw_call_module_function(
-            "core", "ep_stream_send", "void",
+            "core", "ep_stream_send", "voi",
             endpoint->id, msg, NULL);
 }
 
@@ -344,7 +339,7 @@ char* endpoint_send_request(ENDPOINT* endpoint, const char* msg)
 	char* msg_str = message_to_str(req_msg);
 
     mw_call_module_function(
-            "core", "ep_send_request", "void",
+            "core", "ep_send_request__", "voi",
             endpoint->id, req_msg->msg_id, msg_str, NULL);
 
 	char* msg_id = strdup_null(req_msg->msg_id);
@@ -363,7 +358,7 @@ char* endpoint_send_request_json(ENDPOINT* endpoint, JSON* msg)
 	char* msg_str = message_to_str(req_msg);
 
     mw_call_module_function(
-            "core", "ep_send_request", "void",
+            "core", "ep_send_request__", "voi",
             endpoint->id, req_msg->msg_id, msg_str, NULL);
 
 	char* msg_id = strdup_null(req_msg->msg_id);
@@ -393,7 +388,7 @@ MESSAGE* endpoint_send_request_blocking(ENDPOINT* endpoint, const char* msg)
 	char* msg_str = message_to_str(req_msg);
 
 	char* result = (char*) mw_call_module_function_blocking(
-			"core", "ep_send_request", "void",
+			"core", "ep_send_request__", "voi",
 			endpoint->id, req_msg->msg_id, msg_str, NULL);
 
 	MESSAGE* resp = message_parse(result);
@@ -418,7 +413,7 @@ MESSAGE* endpoint_send_request_json_blocking(ENDPOINT* endpoint, JSON* msg)
 	char* msg_str = message_to_str(req_msg);
 
 	char* result = (char*) mw_call_module_function_blocking(
-			"core", "ep_send_request", "void",
+			"core", "ep_send_request__", "voi",
 			endpoint->id, req_msg->msg_id, msg_str, NULL);
 
 	MESSAGE* resp = message_parse(result);
@@ -439,7 +434,7 @@ void endpoint_send_response(ENDPOINT* endpoint, const char* req_id, const char* 
     char* msg_str = message_to_str(resp_msg);
 
     mw_call_module_function(
-            "core", "ep_send_response", "void",
+            "core", "ep_send_response_", "voi",
             endpoint->id, resp_msg->msg_id, msg_str, NULL);
 
     free(msg_str);
@@ -455,7 +450,7 @@ void endpoint_send_response_json(ENDPOINT* endpoint, const char* req_id, JSON* m
     char* msg_str = message_to_str(resp_msg);
 
     mw_call_module_function(
-            "core", "ep_send_response", "void",
+            "core", "ep_send_response_", "voi",
             endpoint->id, resp_msg->msg_id, msg_str, NULL);
 
     free(msg_str);
@@ -475,7 +470,7 @@ void endpoint_send_last_response(ENDPOINT* endpoint, const char* req_id, const c
 	resp_msg->ep = endpoint;
 
     mw_call_module_function(
-            "core", "ep_send_response", "void",
+            "core", "ep_send_response_", "voi",
             endpoint->id, req_id,
             message_to_str(resp_msg), NULL);
 
@@ -496,7 +491,7 @@ void endpoint_send_last_response_json(ENDPOINT* endpoint, const char* req_id, JS
 	resp_msg->ep = endpoint;
 
     mw_call_module_function(
-            "core", "ep_send_response", "void",
+            "core", "ep_send_response_", "voi",
             endpoint->id, req_id,
             message_to_str(resp_msg), NULL);
 
@@ -508,7 +503,7 @@ void endpoint_send_last_response_json(ENDPOINT* endpoint, const char* req_id, JS
 void endpoint_send(ENDPOINT* endpoint, MESSAGE* msg)
 {
     mw_call_module_function(
-    		"core", "ep_send_message", "void",
+    		"core", "ep_send_message__", "voi",
 			endpoint, message_to_str(msg), NULL);
 }
 
@@ -567,7 +562,7 @@ int endpoint_more_responses(ENDPOINT* endpoint, const char* req_id)
 MESSAGE* endpoint_fetch_message(ENDPOINT* endpoint)
 {
 	char* result = (char*) mw_call_module_function_blocking(
-			"core", "ep_receive_message", "message",
+			"core", "ep_receive_message", "msg",
 			endpoint->id, NULL);
 
 	MESSAGE* msg = message_parse(result);
@@ -581,7 +576,7 @@ MESSAGE* endpoint_fetch_message(ENDPOINT* endpoint)
 MESSAGE* endpoint_fetch_request(ENDPOINT* endpoint)
 {
 	char* result = mw_call_module_function_blocking(
-			"core", "ep_receive_request", "message",
+			"core", "ep_receive_request", "msg",
 			endpoint->id, NULL);
 
 	if (result == NULL)
@@ -598,7 +593,7 @@ MESSAGE* endpoint_fetch_request(ENDPOINT* endpoint)
 MESSAGE* endpoint_fetch_response(ENDPOINT* endpoint, const char* req_id)
 {
 	char* result = (char*) mw_call_module_function_blocking(
-			"core", "ep_receive_response", "message",
+			"core", "ep_receive_response", "msg",
 			endpoint->id, req_id, NULL);
 
 	if (result == NULL)
@@ -615,28 +610,28 @@ MESSAGE* endpoint_fetch_response(ENDPOINT* endpoint, const char* req_id)
 void endpoint_add_filter(ENDPOINT* endpoint, const char* filter)
 {
     mw_call_module_function(
-            "core", "ep_add_filter", "void",
+            "core", "ep_add_filter____", "voi",
             endpoint->id, filter, NULL);
 }
 
 void endpoint_set_filters(ENDPOINT* endpoint, const char* filter_json)
 {
     mw_call_module_function(
-            "core", "ep_reset_filter", "void",
+            "core", "ep_reset_filter__", "voi",
             endpoint->id, filter_json, NULL);
 }
 
 void endpoint_set_accesss(ENDPOINT* endpoint, const char* subject)
 {
     mw_call_module_function(
-            "core", "ep_set_access", "void",
+            "core", "ep_set_access____", "voi",
             endpoint->id, subject, NULL);
 }
 
 void endpoint_reset_accesss(ENDPOINT* endpoint, const char* subject)
 {
     mw_call_module_function(
-            "core", "ep_reset_access", "void",
+            "core", "ep_reset_access__", "voi",
             endpoint->id, subject, NULL);
 }
 
@@ -687,13 +682,10 @@ Array* ep_get_all_connections(ENDPOINT* endpoint)
 
 	/* endpoint update core */
 	char* resp = mw_call_module_function_blocking(
-			"core", "ep_get_all_connections", "string",
+			"core", "ep_get_all_conns_", "str",
 			endpoint->id, NULL);
-	MESSAGE* resp_msg = message_parse(resp);
-	JSON* resp_json = resp_msg->_msg_json;
-	char* return_value = json_get_str(resp_json, "return_value");
 
-	JSON* all_conns_json = json_new(return_value);
+	JSON* all_conns_json = json_new(resp);
 	Array* all_conns_array = json_get_jsonarray(all_conns_json, "all_mappings");
 
 	return all_conns_array;
@@ -711,7 +703,7 @@ void endpoint_update_description(ENDPOINT* ep, const char *description)
 
 	/* endpoint update core */
 	mw_call_module_function(
-			"core", "update_description", "void",
+			"core", "update_description", "voi",
 			description, NULL);
 }
 
@@ -725,7 +717,7 @@ void endpoint_update_resp(ENDPOINT* ep, const char *resp_path)
 
 	/* endpoint update core */
 	mw_call_module_function(
-			"core", "update_resp", "void",
+			"core", "update_resp", "voi",
 			ep->resp, NULL);
 }
 
@@ -739,7 +731,7 @@ void endpoint_update_msg(ENDPOINT* ep, const char *msg_path)
 
 	/* endpoint update core */
 	mw_call_module_function(
-			"core", "update_msg", "void",
+			"core", "update_msg", "voi",
 			ep->msg, NULL);
 }
 
@@ -751,8 +743,8 @@ int endpoint_map_to(ENDPOINT* endpoint, const char* address, const char* ep_quer
 {
 	char* result = NULL;
 
-	MESSAGE* msg = NULL;
-	JSON* map_json = NULL;
+	//MESSAGE* msg = NULL;
+	//JSON* map_json = NULL;
 	int return_value;
 
 	if(endpoint == NULL)
@@ -766,26 +758,27 @@ int endpoint_map_to(ENDPOINT* endpoint, const char* address, const char* ep_quer
 	}
 
 	if(ep_query == NULL)
-		ep_query = "";
+		ep_query = "[]";
 	if(cpt_query == NULL)
-		cpt_query = "";
+		cpt_query = "[]";
 
 
 	result = (char*) mw_call_module_function_blocking(
-			"core", "map", "int",
+			"core", "map______________", "int",
 			endpoint->id, address, ep_query, cpt_query,
 			NULL);
 
 	if(result == NULL)
 		return -1;
 
-	msg = message_parse(result);
-	map_json = msg->_msg_json;
-	return_value = json_get_int(map_json, "return_value");
+	//msg = message_parse(result);
+	//map_json = msg->_msg_json;
+	//return_value = json_get_int(map_json, "return_value");
 
 
-	json_free(map_json);
-	message_free(msg);
+	//json_free(map_json);
+	//message_free(msg);
+	sscanf(result, "%010d", &return_value);
 
 	return return_value;
 }
@@ -814,7 +807,7 @@ int endpoint_map_module(ENDPOINT* endpoint, const char* module, const char* addr
 		cpt_query = "";
 
 	result = (char*) mw_call_module_function_blocking(
-			"core", "map_module", "int",
+			"core", "map_module_______", "int",
 			endpoint->id, module, address, ep_query, cpt_query,
 			NULL);
 
@@ -848,7 +841,7 @@ void endpoint_map_lookup(ENDPOINT* endpoint, const char* ep_query, const char* c
 	sprintf(max_nb_str, "%d", max_maps);
 
 	mw_call_module_function(
-			"core", "map_lookup", "void",
+			"core", "map_lookup_______", "voi",
 			endpoint->id, ep_query, cpt_query, max_nb_str, NULL);
 }
 
@@ -916,7 +909,7 @@ int endpoint_unmap_all(ENDPOINT* endpoint)
 int endpoint_divert(ENDPOINT *ep, char *ep_id_from, char* addr, char *ep_id_to)
 {
 	char* result = (char*) mw_call_module_function_blocking(
-			"core", "divert", "string",
+			"core", "divert", "str",
 			ep->id, ep_id_from, addr, ep_id_to, NULL);
 
 	if (result == NULL)

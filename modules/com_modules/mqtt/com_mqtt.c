@@ -178,7 +178,7 @@ void message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_
 
 	/* send data to the core */
 	if(on_data_handler)
-		(*on_data_handler)(thismodule, channel->fd, msg_to_core);
+		(*on_data_handler)(thismodule, channel->fd, msg_to_core, strlen(msg_to_core));
 
 	json_free(outer_json_to_core);
 	json_free(json_to_core);
@@ -313,7 +313,7 @@ int com_send(int conn, const void *data, unsigned int size)
 		buf = json_to_str(ack_json);
 		//printf("send back: %s\n\n", json_to_str(ack_json));
 		(*on_data_handler)(thismodule, channel->fd,
-				buf);
+				buf, strlen(buf));
 
 		json_free(ack_json);
 		json_free(msg_json);
@@ -340,7 +340,7 @@ int com_send_data(int conn, const char *data)
 	return com_send(conn, data, len);
 }
 
-int com_set_on_data( void (*handler)(void*, int, const char*) )
+int com_set_on_data( void (*handler)(void*, int, const void*, unsigned int) )
 {
     on_data_handler = handler;
     return (on_data_handler != NULL);

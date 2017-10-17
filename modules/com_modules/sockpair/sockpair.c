@@ -35,6 +35,7 @@
 
 void* thismodule;
 
+
 /* file descriptors for the sockpair */
 int fds[2];
 
@@ -163,6 +164,40 @@ int com_send_data(int conn, const char* msg)
 	return (int) allBytesSent;
 }
 
+
+int com_send(int conn, const void* msg, unsigned int size)
+{
+	if(conn <= 0)
+	{
+		slog(SLOG_ERROR,
+			 "SOCKPAIR: not established with (%d), can't send msg *%s*",
+			 conn, msg);
+		return -1;
+	}
+	slog(SLOG_INFO, "SOCKPAIR: send to (%d) *%s*", conn, msg);
+	//printf("SOCKPAIR: send to (%d) %d, *%*s*\n", conn, size, size, msg);
+
+	int allBytesSent; /* sum of all sent sizes */
+	ssize_t sentSize; /* one shot sent size */
+
+	allBytesSent = 0;
+	while(allBytesSent < size)
+	{
+		sentSize = send(conn , msg+allBytesSent , size - allBytesSent , 0);
+
+		if (sentSize < 0)
+		{
+			slog(SLOG_ERROR,
+				 "SOCKPAIR: error sending msg on sock (%d)",
+				 conn);
+			break;
+		}
+		allBytesSent += sentSize;
+	}
+
+	return (int) allBytesSent;
+}
+
 char* sockpair_receive_message(int _conn)
 {
 	uint32_t varSize;
@@ -252,6 +287,33 @@ char* sockpair_receive_message(int _conn)
 	}while(1);
 }
 
+char* sockpair_receive_message2(int _conn, void* buf, int* size)
+{
+	uint32_t varSize;
+
+
+	memset(buf, '\0', *size);
+
+		/* reading escape */
+
+	*size = recv(_conn , buf , 50 , 0);
+	if(*size == -1)
+	{
+		slog(SLOG_WARN, "SOCKPAIR: Recv msg failed from (%d). closing connection ", _conn);
+
+		if (on_disconnect_handler)
+			(*on_disconnect_handler)(NULL, _conn);
+		else
+			close(_conn);
+
+		return NULL;
+	}
+
+	slog(SLOG_INFO, "SOCKPAIR: received %d total bytes on sock (%d): *%s*", *size, _conn, buf);
+	return buf;
+}
+
+
 //////
 int com_send_data_alt(int conn, const char* msg)
 {
@@ -285,11 +347,12 @@ int com_send_data_alt(int conn, const char* msg)
     return (int)allBytesSent;
 }
 
-int com_set_on_data( void (*handler)(void*, int, const char*) )
+int com_set_on_data( void (*handler)(void*, int, const void*, unsigned int) )
 {
     on_data_handler = handler;
     return (on_data_handler != NULL);
 }
+
 
 int com_set_on_connect( void (*handler)(void*, int) )
 {
@@ -361,7 +424,10 @@ void* sockpair_receive_function(void *conn)
 
 	do{
 		/* read message */
-		buf = sockpair_receive_message(_conn);
+		void* buf = (char*)malloc(600*sizeof(char));
+		int size = 600;
+		sockpair_receive_message2(_conn, buf, &size);
+		//printf("SOCKPAIR: received (%d) %d *%*s*\n", _conn, size, size, buf);
 
 		/* recv failed or disconnected */
 		if(buf == NULL)
@@ -369,9 +435,8 @@ void* sockpair_receive_function(void *conn)
 
 		/* apply message handler in a different thread */
 		if (on_data_handler != NULL)
-			(*on_data_handler)(thismodule, _conn, buf);
+			(*on_data_handler)(thismodule, _conn, buf, (unsigned int)size);
 
-		free(buf); /* TODO: it can't be passed btw threads */
 
 	}while(1);
 	return NULL;

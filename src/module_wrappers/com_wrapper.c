@@ -298,7 +298,7 @@ int com_send_data_str_wrapper(const char* modulename, int conn, void* data, unsi
 }
 
 int com_set_on_data_wrapper(const char* modulename,
-		void (*handler)(void*, int, const char*))
+		void (*handler)(void*, int, const void*, unsigned int))
 {
 	COM_MODULE* module = com_get_module(modulename);
 	if (module == NULL)

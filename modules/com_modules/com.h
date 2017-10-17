@@ -45,7 +45,7 @@ int com_send_data(int conn, const char *data);
  * register a handler to be called at incoming data
  * the handler is called each time some data is received
  */
-int com_set_on_data( void (*handler)(void*,int, const char*) );
+int com_set_on_data( void (*handler)(void*,int, const void*, unsigned int) );
 
 /*
  * register a handler to be called when a connection is opened
@@ -72,7 +72,7 @@ int com_is_valid_address(const char* full_address);
 
 int com_is_bridge(void);
 
-void (*on_data_handler)(void*, int, const char*);
+void (*on_data_handler)(void*, int, const void*, unsigned int);
 void (*on_connect_handler)(void*, int);
 void (*on_disconnect_handler)(void*, int);
 

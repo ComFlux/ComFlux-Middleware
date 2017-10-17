@@ -10,7 +10,7 @@
 
 /* handlers from the MW */
 /* maybe should be moved tocom.h? not sure */
-void (*on_data_handler)(void*, int, const char*);
+void (*on_data_handler)(void*, int, const void*, unsigned int);
 void (*on_connect_handler)(void*, int);
 void (*on_disconnect_handler)(void*, int);
 
