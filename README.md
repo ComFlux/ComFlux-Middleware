@@ -136,3 +136,14 @@ The distribution provides the core and the library of the middleware. To compile
 ```
 
 All functions presented so far are implemented in the `middleware_api`. The middleware_utils library contains data structures used in the mw and functions to manipulate them. For instance json, hashmap, array, message.
+
+
+# Documentation
+
+For the basic usage of ComFlux, here is a detailed tutorial: [ComFlux: Dynamic creation of pervasive applications from plug-and-play modules](tutorial.pdf)
+
+Here is an article detailing the model and applications of ComFlux: [ComFlux: External Composition and Adaptation of Pervasive Applications](http://arxiv.org/abs/1710.06711)
+
+We also have the following tutorial proposal: [ComFlux: Dynamic creation of pervasive applications from plug-and-play modules](tutorial-main.pdf)
+
+
