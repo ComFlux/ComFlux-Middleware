@@ -489,6 +489,8 @@ int mw_load_com_module(const char* libpath, const char* cfgpath)
 	char* abs_lib_path = realpath(libpath, resolved_lib_path);
 	char* abs_cfg_path = realpath(cfgpath, resolved_cfg_path);
 
+	int return_value = -1;
+
 	if(abs_lib_path==NULL)
 	{
 		return -1;
@@ -507,13 +509,7 @@ int mw_load_com_module(const char* libpath, const char* cfgpath)
 	if(result == NULL)
 		return -1;
 
-	//MESSAGE* msg = message_parse(result);
-	//JSON* map_json = msg->_msg_json;
-	int return_value = -1; //json_get_int(map_json, "return_value");
 	sscanf(result, "%010d", &return_value);
-	//message_free(msg);
-	//json_free(map_json);
-
 	return return_value;
 }
 
@@ -522,6 +518,8 @@ int mw_load_access_module(const char* libpath, const char* cfgpath)
 	char resolved_lib_path[PATH_MAX+1], resolved_cfg_path[PATH_MAX+1];
 	char* abs_lib_path = realpath(libpath, resolved_lib_path);
 	char* abs_cfg_path = realpath(cfgpath, resolved_cfg_path);
+
+	int return_value = -1;
 
 	if(abs_lib_path==NULL)
 	{
@@ -541,13 +539,7 @@ int mw_load_access_module(const char* libpath, const char* cfgpath)
 	if(result == NULL)
 		return -1;
 
-	MESSAGE* msg = message_parse(result);
-	JSON* map_json = msg->_msg_json;
-	int return_value = json_get_int(map_json, "return_value");
-
-	message_free(msg);
-	json_free(map_json);
-
+	sscanf(result, "%010d", &return_value);
 	return return_value;
 }
 

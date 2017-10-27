@@ -510,6 +510,8 @@ void endpoint_send(ENDPOINT* endpoint, MESSAGE* msg)
 /* ask the core if there are queued messages for @ep */
 int endpoint_more_messages(ENDPOINT* endpoint)
 {
+	int return_value = -1;
+
 	char* result = (char*) mw_call_module_function_blocking(
 			"core", "ep_more_messages", "int",
 			endpoint->id, NULL);
@@ -517,16 +519,15 @@ int endpoint_more_messages(ENDPOINT* endpoint)
 	if (result == NULL)
 		return -1;
 
-	MESSAGE* msg = message_parse(result);
-
-	free(result);
-
-	return json_get_int(msg->_msg_json, "return_value");
+	sscanf(result, "%010d", &return_value);
+	return return_value;
 }
 
 /* ask the core if there are queued requests for @ep */
 int endpoint_more_requests(ENDPOINT* endpoint)
 {
+	int return_value = -1;
+
 	char* result = (char*) mw_call_module_function_blocking(
 			"core", "ep_more_requests", "int",
 			endpoint->id, NULL);
@@ -534,16 +535,15 @@ int endpoint_more_requests(ENDPOINT* endpoint)
 	if (result == NULL)
 		return -1;
 
-	MESSAGE* msg = message_parse(result);
-
-	free(result);
-
-	return json_get_int(msg->_msg_json, "return_value");
+	sscanf(result, "%010d", &return_value);
+	return return_value;
 }
 
 /* ask the core if there are queued responses for @ep */
 int endpoint_more_responses(ENDPOINT* endpoint, const char* req_id)
 {
+	int return_value = -1;
+
 	char* result = (char*) mw_call_module_function_blocking(
 			"core", "ep_more_responses", "int",
 			endpoint->id, req_id, NULL);
@@ -551,11 +551,8 @@ int endpoint_more_responses(ENDPOINT* endpoint, const char* req_id)
 	if (result == NULL)
 		return -1;
 
-	MESSAGE* msg = message_parse(result);
-
-	free(result);
-
-	return json_get_int(msg->_msg_json, "return_value");
+	sscanf(result, "%010d", &return_value);
+	return return_value;
 }
 
 /* receive queued message from the core */
@@ -742,9 +739,6 @@ void endpoint_update_msg(ENDPOINT* ep, const char *msg_path)
 int endpoint_map_to(ENDPOINT* endpoint, const char* address, const char* ep_query, const char* cpt_query)
 {
 	char* result = NULL;
-
-	//MESSAGE* msg = NULL;
-	//JSON* map_json = NULL;
 	int return_value;
 
 	if(endpoint == NULL)
@@ -757,9 +751,9 @@ int endpoint_map_to(ENDPOINT* endpoint, const char* address, const char* ep_quer
 		return -2;
 	}
 
-	if(ep_query == NULL)
+	if(ep_query == NULL || strlen(ep_query) <= 1)
 		ep_query = "[]";
-	if(cpt_query == NULL)
+	if(cpt_query == NULL || strlen(cpt_query) <= 1)
 		cpt_query = "[]";
 
 
@@ -771,25 +765,14 @@ int endpoint_map_to(ENDPOINT* endpoint, const char* address, const char* ep_quer
 	if(result == NULL)
 		return -1;
 
-	//msg = message_parse(result);
-	//map_json = msg->_msg_json;
-	//return_value = json_get_int(map_json, "return_value");
-
-
-	//json_free(map_json);
-	//message_free(msg);
 	sscanf(result, "%010d", &return_value);
-
 	return return_value;
 }
 
 int endpoint_map_module(ENDPOINT* endpoint, const char* module, const char* address, const char* ep_query, const char* cpt_query)
 {
 	char* result = NULL;
-
-	MESSAGE* msg = NULL;
-	JSON* map_json = NULL;
-	int return_value;
+	int return_value = -1;
 
 	if(endpoint == NULL)
 	{
@@ -801,10 +784,10 @@ int endpoint_map_module(ENDPOINT* endpoint, const char* module, const char* addr
 		return -2;
 	}
 
-	if(ep_query == NULL)
-		ep_query = "";
-	if(cpt_query == NULL)
-		cpt_query = "";
+	if(ep_query == NULL || strlen(ep_query) <= 1)
+		ep_query = "[]";
+	if(cpt_query == NULL || strlen(cpt_query) <= 1)
+		cpt_query = "[]";
 
 	result = (char*) mw_call_module_function_blocking(
 			"core", "map_module_______", "int",
@@ -814,13 +797,7 @@ int endpoint_map_module(ENDPOINT* endpoint, const char* module, const char* addr
 	if(result == NULL)
 		return -1;
 
-	msg = message_parse(result);
-	map_json = msg->_msg_json;
-	return_value = json_get_int(map_json, "return_value");
-
-	json_free(map_json);
-	message_free(msg);
-
+	sscanf(result, "%010d", &return_value);
 	return return_value;
 }
 
@@ -850,6 +827,7 @@ void endpoint_map_lookup(ENDPOINT* endpoint, const char* ep_query, const char* c
 
 int endpoint_unmap_from(ENDPOINT* endpoint, const char* addr)
 {
+	int return_value = -1;
 	char* result = (char*) mw_call_module_function_blocking(
 			"core", "unmap", "int",
 			endpoint->id, addr, NULL);
@@ -857,20 +835,15 @@ int endpoint_unmap_from(ENDPOINT* endpoint, const char* addr)
 	if(result == NULL)
 		return -1;
 
-	MESSAGE* msg = message_parse(result);
-	JSON* map_json = msg->_msg_json;
-	int return_value = json_get_int(map_json, "return_value");
-
-	//free(result);
-	json_free(map_json);
-	message_free(msg);
-
+	sscanf(result, "%010d", &return_value);
 	return return_value;
 }
 
 int endpoint_unmap_connection(ENDPOINT* endpoint, const char* module, int conn)
 {
 	char conn_str[10];
+	int return_value = -1;
+
 	sprintf(conn_str, "%d", conn);
 
 	char* result = (char*) mw_call_module_function_blocking(
@@ -880,27 +853,19 @@ int endpoint_unmap_connection(ENDPOINT* endpoint, const char* module, int conn)
 	if(result == NULL)
 		return -1;
 
-	MESSAGE* msg = message_parse(result);
-	JSON* map_json = msg->_msg_json;
-	int return_value = json_get_int(map_json, "return_value");
-
-	//free(result);
-	json_free(map_json);
-	message_free(msg);
-
+	sscanf(result, "%010d", &return_value);
 	return return_value;
 }
 
 int endpoint_unmap_all(ENDPOINT* endpoint)
 {
+	int return_value = -1;
+
 	char* result = (char*) mw_call_module_function_blocking(
 			"core", "unmap_all", "int",
 			endpoint->id, NULL);
 
-	MESSAGE* msg = message_parse(result);
-	JSON* msg_json = msg->_msg_json;
-	int return_value = json_get_int(msg_json, "return_value");
-
+	sscanf(result, "%010d", &return_value);
 	return return_value;
 }
 
@@ -908,6 +873,8 @@ int endpoint_unmap_all(ENDPOINT* endpoint)
 
 int endpoint_divert(ENDPOINT *ep, char *ep_id_from, char* addr, char *ep_id_to)
 {
+	int return_value = -1;
+
 	char* result = (char*) mw_call_module_function_blocking(
 			"core", "divert", "str",
 			ep->id, ep_id_from, addr, ep_id_to, NULL);
@@ -915,14 +882,7 @@ int endpoint_divert(ENDPOINT *ep, char *ep_id_from, char* addr, char *ep_id_to)
 	if (result == NULL)
 		return -1;
 
-	MESSAGE* msg = message_parse(result);
-	JSON* divert_json = msg->_msg_json;
-	int return_value = json_get_int(divert_json, "return_value");
-
-	//free(result);
-	json_free(divert_json);
-	message_free(msg);
-
+	sscanf(result, "%010d", &return_value);
 	return return_value;
 }
 
