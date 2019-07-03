@@ -328,7 +328,8 @@ void endpoint_send_stream(ENDPOINT* endpoint, char* msg)
 char* endpoint_send_request(ENDPOINT* endpoint, const char* msg)
 {
 	const char* _msg;
-	if (msg == NULL)
+	//seems this should be != 
+    if (msg != NULL)
 		_msg = msg;
 	else
 		_msg = "";
